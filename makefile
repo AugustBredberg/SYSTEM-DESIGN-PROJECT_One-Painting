@@ -2,7 +2,7 @@
 
 
 server:
-	node app.js &
+	node appNPM/index.js
 
 clean:
 	rm -f *~
