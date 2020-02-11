@@ -1,16 +1,21 @@
 //Load HTTP module
-const http = require("http");
-const hostname = '127.0.0.1';
+const express = require('express');
+const app = express();
+const path = require('path');
+
 const port = 3000;
-
+app.set('port', (process.env.PORT || port));
 //Create HTTP server and listen on port 3000 for requests
-const server = http.createServer((req, res) => {
+app.use(express.static(path.join(__dirname, 'public/')));
 
-  //Set the response HTTP header with HTTP status and Content type
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname, '../views/index.html'));
 });
+
+app.get('/admin', function(req, res) {
+  res.sendFile(path.join(__dirname, '../views/admin.html'));
+});
+
 
 //listen for request on port 3000, and as a callback function have the port listened on logged
 server.listen(port, hostname, () => {
