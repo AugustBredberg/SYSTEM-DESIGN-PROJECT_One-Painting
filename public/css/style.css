@@ -1,3 +1,20 @@
-h1 {
-    color: red;
+body {
+    background: antiquewhite;
+}
+#login {
+
+    background: aqua;
+    text-align: center;
+    margin: 10em 27em 15em 27em;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+#username {
+    margin-bottom: 3em;
+
+}
+
+#password {
+
 }

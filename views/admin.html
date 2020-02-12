@@ -8,11 +8,27 @@
     <meta name="description" content="The HTML5 Herald">
     <meta name="author" content="SitePoint">
 
-    <link rel="stylesheet" href="css/styles.css?v=1.0">
+    <script defer src="/socket.io/socket.io.js" defer></script>
+    <script defer src="/vue/vue.js"></script>
+    <script defer src="js/admin_vue.js"></script>
+
+    <link rel="stylesheet" href="css/style.css?v=1.0">
 
   </head>
 
   <body>
-    Admin
+    <div id="login">
+      <h3>Login:</h3>
+      <p>
+       <!-- <label for="username">Username: </label><br> -->
+        <input type="text" id="username" name="fn" required="required" v-model="uname" placeholder="Username"/>
+        <br>
+       <!-- <label for="password">Password: </label>  --> <br>
+        <input type="password" id="password" name="fn" required="required" v-model="pword" placeholder="password"/>
+      </p>
+      <p>
+        <button type="submit" id="loginbutton" v-on:click = "submitLogin(uname, pword)" <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Checkmark_green.svg/1180px-Checkmark_green.svg.png" alt="Login" width="10" height="10"> Login</button>
+      </p>
+    </div>
   </body>
 </html>
