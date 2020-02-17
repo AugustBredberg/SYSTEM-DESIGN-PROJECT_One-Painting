@@ -1,0 +1,52 @@
+X
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>Admin</title>
+    <meta name="description" content="The HTML5 Herald">
+    <meta name="author" content="SitePoint">
+    
+    
+
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+    <script src="js/user_script.js" defer></script>
+    
+  </head>
+
+  <body>
+    
+    <div align="center">
+      <img src="/img/oneLove.png" class="logo">
+    </div>
+
+    <section class="loginSection">
+      
+      <div class="loginInfoDiv"  align="center">
+	<p>
+	  <input class="userLogin" type="text" id="username" required="required" v-model="user" placeholder="Username" /><br><br>
+	  <input class="userLogin" type="text" id="password" required="required" v-model="pass" placeholder="Password" />
+	</p>
+      </div>
+
+      <div align="center">
+	<a href="www.google.com" type="submit" id="finish" >
+	  <img src="/img/loginButton.png" style="width:20vw;height:20vw;" />
+          
+	</a>
+      </div>
+      
+    </section>
+  </body>
+
+  <footer align="center" id="footer">
+    <hr>
+    <h4> OneLove</h4>
+            <p> &copy; 2020 EST. by Rövgänget</p>
+            <p> mailen@gmail.com </p>
+            <p> 0707070707 </p>
+  </footer>
+</html>
+s

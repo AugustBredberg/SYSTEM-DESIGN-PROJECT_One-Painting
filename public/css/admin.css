@@ -1,0 +1,82 @@
+h1 {
+    color: red;
+}
+
+.body{
+    height: 100vh;
+}
+
+.logo{
+    width: 30vw;
+    height: 30vw;
+}
+
+.loginSection{
+    //height: 100vh;
+}
+
+.loginInfoDiv{
+    
+
+    padding: 50px;
+}
+
+.userLogin{
+    width: 70vw;
+    height: 8vh;
+    font-size: 250%;
+
+    border: 5px solid white; 
+    -webkit-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    padding: 15px;
+    background: rgba(255,255,255,1);
+    margin: 0 0 10px 0;
+}
+
+#footer{
+    font-size: 150%;
+    position: relative;
+    bottom:0px;
+}
+
+.forwardButton{
+    width: 25%;
+    height: 25%;
+    background-image: url(/img/forwardButton);
+}
+
+.genderAgeChoiceDiv{
+    font-size: 250%;
+    display: grid;
+    align-items: normal;
+    grid-template-columns: 50% 50%;
+    //float: left;
+}
+
+.genderAgeChoiceDiv div{
+    //display: flex;
+    //float:left;
+}
+
+#genderRadioButton{
+    width: 2.5em;
+    height: 2.5em;
+}
+
+#ageDropdown{
+    font-size: 200%;
+    width: 30vw;
+    height: 10vw;
+}
+
+#ageOption{
+    font-size: 0.5em;
+}

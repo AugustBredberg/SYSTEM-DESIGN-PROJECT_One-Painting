@@ -1,0 +1,42 @@
+h1 {
+    color: red;
+}
+
+.logo{
+    width: 30vw;
+    height: 30vw;
+}
+
+.loginSection{
+    height: 50vh;
+}
+
+.loginInfoDiv{
+    
+
+    padding: 50px;
+}
+
+.userLogin{
+    width: 70vw;
+    height: 8vh;
+    font-size: 250%;
+
+    border: 5px solid white; 
+    -webkit-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    padding: 15px;
+    background: rgba(255,255,255,1);
+    margin: 0 0 10px 0;
+}
+
+#footer{
+    font-size: 150%;
+}

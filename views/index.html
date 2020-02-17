@@ -4,15 +4,50 @@
   <head>
     <meta charset="utf-8">
 
-    <title>One love</title>
+    <title>User</title>
     <meta name="description" content="The HTML5 Herald">
     <meta name="author" content="SitePoint">
+    
+    
 
-    <link rel="stylesheet" href="css/style.css">
-
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+    <script src="js/user_script.js" defer></script>
+    <script src="https://vuejs.org/js/vue.js"></script>
+    
   </head>
 
-  <body>
-    <h1>One Love</h1>
+  <body class="body">
+    
+    <div align="center">
+      <img src="/img/oneLove.png" class="logo">
+    </div>
+
+    <section class="loginSection" id="loginSection">
+      
+      <div class="loginInfoDiv" id="loginInfoDiv" align="center">
+	<h2 style="font-size: 300%"> Login </h2>
+	
+	<p>
+	  <input class="userLogin" type="text" id="username" required="required" v-model="user" placeholder="Username" /><br><br>
+	  <input class="userLogin" type="text" id="password" required="required" v-model="pass" placeholder="Password" />
+	</p>
+
+	<img v-on:click="login" src="/img/loginButton.png" class="forwardButton"/><br>
+
+	<img v-on:click="createAccount" src="/img/createAccount.png" style="width:25vw;height:8vw;" />
+	
+      </div>
+      
+
+  
+      
+    </section>
   </body>
+
+  <footer align="center" id="footer">
+    <hr>
+    <h4> OneLove</h4>
+            <p> &copy; 2020 EST. by Rövgänget</p>
+  </footer>
 </html>
+

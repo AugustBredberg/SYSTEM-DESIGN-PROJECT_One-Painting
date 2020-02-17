@@ -1,0 +1,34 @@
+
+
+
+
+
+
+const vm = new Vue({
+    el: '#loginSection',
+    data: {
+        user: "",
+	pass: ""
+     
+    },
+
+    methods: {
+	
+	loginFunc: function(){
+	    console.log("click");
+	},
+	
+        markDone: function() {
+
+	}
+
+
+
+    }
+
+});
+
+
+
+
+
