@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Admin</title>
+
+    <script defer type="text/javascript" src="js/users.js"></script>
+    <script src="https://vuejs.org/js/vue.js"></script>
+    <script src="js/admin_menu.js" defer></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+
+
+</head>
+
+<body>
+<div id ="wrapper">
+
+    <div align="center" id="logo">
+        <img src="/img/oneLove.png" class="logo">
+    </div>
+    <div id ="menu">
+        <section id ="eventInfo" class="center">
+
+            <p id="getCode">
+                <button type="submit" v-on:click="createEvent" alt="Create event" width="10" height="10" >Create Event</button>
+            </p>
+            <div id="eventCode" class="center">
+                <p id="codePlacement" class = "center">
+
+                </p>
+            </div>
+            <p id="startEvent">
+                <button type="submit" v-on:click="startEvent" alt="Start event" width="10" height="10" >Continue</button>
+            </p>
+        </section>
+        <section id="userList">
+
+                <div v-for="user in users">
+                    <p v-bind:id="user.id">
+                        <button v-on:click ="removeUser(user.id)">X</button>
+                        {{user.name}}
+                    </p>
+
+                 </div>
+
+
+        </section>
+    </div>
+</div>
+</body>
+<footer>
+
+</footer>
