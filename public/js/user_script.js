@@ -1,7 +1,19 @@
 
 
 
+var startScreen;
+var currentDateNumber = 1;
 
+let accountQuestions = [
+    "Are you adventurous?",
+    "Do you prefer a night on the sofa over a night out?"
+];
+
+let dateQuestions = [
+    "Did date was good for both?",
+    "Maybe not?",
+    "Ugly?"
+];
 
 
 const vm = new Vue({
@@ -15,7 +27,6 @@ const vm = new Vue({
     methods: {
 	login: function(){loginClicked();},
 	createAccount: function(){createAccountClicked();},
-	
         markDone: function() {
 
 	}
@@ -39,23 +50,28 @@ loginClicked = function(){
     let frwBtn = document.createElement("img");
     frwBtn.setAttribute("src", "/img/loginButton.png");
     frwBtn.setAttribute("class", "forwardButton");
+    frwBtn.onclick = function(){
+	console.log("KOLLA FILIP DET FUNKAR");
+	readyScreen();
+	//loadingDate();
+    };
     
     div.appendChild(eventCodeText);
     div.appendChild(eventCode);
     div.appendChild(frwBtn);
-
 };
 
 createAccountClicked = function(){
     let accountInfo = [
 	"Username",
 	"E-mail",
-	"Email",
-	"pettaP"
+	"Password",
+	"Re-enter Password"
     ];
     let linebreak = document.createElement("br");
     
     let div = document.getElementById("loginInfoDiv");
+    startScreen = div.innerHTML;
     div.innerHTML = "";
     
     
@@ -117,9 +133,192 @@ createAccountClicked = function(){
 	temp.setAttribute("placeholder", accountInfo[inf]);
 	div.appendChild(temp);
     }
+
+    let frwBtn = document.createElement("img");
+    frwBtn.setAttribute("src", "/img/loginButton.png");
+    frwBtn.setAttribute("class", "forwardButton");
+    frwBtn.onclick = function(){
+	accountCreationVerification();
+    };
+    
+    div.appendChild(frwBtn);
+}
+
+accountCreationVerification = function(){
+    //location.reload(true);
+    let messageDiv = document.createElement("div");
+    messageDiv.setAttribute("align", "center");
+    let section = document.getElementById("loginSection");
+    //div.innerHTML = startScreen;
+
+    //let section = document.getElemen
+    let accountVerification = document.createElement("label");
+    accountVerification.setAttribute("id", "accountCreationSuccessMessage");
+    accountVerification.innerHTML = "Account Created Successfully!";
+
+    messageDiv.appendChild(accountVerification);
+    section.prepend(messageDiv);
+    
+    personalQuestions(accountQuestions);
+}
+
+loadingDate = function(){
+    let div = document.getElementById("loginInfoDiv");
+    div.innerHTML = "";
+    div.setAttribute("style", "height: 55vh");
+
+    let dateInProgress = document.createElement("p");
+    dateInProgress.innerHTML = "Date in progress";
+    dateInProgress.setAttribute("class", "dateFont");
+    dateInProgress.style.fontSize = "400%";
+    div.appendChild(dateInProgress);
+    
+    let pulsatingHeart = document.createElement("div");
+    pulsatingHeart.setAttribute("class", "lds-heart");
+
+    let tempdiv = document.createElement("div");
+    pulsatingHeart.appendChild(tempdiv);
+
+    div.appendChild(pulsatingHeart);
+
+    /// IF DATE IS FINAL DATE, SHOW INFORMATION SHARING SCREEN
+    
+	setTimeout(personalQuestions, 1000, dateQuestions);
+    
+}
+
+personalQuestions = function(questions){
+    let currentQuestion = 0;
+    /*let questions = [
+	"Are you adventurous?",
+	"Do you prefer a night on the sofa over a night out?"
+    ];*/
+    
+    console.log("click");
+    let div = document.getElementById("loginInfoDiv");
+    div.innerHTML = "";
+
+    let personalQuestionsText = document.createElement("h2");
+    personalQuestionsText.innerHTML = "Personal Questions";
+    personalQuestionsText.style.fontSize = "300%";
+    div.appendChild(personalQuestionsText);
+    
+    let questionsDiv = document.createElement("div");
+    div.appendChild(questionsDiv);
     
     
+
+    qFunc = function(){
+	questionsDiv.innerHTML = "";
+	let question = document.createElement("h3");
+	question.innerHTML = questions[currentQuestion];
+	question.style.fontSize = "250%";
+	
+	currentQuestion ++;
+	questionsDiv.appendChild(question);
+    }
+    qFunc();
+
+    let boxesDiv = document.createElement("div");
+    boxesDiv.setAttribute("class", "boxesDiv");
+
+    /// CREATES 10 HEARTS. CONTAINS FUNCTION FOR COLORING HEARTS 
+    for(i=0; i < 10; i++){
+	let box = document.createElement("div");
+	box.setAttribute("class", "heart");
+	box.setAttribute("id", i);
+	box.setAttribute("value", ""+i);
+	boxesDiv.appendChild(box);
+	box.onclick = function(){
+
+	    for(k=0; k<10; k++){
+		console.log("plong");
+		let current = document.getElementById(k);
+		if(parseInt(this.id) >= k){
+		    current.style.backgroundColor = "red";
+		}
+		else{
+		    current.style.backgroundColor = "lightgrey";
+		}
+	    }
+	}//end onclick func
+    }
     
+    div.appendChild(boxesDiv);
     
+    let frwBtn = document.createElement("img");
+    frwBtn.setAttribute("src", "/img/loginButton.png");
+    frwBtn.setAttribute("class", "forwardButton");
+    frwBtn.onclick = function(){
+	if(questions.length > currentQuestion){
+	    for(k=0; k<10; k++){
+		let current = document.getElementById(k);
+		current.style.backgroundColor = "lightgrey";
+	    }
+	    qFunc();
+	}
+	else{
+	    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
+	    if(currentDateNumber > 3){
+		contantInfoShareScreen();
+	    }
+	    else{
+		readyScreen();
+	    }
+	}
+    };
+
+    div.appendChild(frwBtn);
+}
+
+readyScreen = function(){
+    
+    let div = document.getElementById("loginInfoDiv");
+    let successText = document.getElementById("accountCreationSuccessMessage");
+    if(successText != null){
+	    successText.remove();
+    }
+    div.innerHTML = "";
+
+    let personalQuestionsText = document.createElement("p");
+    personalQuestionsText.innerHTML = "Date: " + currentDateNumber;
+    currentDateNumber ++;
+    personalQuestionsText.setAttribute("class", "dateFont");
+    personalQuestionsText.style.fontSize = "900%";
+    div.appendChild(personalQuestionsText);
+
+    let ready = document.createElement("p");
+    ready.innerHTML = "Ready?";
+    ready.setAttribute("class", "dateFont");
+    ready.style.fontSize = "400%";
+    div.appendChild(ready);
+
+    let frwBtn = document.createElement("img");
+    frwBtn.setAttribute("src", "/img/loginButton.png");
+    frwBtn.setAttribute("class", "forwardButton");
+    frwBtn.onclick = function(){
+	
+	loadingDate();
+    };
+
+    div.appendChild(frwBtn);
+}
+
+
+contantInfoShareScreen = function(){
+    let div = document.getElementById("loginInfoDiv");
+    div.innerHTML = "";
+
+    let shareInfoText = document.createElement("p");
+    shareInfoText.innerHTML = "You matched with Pristian Puuk!";
+    shareInfoText.setAttribute("class", "dateFont");
+    shareInfoText.style.fontSize = "400%";
+    div.appendChild(shareInfoText);
+
+    let shareQ = document.createElement("p");
+    shareQ.innerHTML = "Do you want to share your contact info?";
+    shareQ.setAttribute("class", "dateFont");
+    shareQ.style.fontSize = "300%";
+    div.appendChild(shareQ);
     
 }

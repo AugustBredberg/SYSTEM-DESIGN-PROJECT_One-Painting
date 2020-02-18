@@ -10,7 +10,7 @@
     
     
 
-    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
     <script src="js/user_script.js" defer></script>
     <script src="https://vuejs.org/js/vue.js"></script>
     
@@ -19,7 +19,7 @@
   <body class="body">
     
     <div align="center">
-      <img src="/img/oneLove.png" class="logo">
+      <img src="/img/logotyp.svg" class="logo">
     </div>
 
     <section class="loginSection" id="loginSection">
@@ -32,13 +32,14 @@
 	  <input class="userLogin" type="text" id="password" required="required" v-model="pass" placeholder="Password" />
 	</p>
 
-	<img v-on:click="login" src="/img/loginButton.png" class="forwardButton"/><br>
+	<img v-on:click="login" src="/img/loginButton.png" class="forwardButton"/>
 
-	<img v-on:click="createAccount" src="/img/createAccount.png" style="width:25vw;height:8vw;" />
+	<img v-on:click="createAccount" src="/img/createAccount2.png"class="forwardButton"  />
+
 	
       </div>
       
-
+      
   
       
     </section>
@@ -47,7 +48,8 @@
   <footer align="center" id="footer">
     <hr>
     <h4> OneLove</h4>
-            <p> &copy; 2020 EST. by Rövgänget</p>
+    <p> &copy; 2020 EST. by Rövgänget</p>
+    <br>
   </footer>
 </html>
 
