@@ -12,6 +12,10 @@ app.get('/admin', function(req, res) {
   res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
+app.get('/admin_menu', function(req, res) {
+  res.sendFile(path.join(__dirname, '../views/admin_menu.html'));
+});
+
 app.listen(3000, () => {
   console.log('One Love is running on port 3000!')
 });

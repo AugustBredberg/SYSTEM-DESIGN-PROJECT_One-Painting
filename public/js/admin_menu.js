@@ -2,13 +2,14 @@
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
+
 const vm_menu = new Vue({
     el: '#eventInfo',
     data: {
-    users: [],
-    timer: {minutes:00, seconds:00},
-    dateNum: 1,
-    i: 300,
+	users: [],
+	timer: {minutes:00, seconds:00},
+	dateNum: 1,
+	i: 300,
     },
     methods:{
         createEvent: function(){
@@ -48,23 +49,25 @@ const vm_menu = new Vue({
             let SE_Userlist = document.createElement("ol");
             for (let i = 0; i < users.length-1; i++){
                 let SE_UserInList = document.createElement("li");
+		let liCheckBox = document.createElement("input");
                 let SE_user1 = document.createElement("span");
                 let SE_user2 = document.createElement("span");
+		liCheckBox.setAttribute("type", "checkbox");
                 SE_user1.setAttribute("class", "user");
                 SE_user2.setAttribute("class", "user");
                 SE_user1.setAttribute("id", users[i].id);
                 SE_user2.setAttribute("id", users[i+1].id);
                 SE_user1.appendChild(document.createTextNode(users[i].name));
-
                 SE_user2.appendChild(document.createTextNode(users[i+1].name));
 
+		SE_UserInList.appendChild(liCheckBox);
                 SE_UserInList.appendChild(SE_user1);
                 SE_UserInList.appendChild(document.createTextNode(" And "));
                 SE_UserInList.appendChild(SE_user2);
                 SE_Userlist.appendChild(SE_UserInList);
                 i++;
+		
                 SE_user1.onmouseover = function (){
-
                     vm_menu.hoverOverUser(SE_user1.id);
                     document.getElementById('userInfoText').style.visibility = "visible";
                 }
@@ -93,7 +96,15 @@ const vm_menu = new Vue({
             }
             SE_EditList.appendChild(SE_Userlist);
 
-            let SE_sessionInfo = document.getElementById("wrapper");
+	    let btnEdit = document.createElement("button");
+	    btnEdit.appendChild(document.createTextNode("Edit"));
+	    SE_EditList.appendChild(btnEdit);
+
+	    btnEdit.onclick = function(){
+		edit();
+	    }
+	    
+            //let SE_sessionInfo = document.getElementById("wrapper");
             let SE_dateNum = document.createElement("p");
             SE_dateNum.appendChild(document.createTextNode('Date: ' + this.dateNum));
             let SE_textBox = document.createElement("p");
@@ -101,15 +112,15 @@ const vm_menu = new Vue({
             let SE_timerButton = document.createElement("button");
             SE_timerButton.appendChild(document.createTextNode("Start timer"));
 
-            SE_sessionInfo.appendChild(SE_timer);
+            SE_EditList.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
                 vm_menu.startTimer();
             }
             /*SE_sessionInfo.appendChild(SE_timer);*/
-            SE_sessionInfo.appendChild(SE_dateNum);
-            SE_sessionInfo.appendChild(SE_textBox);
-            SE_sessionInfo.appendChild(SE_timerButton);
+	    SE_EditList.appendChild(SE_dateNum);
+            SE_EditList.appendChild(SE_textBox);
+            SE_EditList.appendChild(SE_timerButton);
 
             SE_dateNum.setAttribute("class", "timer");
             SE_textBox.setAttribute("class", "timer");
@@ -119,46 +130,49 @@ const vm_menu = new Vue({
             SE_timer.setAttribute("id", "toHideOnViewtimer");
             SE_timerButton.setAttribute("id", "toHideOnViewButton");
 
-
         },
         hoverOverUser: function(userID){
             console.log(userID);
+	    
             document.getElementById("toHideOnViewNum").style.visibility = "hidden";
             document.getElementById("toHideOnViewText").style.visibility = "hidden";
             document.getElementById("toHideOnViewtimer").style.visibility = "hidden";
             document.getElementById("toHideOnViewButton").style.visibility = "hidden";
 
-
             SE_userInfoText.setAttribute("class", "userInfo");
             SE_userInfoText.setAttribute("id", "userInfoText");
 
-
-
             let personalInfo = document.createElement("h3");
             personalInfo.appendChild(document.createTextNode("Personal Info:"))
-            let question1 = document.createElement("p");
+
+	    let question1 = document.createElement("p");
             question1.appendChild(document.createTextNode("Answer to question 1"));
             let question2 = document.createElement("p");
             question2.appendChild(document.createTextNode("Answer to question 2"));
             let question3 = document.createElement("p");
             question3.appendChild(document.createTextNode("Answer to question 3"));
-            let ratingsReceived = document.createElement("h3");
+
+	    let ratingsReceived = document.createElement("h3");
             ratingsReceived.appendChild(document.createTextNode("Ratings received:"))
-            let received1 = document.createElement("p");
+
+	    let received1 = document.createElement("p");
             received1.appendChild(document.createTextNode("Answer to question 1 : "));
             let received2 = document.createElement("p");
             received2.appendChild(document.createTextNode("Answer to question 2 : "));
             let received3 = document.createElement("p");
             received3.appendChild(document.createTextNode("Answer to question 3 : "));
-            let ratingsGiven = document.createElement("h3");
+
+	    let ratingsGiven = document.createElement("h3");
             ratingsGiven.appendChild(document.createTextNode("Ratings Given:"))
-            let given1 = document.createElement("p");
+
+	    let given1 = document.createElement("p");
             given1.appendChild(document.createTextNode("Answer to question 1"));
             let given2 = document.createElement("p");
             given2.appendChild(document.createTextNode("Answer to question 2"));
             let given3 = document.createElement("p");
             given3.appendChild(document.createTextNode("Answer to question 3"));
-            SE_userInfoText.appendChild(document.createTextNode(userID));
+
+	    SE_userInfoText.appendChild(document.createTextNode(userID));
             SE_userInfoText.appendChild(personalInfo);
             SE_userInfoText.appendChild(question1);
             SE_userInfoText.appendChild(question2);
@@ -173,7 +187,6 @@ const vm_menu = new Vue({
             SE_userInfoText.appendChild(given3);
 
             SE_userInfo.appendChild(SE_userInfoText);
-
         },
 
 
@@ -202,4 +215,10 @@ const vm_users = new Vue({
 function blankArea(id) {
     let area = document.getElementById(id);
     area.innerHTML = "";
+}
+
+function edit(){
+    var users = vm_users.getUsers();
+    blankArea("wrapper");
+    
 }
