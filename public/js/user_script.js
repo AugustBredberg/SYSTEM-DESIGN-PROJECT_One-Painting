@@ -15,6 +15,7 @@ let dateQuestions = [
     "Ugly?"
 ];
 
+//const socket = io();
 
 const vm = new Vue({
     el: '#loginSection',
