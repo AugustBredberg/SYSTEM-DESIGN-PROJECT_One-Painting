@@ -40,11 +40,15 @@ const vm_menu = new Vue({
 
         },
 
-        startEvent: function() {
+        startEvent: function(listOfUsers) {
             console.log('Event started');
             blankArea("wrapper");
 
-            users =  vm_users.getUsers();
+	    if(listOfUsers != null){
+		users = listOfUsers;
+	    }else{
+	        users = vm_users.getUsers();
+	    }
             console.log(users);
 
 	    displayPairs(users, false);
@@ -55,7 +59,7 @@ const vm_menu = new Vue({
 	    SE_EditList.appendChild(btnEdit);
 
 	    btnEdit.onclick = function(){
-		edit();
+		users = edit();
 	    }
 	    
             //let SE_sessionInfo = document.getElementById("wrapper");
@@ -86,7 +90,7 @@ const vm_menu = new Vue({
 
         },
         hoverOverUser: function(userID){
-            console.log(userID);
+            //console.log(userID);
 	    
             //document.getElementById("toHideOnViewNum").style.visibility = "hidden";
             //document.getElementById("toHideOnViewText").style.visibility = "hidden";
@@ -154,23 +158,34 @@ const vm_users = new Vue({
     },
     methods:{
         removeUser: function(userID){ //This only removes the nametext of the user. Should remove entire user from the users array.
-            console.log(userID);
             this.users.splice(userID-1, 1);
 
         },
         getUsers: function(){
-            console.log(this.users);
-            return this.users;
+	    var userList = [];
+	    var j = 1;
+	    for(var i = 0; i < this.users.length; i++){
+		var temp = [j, this.users[i], this.users[i+1]];
+		userList.push(temp);
+		i++;
+	    }
+            return userList;
         }
 
     }
 })
 
-function edit(){
+function edit(changedUsers){
     var users = vm_users.getUsers();
     var checkedUsers = [];
-    blankArea("wrapper");
+    var usersTemp = users;
+    if(changedUsers != null){
+	for(var i = 0; i < changedUsers.length; i++){
+	    users[changedUsers[i][0]-1] = changedUsers[i];
+	}
+    }
     
+    blankArea("wrapper");
     displayPairs(users, true);
 
     let wrapper = document.getElementById("wrapper");
@@ -190,16 +205,23 @@ function edit(){
 
     btnCompare.onclick = function(){
 	let tableCounter = 1;
-	for(var i = 0; i < users.length; i++){
+	for(var i = 0; i <users.length; i++){
 	    let temp = document.getElementById("li"+i);
 	    if(temp.checked){
-		let tempList = [tableCounter,users[i],users[i+1]];
+		let tempList = [tableCounter,users[i][1],users[i][2]];
 		checkedUsers.push(tempList);
 	    }
 	    tableCounter++;
-	    i++;
 	}
 	compareAndChange(checkedUsers);
+    }
+
+    btnSave.onclick = function(){
+	vm_menu.startEvent(users);
+    }
+
+    btnDiscard.onclick = function(){
+	vm_menu.startEvent(usersTemp);
     }
 }
 
@@ -368,15 +390,20 @@ function compareAndChange(checkedUsers){
 
     
     //-----------------------------
-    
+
+    let btnConfirm = document.createElement("button");
+    btnConfirm.appendChild(document.createTextNode("Confirm"));
+
+    //-----------------------------
+
     wrapper.appendChild(ul);
     wrapper.appendChild(tableChooser);
     wrapper.appendChild(woman);
     wrapper.appendChild(man);
+    wrapper.appendChild(btnConfirm);
 
     select.onchange = function(){
 	selectedTable = select.options[select.selectedIndex].value;
-	
 	
 	changeWoman(checkedUsers);
 	changeMan(checkedUsers);
@@ -397,12 +424,16 @@ function compareAndChange(checkedUsers){
 
 	changeMan(checkedUsers);
     }
+
+    btnConfirm.onclick = function(){
+	edit(checkedUsers);
+    }
 }
 
 function displayPairs(users, bool){
     let SE_EditList = document.getElementById("wrapper");
     let SE_Userlist = document.createElement("ol");
-    for (let i = 0; i < users.length-1; i++){
+    for (let i = 0; i < users.length; i++){
         let SE_UserInList = document.createElement("li");
 	if(bool){
 	    let liCheckbox = document.createElement("input");
@@ -414,16 +445,15 @@ function displayPairs(users, bool){
         let SE_user2 = document.createElement("span");
         SE_user1.setAttribute("class", "user");
         SE_user2.setAttribute("class", "user");
-        SE_user1.setAttribute("id", users[i].id);
-        SE_user2.setAttribute("id", users[i+1].id);
-        SE_user1.appendChild(document.createTextNode(users[i].name));
-        SE_user2.appendChild(document.createTextNode(users[i+1].name));
+        SE_user1.setAttribute("id", users[i][1].id);
+        SE_user2.setAttribute("id", users[i][2].id);
+        SE_user1.appendChild(document.createTextNode(users[i][1].name));
+        SE_user2.appendChild(document.createTextNode(users[i][2].name));
 
         SE_UserInList.appendChild(SE_user1);
         SE_UserInList.appendChild(document.createTextNode(" And "));
         SE_UserInList.appendChild(SE_user2);
         SE_Userlist.appendChild(SE_UserInList);
-        i++;
 	
         SE_user1.onmouseover = function (){
             vm_menu.hoverOverUser(SE_user1.id);
