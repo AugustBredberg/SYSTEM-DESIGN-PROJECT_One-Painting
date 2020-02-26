@@ -35,7 +35,7 @@
 	  <input class="userLogin" type="text" id="password" required="required" v-model="pass" placeholder="Password" />
 	</p>
 
-	<img v-on:click="login" src="/img/loginButton.png" class="forwardButton"/>
+	<img v-on:click="login(user, pass)" src="/img/loginButton.png" id="loginButton" class="forwardButton"/>
 
 	<img v-on:click="createAccount" src="/img/createAccount2.png"class="forwardButton"  />
 

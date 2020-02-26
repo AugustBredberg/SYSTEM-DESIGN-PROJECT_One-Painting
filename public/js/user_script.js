@@ -21,7 +21,9 @@ const vm = new Vue({
     el: '#loginSection',
     data: {
         user: "",
-	pass: ""
+		pass: "",
+		newAccount: {username:"", email:"", password:""}
+
      
     },
 
@@ -32,36 +34,48 @@ const vm = new Vue({
 
 	},
 	
-	login: function(){
+	login: function(usernameLogin, passwordLogin){
+		console.log("clicklogin");
+	    console.log(usernameLogin);
+	    console.log(passwordLogin);
+		socket.emit('loginAttempt', usernameLogin, passwordLogin);
+		socket.on('returnLoginSuccess', function(success){
 
-	    	    
-	    console.log("click");
-	    let div = document.getElementById("loginInfoDiv");
-	    div.innerHTML = "";
+			if(success == true){
+				let div = document.getElementById("loginInfoDiv");
+				div.innerHTML = "";
 
-	    let eventCodeText = document.createElement("h2");
-	    eventCodeText.innerHTML = "Enter Eventcode";
-	    eventCodeText.style.fontSize = "300%";
-	    
-	    let eventCode = document.createElement("input");
-	    eventCode.setAttribute("class", "userLogin");
-	    eventCode.setAttribute("placeholder", "Eventcode");
+				let eventCodeText = document.createElement("h2");
+				eventCodeText.innerHTML = "Enter Eventcode";
+				eventCodeText.style.fontSize = "300%";
 
-	    let frwBtn = document.createElement("img");
-	    frwBtn.setAttribute("src", "/img/loginButton.png");
-	    frwBtn.setAttribute("class", "forwardButton");
-	    frwBtn.onclick = function(){
-		console.log("KOLLA FILIP DET FUNKAR");
-		vm.readyScreen();
-		//loadingDate();
-	    };
-	    
-	    div.appendChild(eventCodeText);
-	    div.appendChild(eventCode);
-	    div.appendChild(frwBtn);
+				let eventCode = document.createElement("input");
+				eventCode.setAttribute("class", "userLogin");
+				eventCode.setAttribute("placeholder", "Eventcode");
+
+				let frwBtn = document.createElement("img");
+				frwBtn.setAttribute("src", "/img/loginButton.png");
+				frwBtn.setAttribute("class", "forwardButton");
+				frwBtn.onclick = function(){
+					console.log("KOLLA FILIP DET FUNKAR");
+					vm.readyScreen();
+					//loadingDate();
+				};
+
+				div.appendChild(eventCodeText);
+				div.appendChild(eventCode);
+				div.appendChild(frwBtn);
+
+			}
+			else{
+				console.log('Invalid username or password');
+			}
+		})
+
+
 	},
 	createAccount: function(){
-	    let accountInfo2 = {username:"", email:""};
+	    let accountInfo2 = {username:"",password:"", email:""};
 	    
 	    let accountInfo = [
 		"Username",
@@ -141,8 +155,10 @@ const vm = new Vue({
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
 		accountInfo2.username = document.getElementById("Username").value;
-		accountInfo2.username = document.getElementById("Username").value;
-		socket.emit('accountCreated', accountInfo2.username);
+		accountInfo2.email = document.getElementById("E-mail").value;
+		accountInfo2.password = document.getElementById("Password").value;
+
+		socket.emit('accountCreated', accountInfo2.username, accountInfo2.email, accountInfo2.password);
 		
 		vm.accountCreationVerification();
 	    };

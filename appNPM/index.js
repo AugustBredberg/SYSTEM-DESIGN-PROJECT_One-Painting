@@ -8,7 +8,7 @@ const port = 3000;
 var io = require('socket.io').listen(http);
 
 var fs = require('fs');
-var FormData = require('form-data');
+
 
 app.set('port', (process.env.PORT || port ));
 app.use(express.static(path.join(__dirname, '../public/')));
@@ -24,21 +24,68 @@ app.get('/admin', function(req, res) {
   res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
-var formData = new FormData();
 function Data(){
     this.account = {};
 }
 const data = new Data();
 
-Data.prototype.accountCreated = function(accountInfo){
+
+
+/*
+Data.prototype.loginAttempt = function(username, password){
+    var success;
+    console.log('Login attempt');
+    fs.readFile('log.txt', function (err, data) {
+        if (err) throw err;
+        if(data.indexOf(username) >= 0){
+            if((data.indexOf(username +', ') + ((username).length + 2) - data.indexOf(password)) == 0 ){
+                console.log('successful login')
+                var success = true;
+                console.log('function returning' + success);
+                return success;
+
+
+            }
+            else{
+                console.log('Failed login attempt')
+                var success = false;
+                console.log('function returning' + success);
+                return success;
+            }
+        }
+        else{
+            console.log('Failed login attempt')
+
+            var success = false;
+            console.log('function returning' + success);
+            return success;
+        }
+    });
+
+
+}
+*/
+Data.prototype.accountCreated = function(username, email, password){
     //formData.append('username', accountInfo, 'log.js');
 
-    
-    let array = [{username: accountInfo}];
-    fs.appendFileSync('log.txt', accountInfo, 'utf8', function(error){
+
+    fs.appendFileSync('log.txt', '[Username: ' + username + ', ', 'utf8', function(error){
 	if(error) throw error; // hantera fel just in case
-	else console.log("Success when writing!");
+	else console.log("Success when writing username!");
     });
+
+
+
+    fs.appendFileSync('log.txt', 'Password: ' + password + ', ', 'utf8', function(error){
+    if(error) throw error; // hantera fel just in case
+    else console.log("Success when writing password!");
+    });
+
+    fs.appendFileSync('log.txt', 'E-mail: ' + email + '],\n', 'utf8', function(error){
+        if(error) throw error; // hantera fel just in case
+        else console.log("Success when writing mail!");
+    });
+
 
 };
 
@@ -46,8 +93,32 @@ Data.prototype.accountCreated = function(accountInfo){
 io.on('connection', function(socket) {
    console.log('A user connected');
 
-    socket.on('accountCreated', function(accountInfo){
-	data.accountCreated(accountInfo);
+    socket.on('accountCreated', function(username, email, password){
+	data.accountCreated(username, email, password);
+    });
+
+    socket.on('loginAttempt', function(username, password){
+        fs.readFile('log.txt', function (err, data) {
+            if (err) throw err;
+            if(data.indexOf('[Username: ' + username) >= 0){
+                console.log((data.indexOf('Username: ' + username +', ') + ((username).length + 22) - data.indexOf(password + ',')))
+                if((data.indexOf('Username: ' + username +', ') + ((username).length + 22) - data.indexOf(password + ',')) == 0 ){
+                    console.log('successful login')
+                    socket.emit('returnLoginSuccess', true)
+                }
+                else{
+                    console.log('Failed login attempt')
+                    socket.emit('returnLoginSuccess', false)
+                }
+            }
+            else{
+                console.log('Failed login attempt')
+                socket.emit('returnLoginSuccess', false)
+            }
+        })
+
+
+
     });
     
    //Whenever someone disconnects this piece of code executed
