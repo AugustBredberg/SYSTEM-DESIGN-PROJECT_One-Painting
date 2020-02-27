@@ -37,7 +37,7 @@ const vm_menu = new Vue({
             }
             else {
 		if(this.i == 299){   //hard coded
-		 console.log('Event started');   
+		    console.log('Event started');   
 		}
                 timeout = setTimeout(vm_menu.startTimer, 1000);
             }
@@ -429,6 +429,10 @@ function compareAndChange(checkedUsers){
     man.appendChild(manRecievedText);
     man.appendChild(manRecieved);
 
+    //-----------------------------
+
+    let matchPrecent = document.createElement("h1");
+    matchPrecent.appendChild(document.createTextNode(calculateMatch(checkedUsers[selectedTable]) + "%"));
     
     //-----------------------------
 
@@ -441,13 +445,17 @@ function compareAndChange(checkedUsers){
     wrapper.appendChild(tableChooser);
     wrapper.appendChild(woman);
     wrapper.appendChild(man);
+    wrapper.appendChild(matchPrecent);
     wrapper.appendChild(btnConfirm);
 
     select.onchange = function(){
 	selectedTable = select.options[select.selectedIndex].value;
 	
+	
 	changeWoman(checkedUsers);
 	changeMan(checkedUsers);
+
+	matchPrecent.innerHTML = calculateMatch(checkedUsers[selectedTable]) + "%";
     }
 
     womanSelect.onchange = function(){
@@ -456,6 +464,8 @@ function compareAndChange(checkedUsers){
 	checkedUsers[womanSelect.options[womanSelect.selectedIndex].value][1] = temporary;
 
 	changeWoman(checkedUsers);
+
+	matchPrecent.innerHTML = calculateMatch(checkedUsers[selectedTable]) + "%";
     }
     
     manSelect.onchange = function(){
@@ -464,6 +474,8 @@ function compareAndChange(checkedUsers){
 	checkedUsers[manSelect.options[manSelect.selectedIndex].value][2] = temporary;
 
 	changeMan(checkedUsers);
+
+	matchPrecent.innerHTML = calculateMatch(checkedUsers[selectedTable]) + "%";
     }
 
     btnConfirm.onclick = function(){
@@ -615,4 +627,33 @@ function getTable(user){
 	}
     }
     return -1;
+}
+
+function calculateMatch(table){
+    let girl = table[1];
+    let boy = table[2];
+
+    let girlPersonal = girl.desc;
+    let girlGive = girl.give;
+    let girlRec = girl.recieved;
+    
+    let boyPersonal = boy.desc;
+    let boyGive = boy.give;
+    let boyRec = boy.recieved;
+
+    let total = 0;
+
+    for(let i = 0; i<boyPersonal.length;i++){
+	total += boyPersonal[i] - girlPersonal[i];
+    }
+
+    for(let i = 0; i<boyGive.length;i++){
+	total += boyGive[i] - girlGive[i];
+    }
+
+    for(let i = 0; i<boyRec.length;i++){
+	total += boyRec[i] - girlRec[i];
+    }
+
+    return 100 - Math.abs(total);
 }
