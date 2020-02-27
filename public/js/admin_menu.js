@@ -103,45 +103,7 @@ const vm_menu = new Vue({
             let personalInfo = document.createElement("h3");
             personalInfo.appendChild(document.createTextNode("Personal Info:"));
 
-	    let question1 = document.createElement("p");
-            question1.appendChild(document.createTextNode("Answer to question 1"));
-            let question2 = document.createElement("p");
-            question2.appendChild(document.createTextNode("Answer to question 2"));
-            let question3 = document.createElement("p");
-            question3.appendChild(document.createTextNode("Answer to question 3"));
 
-	    let ratingsReceived = document.createElement("h3");
-            ratingsReceived.appendChild(document.createTextNode("Ratings received:"))
-
-	    let received1 = document.createElement("p");
-            received1.appendChild(document.createTextNode("Answer to question 1 : "));
-            let received2 = document.createElement("p");
-            received2.appendChild(document.createTextNode("Answer to question 2 : "));
-            let received3 = document.createElement("p");
-            received3.appendChild(document.createTextNode("Answer to question 3 : "));
-
-	    let ratingsGiven = document.createElement("h3");
-            ratingsGiven.appendChild(document.createTextNode("Ratings Given:"))
-
-	    let given1 = document.createElement("p");
-            given1.appendChild(document.createTextNode("Answer to question 1"));
-            let given2 = document.createElement("p");
-            given2.appendChild(document.createTextNode("Answer to question 2"));
-            let given3 = document.createElement("p");
-            given3.appendChild(document.createTextNode("Answer to question 3"));
-
-	    SE_userInfoText.appendChild(document.createTextNode(userID));
-            SE_userInfoText.appendChild(personalInfo);
-            SE_userInfoText.appendChild(question1);
-            SE_userInfoText.appendChild(question2);
-            SE_userInfoText.appendChild(question3);
-            SE_userInfoText.appendChild(ratingsReceived);
-            SE_userInfoText.appendChild(received1);
-            SE_userInfoText.appendChild(received2);
-            SE_userInfoText.appendChild(received3);
-            SE_userInfoText.appendChild(ratingsGiven);
-            SE_userInfoText.appendChild(given1);
-            SE_userInfoText.appendChild(given2);
             SE_userInfoText.appendChild(given3);
 
             SE_userInfo.appendChild(SE_userInfoText);
@@ -155,10 +117,19 @@ const vm_users = new Vue({
     data: {
         users: daters,
         userID: "",
+	button: "button",
     },
     methods:{
-        removeUser: function(userID){ //This only removes the nametext of the user. Should remove entire user from the users array.
-            this.users.splice(userID-1, 1);
+	confirmRemove: function(userID){
+	    console.log(userID.id);
+	    let btn = document.getElementById("button"+userID.id);
+	    btn.innerHTML = "Are you sure?";
+	    btn.onclick = function(){
+		vm_users.removeUser(userID);
+	    }
+	},
+        removeUser: function(userID){ //This only removes the nametext of the user. Should remove entire user from the users array.	    
+            this.users.splice(this.users.indexOf(userID), 1);
 
         },
         getUsers: function(){

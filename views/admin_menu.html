@@ -40,8 +40,8 @@
 
                 <div v-for="user in users">
                     <p v-bind:id="user.id">
-                        <button v-on:click ="removeUser(user.id)">X</button>
-                        {{user.name}}
+                        <button v-bind:id="button+user.id" v-on:click="confirmRemove(user)">X</button>
+                        {{user.id}}{{user.name}}
                     </p>
 
                  </div>
