@@ -1,4 +1,4 @@
-
+let compareUser = null;
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
@@ -159,16 +159,25 @@ const vm_users = new Vue({
     },
     methods:{
 	confirmRemove: function(userID){
-	    console.log(userID.id);
 	    let btn = document.getElementById("button"+userID.id);
-	    btn.innerHTML = "Are you sure?";
-	    btn.onclick = function(){
+	    if(userID === compareUser){
 		vm_users.removeUser(userID);
+		btn.innerHTML = "X";
+	    }else{
+		if(compareUser !== null || this.users.indexOf(compareUser) !== -1){
+		    
+		    let btn2 = document.getElementById("button"+compareUser.id);
+		    if(btn2 !== null){
+			btn2.innerHTML = "X";
+		    }
+		}
+		compareUser = userID;
+		
+		btn.innerHTML = "Are you sure?";
 	    }
 	},
-        removeUser: function(userID){ //This only removes the nametext of the user. Should remove entire user from the users array.	    
+        removeUser: function(userID){
             this.users.splice(this.users.indexOf(userID), 1);
-
         },
         getUsers: function(){
 	    var userList = [];
@@ -296,7 +305,7 @@ function compareAndChange(checkedUsers){
     womanHeader.setAttribute("id", "womanH3");
     womanHeader.appendChild(document.createTextNode(checkedUsers[0][1].name));
 
-     let womanDescText = document.createElement("h4");
+    let womanDescText = document.createElement("h4");
     womanDescText.appendChild(document.createTextNode("Personal questions"));
     
     let womanDesc = document.createElement("ul");
@@ -306,7 +315,7 @@ function compareAndChange(checkedUsers){
 	womanLi.appendChild(document.createTextNode(checkedUsers[0][1].desc[i]));
 	womanDesc.appendChild(womanLi);
     }
-   
+    
     let womanGivenText = document.createElement("h4");
     womanGivenText.appendChild(document.createTextNode("Given ratings"));
 
@@ -366,7 +375,7 @@ function compareAndChange(checkedUsers){
 	manLi.appendChild(document.createTextNode(checkedUsers[0][2].desc[i]));
 	manDesc.appendChild(manLi);
     }
-   
+    
     let manGivenText = document.createElement("h4");
     manGivenText.appendChild(document.createTextNode("Given ratings"));
 
