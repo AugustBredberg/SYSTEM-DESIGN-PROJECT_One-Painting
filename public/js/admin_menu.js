@@ -1,4 +1,4 @@
-
+let compareUser = null;
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
@@ -123,7 +123,45 @@ const vm_menu = new Vue({
             let personalInfo = document.createElement("h3");
             personalInfo.appendChild(document.createTextNode("Personal Info:"));
 
+	    let question1 = document.createElement("p");
+            question1.appendChild(document.createTextNode("Answer to question 1"));
+            let question2 = document.createElement("p");
+            question2.appendChild(document.createTextNode("Answer to question 2"));
+            let question3 = document.createElement("p");
+            question3.appendChild(document.createTextNode("Answer to question 3"));
 
+	    let ratingsReceived = document.createElement("h3");
+            ratingsReceived.appendChild(document.createTextNode("Ratings received:"))
+
+	    let received1 = document.createElement("p");
+            received1.appendChild(document.createTextNode("Answer to question 1 : "));
+            let received2 = document.createElement("p");
+            received2.appendChild(document.createTextNode("Answer to question 2 : "));
+            let received3 = document.createElement("p");
+            received3.appendChild(document.createTextNode("Answer to question 3 : "));
+
+	    let ratingsGiven = document.createElement("h3");
+            ratingsGiven.appendChild(document.createTextNode("Ratings Given:"))
+
+	    let given1 = document.createElement("p");
+            given1.appendChild(document.createTextNode("Answer to question 1"));
+            let given2 = document.createElement("p");
+            given2.appendChild(document.createTextNode("Answer to question 2"));
+            let given3 = document.createElement("p");
+            given3.appendChild(document.createTextNode("Answer to question 3"));
+
+	    SE_userInfoText.appendChild(document.createTextNode(userID));
+            SE_userInfoText.appendChild(personalInfo);
+            SE_userInfoText.appendChild(question1);
+            SE_userInfoText.appendChild(question2);
+            SE_userInfoText.appendChild(question3);
+            SE_userInfoText.appendChild(ratingsReceived);
+            SE_userInfoText.appendChild(received1);
+            SE_userInfoText.appendChild(received2);
+            SE_userInfoText.appendChild(received3);
+            SE_userInfoText.appendChild(ratingsGiven);
+            SE_userInfoText.appendChild(given1);
+            SE_userInfoText.appendChild(given2);
             SE_userInfoText.appendChild(given3);
 
             SE_userInfo.appendChild(SE_userInfoText);
@@ -141,16 +179,25 @@ const vm_users = new Vue({
     },
     methods:{
 	confirmRemove: function(userID){
-	    console.log(userID.id);
 	    let btn = document.getElementById("button"+userID.id);
-	    btn.innerHTML = "Are you sure?";
-	    btn.onclick = function(){
+	    if(userID === compareUser){
 		vm_users.removeUser(userID);
+		btn.innerHTML = "X";
+	    }else{
+		if(compareUser !== null || this.users.indexOf(compareUser) !== -1){
+		    
+		    let btn2 = document.getElementById("button"+compareUser.id);
+		    if(btn2 !== null){
+			btn2.innerHTML = "X";
+		    }
+		}
+		compareUser = userID;
+		
+		btn.innerHTML = "Are you sure?";
 	    }
 	},
-        removeUser: function(userID){ //This only removes the nametext of the user. Should remove entire user from the users array.	    
+        removeUser: function(userID){
             this.users.splice(this.users.indexOf(userID), 1);
-
         },
         getUsers: function(){
 	    var userList = [];
@@ -278,7 +325,7 @@ function compareAndChange(checkedUsers){
     womanHeader.setAttribute("id", "womanH3");
     womanHeader.appendChild(document.createTextNode(checkedUsers[0][1].name));
 
-     let womanDescText = document.createElement("h4");
+    let womanDescText = document.createElement("h4");
     womanDescText.appendChild(document.createTextNode("Personal questions"));
     
     let womanDesc = document.createElement("ul");
@@ -288,7 +335,7 @@ function compareAndChange(checkedUsers){
 	womanLi.appendChild(document.createTextNode(checkedUsers[0][1].desc[i]));
 	womanDesc.appendChild(womanLi);
     }
-   
+    
     let womanGivenText = document.createElement("h4");
     womanGivenText.appendChild(document.createTextNode("Given ratings"));
 
@@ -348,7 +395,7 @@ function compareAndChange(checkedUsers){
 	manLi.appendChild(document.createTextNode(checkedUsers[0][2].desc[i]));
 	manDesc.appendChild(manLi);
     }
-   
+    
     let manGivenText = document.createElement("h4");
     manGivenText.appendChild(document.createTextNode("Given ratings"));
 

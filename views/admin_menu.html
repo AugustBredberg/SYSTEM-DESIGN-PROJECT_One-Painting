@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
 
     <title>Admin</title>
@@ -13,45 +13,44 @@
     <link rel="stylesheet" type="text/css" href="/css/admin.css">
 
 
-</head>
+  </head>
 
-<body>
-<div id ="wrapper">
+  <body>
+    <div id ="wrapper">
 
-    <div align="center" id="logo">
+      <div align="center" id="logo">
         <img src="/img/logotyp.svg" class="logo">
-    </div>
-    <div id ="menu">
+      </div>
+      <div id ="menu">
         <section id ="eventInfo" class="center">
 
-            <p id="getCode">
-                <button type="submit" v-on:click="createEvent" alt="Create event" width="10" height="10" >Create Event</button>
-            </p>
-            <div id="eventCode" class="center">
-                <p id="codePlacement" class = "center">
+          <p id="getCode">
+            <button type="submit" v-on:click="createEvent" alt="Create event" width="10" height="10" >Create Event</button>
+          </p>
+          <div id="eventCode" class="center">
+            <p id="codePlacement" class = "center">
 
-                </p>
-            </div>
-            <p id="startEvent">
-                <button type="submit" v-on:click="startEvent(null)" alt="Start event" width="10" height="10" >Continue</button>
             </p>
+          </div>
+          <p id="startEvent">
+            <button type="submit" v-on:click="startEvent(null)" alt="Start event" width="10" height="10" >Continue</button>
+          </p>
 
         </section>
         <section id="userList">
 
-                <div v-for="user in users">
-                    <p v-bind:id="user.id">
-                        <button v-bind:id="button+user.id" v-on:click="confirmRemove(user)">X</button>
-                        {{user.id}}{{user.name}}
-                    </p>
-
-                 </div>
+          <div v-for="user in users">
+            <p v-bind:id="user.id">
+              <button v-bind:id="button+user.id" v-on:click="confirmRemove(user)">X</button>
+              {{user.id}}{{user.name}}
+            </p>
+          </div>
 
 
         </section>
+      </div>
     </div>
-</div>
-</body>
-<footer>
+  </body>
+  <footer>
 
-</footer>
+  </footer>
