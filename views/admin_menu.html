@@ -5,7 +5,7 @@
     <meta charset="utf-8">
 
     <title>Admin</title>
-
+    <script src="/socket.io/socket.io.js" defer></script>
     <script defer type="text/javascript" src="js/users.js"></script>
     <script src="https://vuejs.org/js/vue.js"></script>
     <script defer src="js/admin_menu.js"></script>
@@ -25,7 +25,7 @@
         <section id ="eventInfo" class="center">
 
             <p id="getCode">
-                <button type="submit" v-on:click="createEvent" alt="Create event" width="10" height="10" >Create Event</button>
+                <button type="submit" id="eventButton" v-on:click="createEvent" alt="Create event" width="10" height="10" >Create Event</button>
             </p>
             <div id="eventCode" class="center">
                 <p id="codePlacement" class = "center">
@@ -35,6 +35,10 @@
             <p id="startEvent">
                 <button type="submit" v-on:click="startEvent(null)" alt="Start event" width="10" height="10" >Continue</button>
             </p>
+            <div id="stopButton" class="center">
+
+            </div>
+
         </section>
         <section id="userList">
 

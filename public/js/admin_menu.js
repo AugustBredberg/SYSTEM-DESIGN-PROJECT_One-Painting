@@ -1,23 +1,53 @@
+'use strict';
+var socket = io();
+
 
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 let selectedTable = 0;
 
+
 const vm_menu = new Vue({
-    el: '#eventInfo',
-    data: {
-	users: [],
-	timer: {minutes:00, seconds:00},
-	dateNum: 1,
-	i: 300,
+        el: '#eventInfo',
+        data: {
+        users: [],
+        timer: {minutes:0, seconds:0},
+        dateNum: 1,
+        i: 300,
+        code: "",
+        eventOngoing: false,
     },
     methods:{
         createEvent: function(){
-            console.log('Eventcode generated');
-            let eventCode = document.getElementById("eventCode");
-            document.getElementById("eventCode").innerHTML = "1D10T";
 
+            if(this.eventOngoing == false){
+                this.eventOngoing = true;
+                document.getElementById("eventButton").innerHTML = "Stop Event";
+                console.log('Eventcode generated');
+                let eventCode = document.getElementById("eventCode");
+                var code = vm_users.makeid(8)
+                document.getElementById("eventCode").innerHTML = code;
+                console.log('adding eventcode' + code);
+                socket.emit('EventStarted', code);
+            }
+            else if(this.eventOngoing = true){
+                this.eventOngoing = false;
+                document.getElementById("eventButton").innerHTML = "Create Event";
+
+                console.log('removing eventcode' + document.getElementById("eventCode").innerHTML);
+                socket.emit('EventStopped', document.getElementById("eventCode").innerHTML);
+                document.getElementById("eventCode").innerHTML = "";
+            }
+
+            /*let stopEvent = document.getElementById("stopButton")
+            var stopButton = document.createElement("button");
+            stopButton.innerHTML = "Stop Event";
+            stopEvent.appendChild(stopButton);*/
+        },
+        cancelEvent: function(){
+            console.log('Event canceled')
+            document.getElementById("eventCode").innerHTML = "";
         },
         startTimer: function(){
             var minute = Math.floor(this.i/60);
@@ -131,6 +161,15 @@ const vm_users = new Vue({
         removeUser: function(userID){ //This only removes the nametext of the user. Should remove entire user from the users array.	    
             this.users.splice(this.users.indexOf(userID), 1);
 
+        },
+        makeid: function(length) {
+            var result           = '';
+            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for ( var i = 0; i < length; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+         }
+        return result;
         },
         getUsers: function(){
 	    var userList = [];
