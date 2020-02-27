@@ -36,14 +36,16 @@ const vm_menu = new Vue({
                 this.i = 0;
             }
             else {
-
+		if(this.i == 299){   //hard coded
+		 console.log('Event started');   
+		}
                 timeout = setTimeout(vm_menu.startTimer, 1000);
             }
 
         },
 
 	stopTimer: function(){
-	    console.log('stopEvent');
+	    console.log('Event paused');
 	    clearTimeout(timeout);
 	    
 	    
