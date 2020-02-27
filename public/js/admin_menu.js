@@ -584,3 +584,13 @@ function blankArea(id) {
     let area = document.getElementById(id);
     area.innerHTML = ""; 
 }
+
+function getTable(user){
+    var tableList = vm_users.getUsers();
+    for(var i = 0; i < tableList.length; i++){
+	if(tableList[i][1].name === user || tableList[i][2].name === user){
+	    return tableList[i][0];
+	}
+    }
+    return -1;
+}
