@@ -168,6 +168,7 @@ const vm_users = new Vue({
 		var temp = [j, this.users[i], this.users[i+1]];
 		userList.push(temp);
 		i++;
+		j++;
 	    }
             return userList;
         }
