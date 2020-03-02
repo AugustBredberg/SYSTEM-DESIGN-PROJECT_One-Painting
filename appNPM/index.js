@@ -4,6 +4,7 @@ const http = require('http').createServer(app);
 const path = require('path');
 
 const port = 3000;
+var timerStarted = 0;
 
 var io = require('socket.io').listen(http);
 
@@ -126,6 +127,25 @@ io.on('connection', function(socket) {
 
 
     });
+    socket.on('timerStarted', function() {
+        console.log('Timer started');
+        timerStarted = 1;
+
+    })
+    socket.on('timerStartedUser',function(){
+        console.log(timerStarted);
+        if(timerStarted == 1){
+            console.log('timer started and return emitted');
+            socket.emit("userTimerReturn", true);
+
+        }
+        else {
+            socket.emit("userTimerReturn", false);
+
+        }
+
+
+    })
     socket.on('VerifyCode', function (eventcode) {
 
         fs.readFile('eventcodes.txt', function (err, data) {
@@ -159,6 +179,7 @@ io.on('connection', function(socket) {
    //Whenever someone disconnects this piece of code executed
    socket.on('disconnect', function () {
       console.log('A user disconnected');
+      
    });
 
 

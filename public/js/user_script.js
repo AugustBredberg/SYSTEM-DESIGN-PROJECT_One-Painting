@@ -57,6 +57,7 @@ const vm = new Vue({
 				frwBtn.setAttribute("src", "/img/loginButton.png");
 				frwBtn.setAttribute("class", "forwardButton");
 				frwBtn.onclick = function(){
+
 					console.log("KOLLA FILIP DET FUNKAR");
 					console.log(eventCode.value);
 					socket.emit('VerifyCode', eventCode.value);
@@ -246,13 +247,52 @@ const vm = new Vue({
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
-		
-		vm.loadingDate();
+	    	frwBtn.setAttribute("src", "/img/waitscreen.png");
+	    	console.log("kall1");
+	    	vm.myLoop(500);
+
 	    };
 
 	    div.appendChild(frwBtn);
 	},
-	
+
+	myLoop: function(i) {
+		setTimeout(function () {
+			console.log('hello');
+			socket.emit('timerStartedUser');
+			socket.on('userTimerReturn', function(startedBool) {
+				if(startedBool == true) {
+					console.log("Timertest fungerade");
+					vm.loadingDate();
+				}
+				})
+			if (--i) vm.myLoop(i);      //  decrement i and call myLoop again if i > 0
+		}, 3000)
+	},
+
+refreshPage: function(){
+        var boolbitch = true;
+		setTimeout(vm.foo, 3000);
+        while(boolbitch){
+
+			console.log('Checking if timer started');
+			socket.emit('timerStartedUser');
+			socket.on('userTimerReturn', function(startedBool) {
+				if(startedBool == true){
+					console.log("Timertest fungerade");
+					boolbitch = false;
+					vm.loadingDate();
+				}
+			})
+
+		}
+
+
+	},
+
+	foo: function (){
+		console.log('foo');
+	},
 	personalQuestions: function(questions){
 	    let currentQuestion = 0;
 	    /*let questions = [
