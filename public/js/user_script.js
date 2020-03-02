@@ -15,7 +15,9 @@ let dateQuestions = [
     "Maybe not?",
     "Ugly?"
 ];
-
+socket.on('timerStartedUser', function(){
+    console.log("Testelitest");
+})
 
 const vm = new Vue({
     el: '#loginSection',
@@ -242,6 +244,18 @@ const vm = new Vue({
 	    ready.setAttribute("class", "dateFont");
 	    ready.style.fontSize = "400%";
 	    div.appendChild(ready);
+	    console.log('Här vare sockets');
+	    
+	    socket.on('timerStartedUser', function(){
+		console.log("hejehejehjeheje");
+		let timerReady = document.createElement("p");
+		timerReady.innerHTML = "Timer Started :)";
+		timerReady.setAttribute("class", "dateFont");
+		timerReady.style.fontSize = "400%";
+		div.appendChild(timerReady);
+	    })
+		
+	    
 
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");

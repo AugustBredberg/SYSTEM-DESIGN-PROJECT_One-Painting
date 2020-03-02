@@ -17,6 +17,7 @@ const vm_menu = new Vue({
         i: 300,
         code: "",
         eventOngoing: false,
+	timeout: 1,    
     },
     methods:{
         createEvent: function(){
@@ -64,13 +65,21 @@ const vm_menu = new Vue({
                 this.i = 0;
             }
             else {
-
-                setTimeout(vm_menu.startTimer, 1000);
+		if(this.i == 299){   //hard coded
+		    console.log('Event started');
+		}
+                this.timeout = setTimeout(vm_menu.startTimer, 1000);
             }
 
         },
-
-        startEvent: function(listOfUsers) {
+	    
+	stopTimer: function(){
+	    console.log('Event paused');
+	    clearTimeout(this.timeout);
+	    
+	},
+	
+	startEvent: function(listOfUsers) {
             console.log('Event started');
             blankArea("wrapper");
 
@@ -98,28 +107,41 @@ const vm_menu = new Vue({
             let SE_textBox = document.createElement("p");
             SE_textBox.appendChild(document.createTextNode('Coming up'));
             let SE_timerButton = document.createElement("button");
+	    let SE_stopTimerButton = document.createElement("button");
+
             SE_timerButton.appendChild(document.createTextNode("Start timer"));
+	    SE_stopTimerButton.appendChild(document.createTextNode("Stop timer"));
 
             SE_EditList.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
+
                 socket.emit('timerStarted');
                 vm_menu.startTimer();
+            }
+	    SE_stopTimerButton.onclick = function() {
+                socket.emit('timerStopped');
+                vm_menu.stopTimer();
             }
             /*SE_sessionInfo.appendChild(SE_timer);*/
 	    SE_EditList.appendChild(SE_dateNum);
             SE_EditList.appendChild(SE_textBox);
             SE_EditList.appendChild(SE_timerButton);
+	    SE_EditList.appendChild(SE_stopTimerButton);
 
             SE_dateNum.setAttribute("class", "timer");
             SE_textBox.setAttribute("class", "timer");
             SE_timerButton.setAttribute("class", "timerbutton");
+	    SE_stopTimerButton.setAttribute("class", "stopTimerbutton");
             SE_dateNum.setAttribute("id", "toHideOnViewNum");
             SE_textBox.setAttribute("id", "toHideOnViewText");
             SE_timer.setAttribute("id", "toHideOnViewtimer");
             SE_timerButton.setAttribute("id", "toHideOnViewButton");
+	    SE_stopTimerButton.setAttribute("id", "toHideOnViewButton");
+
 
         },
+        
         hoverOverUser: function(userID){
             //console.log(userID);
 	    

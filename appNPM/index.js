@@ -132,6 +132,11 @@ io.on('connection', function(socket) {
         timerStarted = 1;
 
     })
+    socket.on('timerStopped', function() {
+        console.log('Timer stopepd');
+        timerStarted = 0;
+
+    })
     socket.on('timerStartedUser',function(){
         console.log(timerStarted);
         if(timerStarted == 1){
@@ -160,6 +165,13 @@ io.on('connection', function(socket) {
             }
         }
     )});
+    socket.on("timerStarted", function() {
+	console.log("timer started blalalla");
+	socket.emit('timerStartedUser');
+    });
+
+
+
 
     socket.on('EventStarted', function(eventCode){
        console.log("event started");
@@ -178,6 +190,7 @@ io.on('connection', function(socket) {
     
    //Whenever someone disconnects this piece of code executed
    socket.on('disconnect', function () {
+
       console.log('A user disconnected');
       
    });
