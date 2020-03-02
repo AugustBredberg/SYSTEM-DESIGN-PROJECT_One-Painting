@@ -10,7 +10,7 @@
     <script src="https://vuejs.org/js/vue.js"></script>
     <script defer src="js/admin_menu.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/css/admin.css">
+    <link rel="stylesheet" type="text/css" href="/css/admin_menu.css">
 
 
   </head>
@@ -21,30 +21,28 @@
       <div align="center" id="logo">
         <img src="/img/logotyp.svg" class="logo">
       </div>
-      <div id ="menu">
-        <section id ="eventInfo" class="center">
-
-          <p id="getCode">
-            <button type="submit" v-on:click="createEvent" alt="Create event" width="10" height="10" >Create Event</button>
-          </p>
-          <div id="eventCode" class="center">
-            <p id="codePlacement" class = "center">
-
-            </p>
-          </div>
-          <p id="startEvent">
-            <button type="submit" v-on:click="startEvent(null)" alt="Start event" width="10" height="10" >Continue</button>
-          </p>
+      
+      <div id="menu">
+	
+        <section id="eventInfo">
+	  <h2>Manage event</h2>
+	  <div>
+            <button type="submit" v-on:click="createEvent" alt="Create event" width="10">Create Event</button>
+            <div id="eventCode" class="center"><p id="temp">temp</p></div>
+            <button type="submit" v-on:click="startEvent(null)" alt="Start event" width="10">Continue</button>
+	  </div>
 
         </section>
         <section id="userList">
-
-          <div v-for="user in users">
-            <p v-bind:id="user.id">
-              <button v-bind:id="button+user.id" v-on:click="confirmRemove(user)">X</button>
-              {{user.id}}{{user.name}}
-            </p>
-          </div>
+	  <h2>Connected users:</h2>
+	  <div id="list">
+            <div v-for="user in users">
+              <p v-bind:id="user.id">
+		<button v-bind:id="button+user.id" v-on:click="confirmRemove(user)">X</button>
+		{{user.id}}{{user.name}}
+              </p>
+            </div>
+	  </div>
 
 
         </section>

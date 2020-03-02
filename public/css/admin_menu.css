@@ -1,0 +1,93 @@
+button {
+  background-color: red; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+li {
+    font-size: 24px;
+}
+
+p {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-size: 24px;
+}
+
+span {
+    text-decoration: underline;
+}
+
+#eventCode{
+    width: 10%;
+    text-align: center;
+    border: 4px solid;
+    font-size: 16px;
+    padding: 6px;
+    margin: 10px 0px 0px 0px;
+}
+
+#menu{
+    float: left;
+    width: 100%;
+}
+
+#menu section {
+    width: 50%;
+    float: left;
+}
+#menu button{
+    margin: 10px 0px 0px 0px;
+}
+
+#list{
+    height: 65vh;
+    overflow: scroll;
+    margin: 0;
+}
+
+#temp{
+    color: white;
+    font-size: 16px;
+}
+
+#wrapper{
+    float: left;
+    width: 100%;
+}
+
+#userInfoText,
+#right,
+#middle,
+#left,
+#seTime,
+#seButtons{
+    width: 33%;
+    float: left;
+}
+
+#left button,
+#seTime button,
+#seButtons button{
+    margin-top: 16px;
+    display: block;
+    width: 14vw;
+}
+
+#right li{
+    font-size: 16px;
+}
+
+#select{
+    background-color: red;
+    padding: 8px 12px;
+}
+
+label{
+    font-size: 24px;
+}

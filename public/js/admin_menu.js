@@ -16,7 +16,6 @@ const vm_menu = new Vue({
     },
     methods:{
         createEvent: function(){
-            console.log('Eventcode generated');
             let eventCode = document.getElementById("eventCode");
             document.getElementById("eventCode").innerHTML = "1D10T";
 
@@ -25,7 +24,6 @@ const vm_menu = new Vue({
             var minute = Math.floor(this.i/60);
 
             var second = this.i % 60;
-            console.log("Minutes: " + minute + "seconds: " + second)
             this.timer.minutes = minute;
             this.timer.seconds = second;
             SE_timer.innerHTML = this.timer.minutes + ' : ' + this.timer.seconds;
@@ -36,8 +34,7 @@ const vm_menu = new Vue({
                 this.i = 0;
             }
             else {
-		if(this.i == 299){   //hard coded
-		    console.log('Event started');   
+		if(this.i == 299){   //hard coded  
 		}
                 timeout = setTimeout(vm_menu.startTimer, 1000);
             }
@@ -45,7 +42,6 @@ const vm_menu = new Vue({
         },
 
 	stopTimer: function(){
-	    console.log('Event paused');
 	    clearTimeout(timeout);
 	    
 	    
@@ -53,7 +49,6 @@ const vm_menu = new Vue({
 	},
 	
         startEvent: function(listOfUsers) {
-            console.log('Event started');
             blankArea("wrapper");
 
 	    if(listOfUsers != null){
@@ -61,14 +56,24 @@ const vm_menu = new Vue({
 	    }else{
 	        users = vm_users.getUsers();
 	    }
-            console.log(users);
 
-	    displayPairs(users, false);
 	    let SE_EditList = document.getElementById("wrapper");
+
+	    let SE_Left = document.createElement("div");
+	    SE_Left.setAttribute("id","left");
+	    SE_EditList.appendChild(SE_Left);
+
+	    let SE_Time = document.createElement("div");
+	    SE_Time.setAttribute("id","seTime");
+	    SE_EditList.appendChild(SE_Time);
+	    
+	    displayPairs(users, false);
             
+	    
+	    
 	    let btnEdit = document.createElement("button");
 	    btnEdit.appendChild(document.createTextNode("Edit"));
-	    SE_EditList.appendChild(btnEdit);
+	    SE_Time.appendChild(btnEdit);
 
 	    btnEdit.onclick = function(){
 		users = edit();
@@ -85,7 +90,8 @@ const vm_menu = new Vue({
             SE_timerButton.appendChild(document.createTextNode("Start timer"));
 	    SE_stopTimerButton.appendChild(document.createTextNode("Stop timer"));
 
-            SE_EditList.appendChild(SE_timer);
+	    SE_timer.appendChild(document.createTextNode("5 : 0"));
+            SE_Left.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
                 vm_menu.startTimer();
@@ -94,10 +100,10 @@ const vm_menu = new Vue({
                 vm_menu.stopTimer();
             }
             /*SE_sessionInfo.appendChild(SE_timer);*/
-	    SE_EditList.appendChild(SE_dateNum);
-            SE_EditList.appendChild(SE_textBox);
-            SE_EditList.appendChild(SE_timerButton);
-	    SE_EditList.appendChild(SE_stopTimerButton);
+	    SE_Left.appendChild(SE_dateNum);
+            SE_Left.appendChild(SE_textBox);
+            SE_Left.appendChild(SE_timerButton);
+	    SE_Left.appendChild(SE_stopTimerButton);
 
             SE_dateNum.setAttribute("class", "timer");
             SE_textBox.setAttribute("class", "timer");
@@ -122,37 +128,37 @@ const vm_menu = new Vue({
             SE_userInfoText.setAttribute("class", "userInfo");
             SE_userInfoText.setAttribute("id", "userInfoText");
 
-            let personalInfo = document.createElement("h3");
+            let personalInfo = document.createElement("h1");
             personalInfo.appendChild(document.createTextNode("Personal Info:"));
 
 	    let question1 = document.createElement("p");
-            question1.appendChild(document.createTextNode("Answer to question 1"));
+            question1.appendChild(document.createTextNode("Answer to question 1: " + userID.desc[0]));
             let question2 = document.createElement("p");
-            question2.appendChild(document.createTextNode("Answer to question 2"));
+            question2.appendChild(document.createTextNode("Answer to question 2: " + userID.desc[1]));
             let question3 = document.createElement("p");
-            question3.appendChild(document.createTextNode("Answer to question 3"));
+            question3.appendChild(document.createTextNode("Answer to question 3: " + userID.desc[2]));
 
-	    let ratingsReceived = document.createElement("h3");
-            ratingsReceived.appendChild(document.createTextNode("Ratings received:"))
+	    let ratingsReceived = document.createElement("h1");
+            ratingsReceived.appendChild(document.createTextNode("Ratings given:"))
 
 	    let received1 = document.createElement("p");
-            received1.appendChild(document.createTextNode("Answer to question 1 : "));
+            received1.appendChild(document.createTextNode("Answer to question 1: " + userID.give[0]));
             let received2 = document.createElement("p");
-            received2.appendChild(document.createTextNode("Answer to question 2 : "));
+            received2.appendChild(document.createTextNode("Answer to question 2: " + userID.give[1]));
             let received3 = document.createElement("p");
-            received3.appendChild(document.createTextNode("Answer to question 3 : "));
+            received3.appendChild(document.createTextNode("Answer to question 3: " + userID.give[2]));
 
-	    let ratingsGiven = document.createElement("h3");
-            ratingsGiven.appendChild(document.createTextNode("Ratings Given:"))
+	    let ratingsGiven = document.createElement("h1");
+            ratingsGiven.appendChild(document.createTextNode("Ratings recieved:"))
 
 	    let given1 = document.createElement("p");
-            given1.appendChild(document.createTextNode("Answer to question 1"));
+            given1.appendChild(document.createTextNode("Answer to question 1: " + userID.recieved[0]));
             let given2 = document.createElement("p");
-            given2.appendChild(document.createTextNode("Answer to question 2"));
+            given2.appendChild(document.createTextNode("Answer to question 2: " + userID.recieved[1]));
             let given3 = document.createElement("p");
-            given3.appendChild(document.createTextNode("Answer to question 3"));
+            given3.appendChild(document.createTextNode("Answer to question 3: " + userID.recieved[2]));
 
-	    SE_userInfoText.appendChild(document.createTextNode(userID));
+	    //SE_userInfoText.appendChild(document.createTextNode(userID)); //Denna ska bort
             SE_userInfoText.appendChild(personalInfo);
             SE_userInfoText.appendChild(question1);
             SE_userInfoText.appendChild(question2);
@@ -227,9 +233,18 @@ function edit(changedUsers){
     }
     
     blankArea("wrapper");
-    displayPairs(users, true);
-
+    
     let wrapper = document.getElementById("wrapper");
+    
+    let SE_Left = document.createElement("div");
+    SE_Left.setAttribute("id","left");
+    wrapper.appendChild(SE_Left);
+    
+    let SE_buttons = document.createElement("div");
+    SE_buttons.setAttribute("id","seTime");
+    wrapper.appendChild(SE_buttons);
+    
+    displayPairs(users, true);
 
     let btnCompare = document.createElement("button");
     btnCompare.appendChild(document.createTextNode("Compare and change"));
@@ -240,9 +255,9 @@ function edit(changedUsers){
     let btnDiscard = document.createElement("button");
     btnDiscard.appendChild(document.createTextNode("Discard changes"));
 
-    wrapper.appendChild(btnCompare);
-    wrapper.appendChild(btnSave);
-    wrapper.appendChild(btnDiscard);
+    SE_Left.appendChild(btnCompare);
+    SE_Left.appendChild(btnSave);
+    SE_Left.appendChild(btnDiscard);
 
     btnCompare.onclick = function(){
 	let tableCounter = 1;
@@ -270,6 +285,22 @@ function compareAndChange(checkedUsers){
     blankArea("wrapper");
 
     let wrapper = document.getElementById("wrapper");
+    let SE_Left = document.createElement("div");
+    SE_Left.setAttribute("id","left");
+    wrapper.appendChild(SE_Left);
+
+    let SE_Middle = document.createElement("div");
+    SE_Middle.setAttribute("id","seTime");
+    wrapper.appendChild(SE_Middle);
+
+    let SE_Right = document.createElement("div");
+    SE_Right.setAttribute("id","right");
+    wrapper.appendChild(SE_Right);
+
+    let SE_Div = document.createElement("div");
+    SE_Div.setAttribute("id","div");
+    SE_Right.appendChild(SE_Div);
+    
     let ul = document.createElement("ul");
     ul.setAttribute("id", "pairsList");
     ul.style.listStyleType = "none";
@@ -441,12 +472,12 @@ function compareAndChange(checkedUsers){
 
     //-----------------------------
 
-    wrapper.appendChild(ul);
-    wrapper.appendChild(tableChooser);
-    wrapper.appendChild(woman);
-    wrapper.appendChild(man);
-    wrapper.appendChild(matchPrecent);
-    wrapper.appendChild(btnConfirm);
+    SE_Middle.appendChild(ul);
+    SE_Left.appendChild(tableChooser);
+    SE_Div.appendChild(woman);
+    SE_Div.appendChild(man);
+    SE_Left.appendChild(matchPrecent);
+    SE_Left.appendChild(btnConfirm);
 
     select.onchange = function(){
 	selectedTable = select.options[select.selectedIndex].value;
@@ -484,7 +515,7 @@ function compareAndChange(checkedUsers){
 }
 
 function displayPairs(users, bool){
-    let SE_EditList = document.getElementById("wrapper");
+    let SE_EditList = document.getElementById("seTime");
     let SE_Userlist = document.createElement("ol");
     for (let i = 0; i < users.length; i++){
         let SE_UserInList = document.createElement("li");
@@ -509,7 +540,7 @@ function displayPairs(users, bool){
         SE_Userlist.appendChild(SE_UserInList);
 	
         SE_user1.onmouseover = function (){
-            vm_menu.hoverOverUser(SE_user1.id);
+            vm_menu.hoverOverUser(users[i][1]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }
         SE_user1.onmouseleave = function (){
@@ -522,7 +553,7 @@ function displayPairs(users, bool){
 
         }
         SE_user2.onmouseover = function (){
-            vm_menu.hoverOverUser(SE_user2.id);
+            vm_menu.hoverOverUser(users[i][2]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }
         SE_user2.onmouseleave = function (){
