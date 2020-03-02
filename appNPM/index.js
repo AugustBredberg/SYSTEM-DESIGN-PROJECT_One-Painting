@@ -17,16 +17,32 @@ let userArray = myModule.users(); // val is "Hello"
 //==========================================================
 var userInformation = [];
 readInAllUsers = function(){
-	var data = fs.readFileSync('log.txt', 'utf8');
-	var users = [];
-	var lines = data.split('\n');
-	for(var line = 0; line < lines.length; line++){
-	    var array = lines[line].split(",");;
-	    users.push(array);
-	}	
-    console.log(users);
-    userInformation = users;
-    return users;
+    var data = fs.readFileSync('log.txt', 'utf8');
+    var logins = [];
+    var accountInfo = [];
+    var lines = data.split('\n');
+    for(var line = 0; line < lines.length; line++){
+	var array = lines[line].split(",");
+	console.log(array.slice(5));
+	logins.push(array);
+	
+	var acc = {
+	    "name": array[0],
+	    "id": line+1,
+	    "gender": array[3],
+	    "agePref": array[4],
+	    "desc": array.slice(5),
+	    "give": "",
+	    "recieved": ""
+	};
+	console.log(acc);
+    }
+    /// Converting list of accounts to list of objects containing account info
+    
+    
+    console.log(logins);
+    userInformation = logins;
+    return logins;
 };
 readInAllUsers();
 console.log(userInformation.length);
@@ -74,10 +90,15 @@ Data.prototype.loginAttempt = function(usernameInput, passwordInput){
 }
 
 /// WHEN CREATE ACCOUNT IS CLICKED
-Data.prototype.accountCreated = function(username, email, password){
+Data.prototype.accountCreated = function(username, email, password, gender, agePref, desc){
     userArray.push(username);
     
-    fs.appendFileSync('log.txt',username +","+password+","+email+"\n", 'utf8', function(error){
+    fs.appendFileSync('log.txt',username +","
+		      +password+","
+		      +email+","
+		      +gender+","
+		      +agePref+","
+		      +desc+"\n", 'utf8', function(error){
 	if(error) throw error; // hantera fel just in case
 	else console.log("Success when writing username!");
 	
@@ -88,8 +109,8 @@ Data.prototype.accountCreated = function(username, email, password){
 io.on('connection', function(socket) {
    console.log('A user connected');
 
-    socket.on('accountCreated', function(username, email, password){
-	data.accountCreated(username, email, password);
+    socket.on('accountCreated', function(username, email, password, gender, agePref, desc){
+	data.accountCreated(username, email, password, gender, agePref, desc);
 	readInAllUsers(); // UPDATING USERLIST WITH NEW USER
     });
     

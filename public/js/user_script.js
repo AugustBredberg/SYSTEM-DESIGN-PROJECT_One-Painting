@@ -21,10 +21,10 @@ const vm = new Vue({
     el: '#loginSection',
     data: {
         user: "",
-		pass: "",
-		newAccount: {username:"", email:"", password:""}
+	pass: "",
+	newAccount: {username:"", email:"", password:"", gender: "", agePref: "", desc: []}
 
-     
+	
     },
 
     methods: {
@@ -35,47 +35,47 @@ const vm = new Vue({
 	},
 	
 	login: function(usernameLogin, passwordLogin){
-		console.log("clicklogin");
+	    console.log("clicklogin");
 	    console.log(usernameLogin);
 	    console.log(passwordLogin);
-		socket.emit('loginAttempt', usernameLogin, passwordLogin);
-		socket.on('returnLoginSuccess', function(success){
+	    socket.emit('loginAttempt', usernameLogin, passwordLogin);
+	    socket.on('returnLoginSuccess', function(success){
 
-			if(success == true){
-				let div = document.getElementById("loginInfoDiv");
-				div.innerHTML = "";
+		if(success == true){
+		    let div = document.getElementById("loginInfoDiv");
+		    div.innerHTML = "";
 
-				let eventCodeText = document.createElement("h2");
-				eventCodeText.innerHTML = "Enter Eventcode";
-				eventCodeText.style.fontSize = "300%";
+		    let eventCodeText = document.createElement("h2");
+		    eventCodeText.innerHTML = "Enter Eventcode";
+		    eventCodeText.style.fontSize = "300%";
 
-				let eventCode = document.createElement("input");
-				eventCode.setAttribute("class", "userLogin");
-				eventCode.setAttribute("placeholder", "Eventcode");
+		    let eventCode = document.createElement("input");
+		    eventCode.setAttribute("class", "userLogin");
+		    eventCode.setAttribute("placeholder", "Eventcode");
 
-				let frwBtn = document.createElement("img");
-				frwBtn.setAttribute("src", "/img/loginButton.png");
-				frwBtn.setAttribute("class", "forwardButton");
-				frwBtn.onclick = function(){
-					console.log("KOLLA FILIP DET FUNKAR");
-					vm.readyScreen();
-					//loadingDate();
-				};
+		    let frwBtn = document.createElement("img");
+		    frwBtn.setAttribute("src", "/img/loginButton.png");
+		    frwBtn.setAttribute("class", "forwardButton");
+		    frwBtn.onclick = function(){
+			console.log("KOLLA FILIP DET FUNKAR");
+			vm.readyScreen();
+			//loadingDate();
+		    };
 
-				div.appendChild(eventCodeText);
-				div.appendChild(eventCode);
-				div.appendChild(frwBtn);
+		    div.appendChild(eventCodeText);
+		    div.appendChild(eventCode);
+		    div.appendChild(frwBtn);
 
-			}
-			else{
-				console.log('Invalid username or password');
-			}
-		})
+		}
+		else{
+		    console.log('Invalid username or password');
+		}
+	    })
 
 
 	},
 	createAccount: function(){
-	    let accountInfo2 = {username:"",password:"", email:""};
+	    
 	    
 	    let accountInfo = [
 		"Username",
@@ -108,6 +108,7 @@ const vm = new Vue({
 	    genderMale.setAttribute("type", "radio");
 	    genderMale.setAttribute("id", "genderRadioButton");
 	    genderMale.setAttribute("name", "gender");
+	    genderMale.setAttribute("value", "male");
 	    let genderLabelMale = document.createElement("label");
 	    genderLabelMale.innerHTML = "Male";
 
@@ -115,6 +116,7 @@ const vm = new Vue({
 	    genderFemale.setAttribute("type", "radio");
 	    genderFemale.setAttribute("id", "genderRadioButton");
 	    genderFemale.setAttribute("name", "gender");
+	    genderFemale.setAttribute("value", "female");
 	    let genderLabelFemale = document.createElement("label");
 	    genderLabelFemale.innerHTML = "Female";
 	    
@@ -154,11 +156,20 @@ const vm = new Vue({
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
-		accountInfo2.username = document.getElementById("Username").value;
-		accountInfo2.email = document.getElementById("E-mail").value;
-		accountInfo2.password = document.getElementById("Password").value;
+		vm.newAccount.username = document.getElementById("Username").value;
+		vm.newAccount.email = document.getElementById("E-mail").value;
+		vm.newAccount.password = document.getElementById("Password").value;
+		
+		let genderRadios = document.getElementsByName("gender");
+		if(genderRadios[0].checked)
+		{
+		    vm.newAccount.gender = "male";
+		}
+		else vm.newAccount.gender = "female";
 
-		socket.emit('accountCreated', accountInfo2.username, accountInfo2.email, accountInfo2.password);
+		vm.newAccount.agePref = document.getElementById("ageDropdown").value;
+		
+		
 		
 		vm.accountCreationVerification();
 	    };
@@ -181,7 +192,7 @@ const vm = new Vue({
 	    messageDiv.appendChild(accountVerification);
 	    section.prepend(messageDiv);
 	    
-	    vm.personalQuestions(accountQuestions);
+	    vm.personalQuestions(accountQuestions, true);
 	},
 
 	loadingDate: function(){
@@ -205,7 +216,7 @@ const vm = new Vue({
 
 	    /// IF DATE IS FINAL DATE, SHOW INFORMATION SHARING SCREEN
 	    
-	    setTimeout(vm.personalQuestions, 1000, dateQuestions);
+	    setTimeout(vm.personalQuestions, 1000, dateQuestions, false);
 	    
 	},
 
@@ -242,7 +253,7 @@ const vm = new Vue({
 	    div.appendChild(frwBtn);
 	},
 	
-	personalQuestions: function(questions){
+	personalQuestions: function(questions, personalQ){
 	    let currentQuestion = 0;
 	    /*let questions = [
 	      "Are you adventurous?",
@@ -277,6 +288,7 @@ const vm = new Vue({
 	    let boxesDiv = document.createElement("div");
 	    boxesDiv.setAttribute("class", "boxesDiv");
 
+	    let heartAnswerInt = 0;
 	    /// CREATES 10 HEARTS. CONTAINS FUNCTION FOR COLORING HEARTS 
 	    for(let i=0; i < 10; i++){
 		let box = document.createElement("div");
@@ -285,12 +297,13 @@ const vm = new Vue({
 		box.setAttribute("value", ""+i);
 		boxesDiv.appendChild(box);
 		box.onclick = function(){
-
+		    heartAnswerInt = 0;
 		    for(let k=0; k<10; k++){
 			console.log("plong");
 			let current = document.getElementById(k);
 			if(parseInt(this.id) >= k){
 			    current.style.backgroundColor = "red";
+			    heartAnswerInt++;
 			}
 			else{
 			    current.style.backgroundColor = "lightgrey";
@@ -300,11 +313,14 @@ const vm = new Vue({
 	    }
 	    
 	    div.appendChild(boxesDiv);
+	    let personalDesc = [];
 	    
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
+		personalDesc.push(heartAnswerInt);
+		console.log("pushed to desc " + heartAnswerInt);
 		if(questions.length > currentQuestion){
 		    for(let k=0; k<10; k++){
 			let current = document.getElementById(k);
@@ -313,6 +329,16 @@ const vm = new Vue({
 		    qFunc();
 		}
 		else{
+		    vm.newAccount.desc = personalDesc;
+		    socket.emit('accountCreated',
+				vm.newAccount.username,
+				vm.newAccount.email,
+				vm.newAccount.password,
+				vm.newAccount.gender,
+				vm.newAccount.agePref,
+				vm.newAccount.desc
+			       );
+		    
 		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
 		    if(currentDateNumber > 3){
 			vm.contantInfoShareScreen();
