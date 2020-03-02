@@ -17,6 +17,7 @@ const vm_menu = new Vue({
         i: 300,
         code: "",
         eventOngoing: false,
+	timeout: 1,    
     },
     methods:{
         createEvent: function(){
@@ -65,31 +66,31 @@ const vm_menu = new Vue({
             }
             else {
 		if(this.i == 299){   //hard coded
-		console.log('Event started');   
+		    console.log('Event started');
 		}
-                setTimeout(vm_menu.startTimer, 1000);
+                this.timeout = setTimeout(vm_menu.startTimer, 1000);
             }
 
         },
 	    
 	stopTimer: function(){
 	    console.log('Event paused');
-	    clearTimeout(timeout);
+	    clearTimeout(this.timeout);
 	    
 	},
 	
-	       startEvent: function(listOfUsers) {
+	startEvent: function(listOfUsers) {
             console.log('Event started');
             blankArea("wrapper");
 
 	    if(listOfUsers != null){
-		users = listOfUsers;
+		this.users = listOfUsers;
 	    }else{
-	        users = vm_users.getUsers();
+	        this.users = vm_users.getUsers();
 	    }
-            console.log(users);
+            console.log(this.users);
 
-	    displayPairs(users, false);
+	    displayPairs(this.users, false);
 	    let SE_EditList = document.getElementById("wrapper");
             
 	    let btnEdit = document.createElement("button");
@@ -97,7 +98,7 @@ const vm_menu = new Vue({
 	    SE_EditList.appendChild(btnEdit);
 
 	    btnEdit.onclick = function(){
-		users = edit();
+		this.users = edit();
 	    }
 	    
             //let SE_sessionInfo = document.getElementById("wrapper");
@@ -114,6 +115,7 @@ const vm_menu = new Vue({
             SE_EditList.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
+		socket.emit("timerStarted");
                 vm_menu.startTimer();
             }
 	    SE_stopTimerButton.onclick = function() {
