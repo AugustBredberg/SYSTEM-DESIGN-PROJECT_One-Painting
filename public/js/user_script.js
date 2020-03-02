@@ -22,6 +22,7 @@ socket.on('timerStartedUser', function(){
 const vm = new Vue({
     el: '#loginSection',
     data: {
+    	waiting: true,
         user: "",
 		pass: "",
 		newAccount: {username:"", email:"", password:""}
@@ -198,7 +199,7 @@ const vm = new Vue({
 	    vm.personalQuestions(accountQuestions);
 	},
 
-	loadingDate: function(){
+	loadingDate: function(loadTime){
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
 	    div.setAttribute("style", "height: 55vh");
@@ -219,7 +220,7 @@ const vm = new Vue({
 
 	    /// IF DATE IS FINAL DATE, SHOW INFORMATION SHARING SCREEN
 	    
-	    setTimeout(vm.personalQuestions, 1000, dateQuestions);
+	    setTimeout(vm.personalQuestions, loadTime, dateQuestions);
 	    
 	},
 
@@ -272,37 +273,16 @@ const vm = new Vue({
 
 	myLoop: function(i) {
 		setTimeout(function () {
-			console.log('hello');
 			socket.emit('timerStartedUser');
 			socket.on('userTimerReturn', function(startedBool) {
-				if(startedBool == true) {
-					console.log("Timertest fungerade");
-					vm.loadingDate();
-				}
-				})
+				if(startedBool == true && vm.waiting) {
+					vm.waiting = false;
+					vm.loadingDate(5000);
+				}})
 			if (--i) vm.myLoop(i);      //  decrement i and call myLoop again if i > 0
 		}, 3000)
 	},
 
-refreshPage: function(){
-        var boolbitch = true;
-		setTimeout(vm.foo, 3000);
-        while(boolbitch){
-
-			console.log('Checking if timer started');
-			socket.emit('timerStartedUser');
-			socket.on('userTimerReturn', function(startedBool) {
-				if(startedBool == true){
-					console.log("Timertest fungerade");
-					boolbitch = false;
-					vm.loadingDate();
-				}
-			})
-
-		}
-
-
-	},
 
 	foo: function (){
 		console.log('foo');
