@@ -17,14 +17,16 @@ var fs = require('fs');
 //==========================================================
 //==========================================================
 var userInformation = [];
+var daters = [];
 readInAllUsers = function(){
     var data = fs.readFileSync('log.txt', 'utf8');
     var logins = [];
     var accountInfo = [];
+    daters = [];
     var lines = data.split('\n');
     for(var line = 0; line < lines.length; line++){
 	var array = lines[line].split(",");
-	console.log(array.slice(5));
+	//console.log(array.slice(5));
 	logins.push(array);
 	
 	var acc = {
@@ -34,14 +36,18 @@ readInAllUsers = function(){
 	    "agePref": array[4],
 	    "desc": array.slice(5),
 	    "give": "",
-	    "recieved": ""
+	    "recieved": "",
+        "eventCode": "",
 	};
-	console.log(acc);
+	daters.push(acc);
+	
+	//console.log(acc);
     }
     /// Converting list of accounts to list of objects containing account info
     
-    
-    console.log(logins);
+    daters.pop();
+    //console.log(logins);
+    console.log(daters); 
     userInformation = logins;
     return logins;
 };
@@ -55,21 +61,20 @@ app.set('port', (process.env.PORT || port ));
 app.use(express.static(path.join(__dirname, '../public/')));
 
 app.use('/vue',
-  express.static(path.join(__dirname, '/node_modules/vue/dist/')));
+	express.static(path.join(__dirname, '/node_modules/vue/dist/')));
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '../views/index.html'));
+    res.sendFile(path.join(__dirname, '../views/index.html'));
 });
 
 app.get('/admin', function(req, res) {
-  res.sendFile(path.join(__dirname, '../views/admin.html'));
+    res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
 
 app.get('/admin_menu', function(req, res) {
-  res.sendFile(path.join(__dirname, '../views/admin_menu.html'));
+    res.sendFile(path.join(__dirname, '../views/admin_menu.html'));
 });
-
 
 function Data(){
     this.account = {};
@@ -106,24 +111,23 @@ Data.prototype.accountCreated = function(username, email, password, gender, ageP
 		      +gender+","
 		      +agePref+","
 		      +desc+"\n", 'utf8', function(error){
-	if(error) throw error; // hantera fel just in case
-	else console.log("Success when writing username!");
-	
-    });
+			  if(error) throw error; // hantera fel just in case
+			  else console.log("Success when writing username!");
+			  
+		      });
 };
 
 //Whenever someone connects this gets executed
 io.on('connection', function(socket) {
-   console.log('A user connected');
+    console.log('A user connected');
 
     socket.on('accountCreated', function(username, email, password, gender, agePref, desc){
 	data.accountCreated(username, email, password, gender, agePref, desc);
 	readInAllUsers(); // UPDATING USERLIST WITH NEW USER
     });
 
-    socket.on('getParticipants', function (){
-        console.log('Fetching and returning participants!');
-        socket.emit('returnParticipants', readInAllUsers());
+    socket.on('connectUserToCode', function (user, code) {
+        console.log('Connecting ' + user + 'to code: ' + code);
     })
 
     socket.on('loginAttempt', function(username, password){
@@ -137,6 +141,7 @@ io.on('connection', function(socket) {
             socket.emit('returnLoginSuccess', false)
         }
     });
+
     socket.on('timerStarted', function() {
         console.log('Timer started');
         timerStarted = 1;
@@ -206,6 +211,24 @@ io.on('connection', function(socket) {
    });
 
 
+
+
+    socket.on('getDaters', function(callback){
+	callback(daters);
+    });
+
+    socket.on('setDaters', function(setter){
+        daters = setter;
+
+    });
+    socket.on('setDaterCode', function(daterID, code){
+        console.log(daterID);
+
+        daters[daterID+1].eventCode = code;
+        console.log('code = ' + daters[daterID+1].eventCode);
+
+    })
+
 });
 
 /// FUNCTION TO WRITE TO FILE HEHEHEHEHEHE
@@ -213,11 +236,6 @@ io.on('connection', function(socket) {
 
 //http.listen(3000);
 http.listen(app.get('port'), () => {
-  console.log('One Love is running on port 3000!')
+    console.log('One Love is running on port 3000!')
 })
-/*
->>>>>>> UserAdmin
-app.listen(3000, () => {
-  console.log('One Love is running on port 3000!')
-});
-*/
+

@@ -1,37 +1,64 @@
-'use strict';
+
+
 var socket = io();
 
+
+
+let compareUser = null;
 
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 let selectedTable = 0;
+let userList = [];
+let removedUsers = [];
+
+
+
+
+
+function updateUsers(){
+    socket.emit('getDaters', function(daters){
+	for(var i = 0; i<removedUsers.length; i++){
+	    console.log(removedUsers[i].name);
+	    console.log(daters);
+	    daters.splice(daters.indexOf(removedUsers[i]), 1);
+	}
+	vm_users.users = daters;
+    });
+}
+
+setInterval(function() {
+    updateUsers();
+}, 5000);
+
 
 
 const vm_menu = new Vue({
-        el: '#eventInfo',
-        data: {
-        users: [],
-        timer: {minutes:0, seconds:0},
-        dateNum: 1,
-        i: 300,
-        code: "",
-        eventOngoing: false,
-	timeout: 1,    
+/
+    el: '#eventInfo',
+    data: {
+	users: daters,
+	timer: {minutes:00, seconds:00},
+	dateNum: 1,
+	i: 300,
+	timeout: 0,
+    eventOngoing: false,
+    eventcode: "",
+	
     },
     methods:{
         createEvent: function(){
+            let eventCode = document.getElementById("eventCode");
+            document.getElementById("eventCode").innerHTML = "1D10T";
 
-            socket.emit('getParticipants');
-            socket.on('returnParticipants',function(participants) {
-                console.log(participants[0][0])
-            })
             if(this.eventOngoing == false){
                 this.eventOngoing = true;
                 document.getElementById("eventButton").innerHTML = "Stop Event";
                 console.log('Eventcode generated');
                 let eventCode = document.getElementById("eventCode");
                 var code = vm_users.makeid(8)
+                this.eventcode = code;
                 document.getElementById("eventCode").innerHTML = code;
                 console.log('adding eventcode' + code);
                 socket.emit('EventStarted', code);
@@ -44,6 +71,7 @@ const vm_menu = new Vue({
                 socket.emit('EventStopped', document.getElementById("eventCode").innerHTML);
                 document.getElementById("eventCode").innerHTML = "";
             }
+
 
             /*let stopEvent = document.getElementById("stopButton")
             var stopButton = document.createElement("button");
@@ -58,7 +86,6 @@ const vm_menu = new Vue({
             var minute = Math.floor(this.i/60);
 
             var second = this.i % 60;
-            console.log("Minutes: " + minute + "seconds: " + second)
             this.timer.minutes = minute;
             this.timer.seconds = second;
             SE_timer.innerHTML = this.timer.minutes + ' : ' + this.timer.seconds;
@@ -69,22 +96,23 @@ const vm_menu = new Vue({
                 this.i = 0;
             }
             else {
-		if(this.i == 299){   //hard coded
-		    console.log('Event started');
+
+		if(this.i == 299){   //hard coded  
 		}
-                this.timeout = setTimeout(vm_menu.startTimer, 1000);
+                timeout = setTimeout(vm_menu.startTimer, 1000);
             }
 
         },
-	    
+
 	stopTimer: function(){
-	    console.log('Event paused');
-	    clearTimeout(this.timeout);
+	    clearTimeout(timeout);
+	    
+	    
 	    
 	},
 	
-	startEvent: function(listOfUsers) {
-            console.log('Event started');
+        startEvent: function(listOfUsers) {
+
             blankArea("wrapper");
 
 	    if(listOfUsers != null){
@@ -92,14 +120,24 @@ const vm_menu = new Vue({
 	    }else{
 	        this.users = vm_users.getUsers();
 	    }
-            console.log(this.users);
 
-	    displayPairs(this.users, false);
 	    let SE_EditList = document.getElementById("wrapper");
+
+	    let SE_Left = document.createElement("div");
+	    SE_Left.setAttribute("id","left");
+	    SE_EditList.appendChild(SE_Left);
+
+	    let SE_Time = document.createElement("div");
+	    SE_Time.setAttribute("id","seTime");
+	    SE_EditList.appendChild(SE_Time);
+	    
+	    displayPairs(this.users, false);
             
+	    
+	    
 	    let btnEdit = document.createElement("button");
 	    btnEdit.appendChild(document.createTextNode("Edit"));
-	    SE_EditList.appendChild(btnEdit);
+	    SE_Time.appendChild(btnEdit);
 
 	    btnEdit.onclick = function(){
 		this.users = edit();
@@ -116,7 +154,8 @@ const vm_menu = new Vue({
             SE_timerButton.appendChild(document.createTextNode("Start timer"));
 	    SE_stopTimerButton.appendChild(document.createTextNode("Stop timer"));
 
-            SE_EditList.appendChild(SE_timer);
+	    SE_timer.appendChild(document.createTextNode(""));
+            SE_Left.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
 
@@ -124,14 +163,15 @@ const vm_menu = new Vue({
                 vm_menu.startTimer();
             }
 	    SE_stopTimerButton.onclick = function() {
-                socket.emit('timerStopped');
+
                 vm_menu.stopTimer();
             }
-            /*SE_sessionInfo.appendChild(SE_timer);*/
-	    SE_EditList.appendChild(SE_dateNum);
-            SE_EditList.appendChild(SE_textBox);
-            SE_EditList.appendChild(SE_timerButton);
-	    SE_EditList.appendChild(SE_stopTimerButton);
+
+	    SE_Left.appendChild(SE_dateNum);
+            SE_Left.appendChild(SE_textBox);
+            SE_Left.appendChild(SE_timerButton);
+	    SE_Left.appendChild(SE_stopTimerButton);
+
 
             SE_dateNum.setAttribute("class", "timer");
             SE_textBox.setAttribute("class", "timer");
@@ -157,10 +197,48 @@ const vm_menu = new Vue({
             SE_userInfoText.setAttribute("class", "userInfo");
             SE_userInfoText.setAttribute("id", "userInfoText");
 
-            let personalInfo = document.createElement("h3");
+            let personalInfo = document.createElement("h1");
             personalInfo.appendChild(document.createTextNode("Personal Info:"));
 
+	    let question1 = document.createElement("p");
+            question1.appendChild(document.createTextNode("Answer to question 1: " + userID.desc[0]));
+            let question2 = document.createElement("p");
+            question2.appendChild(document.createTextNode("Answer to question 2: " + userID.desc[1]));
+            let question3 = document.createElement("p");
+            question3.appendChild(document.createTextNode("Answer to question 3: " + userID.desc[2]));
 
+	    let ratingsReceived = document.createElement("h1");
+            ratingsReceived.appendChild(document.createTextNode("Ratings given:"))
+
+	    let received1 = document.createElement("p");
+            received1.appendChild(document.createTextNode("Answer to question 1: " + userID.give[0]));
+            let received2 = document.createElement("p");
+            received2.appendChild(document.createTextNode("Answer to question 2: " + userID.give[1]));
+            let received3 = document.createElement("p");
+            received3.appendChild(document.createTextNode("Answer to question 3: " + userID.give[2]));
+
+	    let ratingsGiven = document.createElement("h1");
+            ratingsGiven.appendChild(document.createTextNode("Ratings recieved:"))
+
+	    let given1 = document.createElement("p");
+            given1.appendChild(document.createTextNode("Answer to question 1: " + userID.recieved[0]));
+            let given2 = document.createElement("p");
+            given2.appendChild(document.createTextNode("Answer to question 2: " + userID.recieved[1]));
+            let given3 = document.createElement("p");
+            given3.appendChild(document.createTextNode("Answer to question 3: " + userID.recieved[2]));
+
+	    //SE_userInfoText.appendChild(document.createTextNode(userID)); //Denna ska bort
+            SE_userInfoText.appendChild(personalInfo);
+            SE_userInfoText.appendChild(question1);
+            SE_userInfoText.appendChild(question2);
+            SE_userInfoText.appendChild(question3);
+            SE_userInfoText.appendChild(ratingsReceived);
+            SE_userInfoText.appendChild(received1);
+            SE_userInfoText.appendChild(received2);
+            SE_userInfoText.appendChild(received3);
+            SE_userInfoText.appendChild(ratingsGiven);
+            SE_userInfoText.appendChild(given1);
+            SE_userInfoText.appendChild(given2);
             SE_userInfoText.appendChild(given3);
 
             SE_userInfo.appendChild(SE_userInfoText);
@@ -172,23 +250,53 @@ const vm_menu = new Vue({
 const vm_users = new Vue({
     el: '#userList',
     data: {
-        users: daters,
+        users: [],
         userID: "",
 	button: "button",
     },
     methods:{
 	confirmRemove: function(userID){
-	    console.log(userID.id);
 	    let btn = document.getElementById("button"+userID.id);
-	    btn.innerHTML = "Are you sure?";
-	    btn.onclick = function(){
+	    if(userID === compareUser){
 		vm_users.removeUser(userID);
+		btn.innerHTML = "X";
+	    }else{
+		if(compareUser !== null || this.users.indexOf(compareUser) !== -1){
+		    
+		    let btn2 = document.getElementById("button"+compareUser.id);
+		    if(btn2 !== null){
+			btn2.innerHTML = "X";
+		    }
+		}
+		compareUser = userID;
+		
+		btn.innerHTML = "Are you sure?";
 	    }
 	},
-        removeUser: function(userID){ //This only removes the nametext of the user. Should remove entire user from the users array.	    
+
+        removeUser: function(userID){
+	        console.log('removeuser');
             this.users.splice(this.users.indexOf(userID), 1);
+            socket.emit('setDaters',this.users);
+
 
         },
+        getUsers: function(){
+            var userList = [];
+
+            updateUsers();
+
+            var j = 1;
+            for(var i = 0; i < this.users.length; i++){
+                var temp = [j, this.users[i], this.users[i+1]];
+                userList.push(temp);
+                i++;
+                j++;
+            }
+            //vm_users.users =
+            return userList;
+        },
+
         makeid: function(length) {
             var result           = '';
             var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -201,6 +309,9 @@ const vm_users = new Vue({
         getUsers: function(){
 	    var userList = [];
 
+
+	    updateUsers();
+
 	    var j = 1;
 	    for(var i = 0; i < this.users.length; i++){
 		var temp = [j, this.users[i], this.users[i+1]];
@@ -208,6 +319,7 @@ const vm_users = new Vue({
 		i++;
 		j++;
 	    }
+	    //vm_users.users = 
             return userList;
         }
 
@@ -225,9 +337,18 @@ function edit(changedUsers){
     }
     
     blankArea("wrapper");
-    displayPairs(users, true);
-
+    
     let wrapper = document.getElementById("wrapper");
+    
+    let SE_Left = document.createElement("div");
+    SE_Left.setAttribute("id","left");
+    wrapper.appendChild(SE_Left);
+    
+    let SE_buttons = document.createElement("div");
+    SE_buttons.setAttribute("id","seTime");
+    wrapper.appendChild(SE_buttons);
+    
+    displayPairs(users, true);
 
     let btnCompare = document.createElement("button");
     btnCompare.appendChild(document.createTextNode("Compare and change"));
@@ -238,9 +359,9 @@ function edit(changedUsers){
     let btnDiscard = document.createElement("button");
     btnDiscard.appendChild(document.createTextNode("Discard changes"));
 
-    wrapper.appendChild(btnCompare);
-    wrapper.appendChild(btnSave);
-    wrapper.appendChild(btnDiscard);
+    SE_Left.appendChild(btnCompare);
+    SE_Left.appendChild(btnSave);
+    SE_Left.appendChild(btnDiscard);
 
     btnCompare.onclick = function(){
 	let tableCounter = 1;
@@ -268,6 +389,22 @@ function compareAndChange(checkedUsers){
     blankArea("wrapper");
 
     let wrapper = document.getElementById("wrapper");
+    let SE_Left = document.createElement("div");
+    SE_Left.setAttribute("id","left");
+    wrapper.appendChild(SE_Left);
+
+    let SE_Middle = document.createElement("div");
+    SE_Middle.setAttribute("id","seTime");
+    wrapper.appendChild(SE_Middle);
+
+    let SE_Right = document.createElement("div");
+    SE_Right.setAttribute("id","right");
+    wrapper.appendChild(SE_Right);
+
+    let SE_Div = document.createElement("div");
+    SE_Div.setAttribute("id","div");
+    SE_Right.appendChild(SE_Div);
+    
     let ul = document.createElement("ul");
     ul.setAttribute("id", "pairsList");
     ul.style.listStyleType = "none";
@@ -284,10 +421,11 @@ function compareAndChange(checkedUsers){
     //-----------------------------
     
     let tableChooser = document.createElement("div");
-    
-    let label = document.createElement("label");
-    label.appendChild(document.createTextNode("Table:"));
-    label.setAttribute("for", "select");
+
+    /*
+      let label = document.createElement("label");
+      label.appendChild(document.createTextNode("Table:"));
+      label.setAttribute("for", "select");*/
     
     let select = document.createElement("select");
     select.setAttribute("id", "select");
@@ -295,14 +433,14 @@ function compareAndChange(checkedUsers){
     for(var i = 0; i < checkedUsers.length; i++){
 	let option = document.createElement("option");
 	option.setAttribute("value", i);
-	option.appendChild(document.createTextNode(checkedUsers[i][0]));
+	option.appendChild(document.createTextNode("Table: " + checkedUsers[i][0]));
 	if(i == 0){
 	    option.setAttribute("selected", "selected");
 	}
 	select.appendChild(option);
     }
     
-    tableChooser.appendChild(label);
+    //tableChooser.appendChild(label);
     tableChooser.appendChild(select);
 
     //-----------------------------
@@ -325,7 +463,7 @@ function compareAndChange(checkedUsers){
     womanHeader.setAttribute("id", "womanH3");
     womanHeader.appendChild(document.createTextNode(checkedUsers[0][1].name));
 
-     let womanDescText = document.createElement("h4");
+    let womanDescText = document.createElement("h4");
     womanDescText.appendChild(document.createTextNode("Personal questions"));
     
     let womanDesc = document.createElement("ul");
@@ -335,7 +473,7 @@ function compareAndChange(checkedUsers){
 	womanLi.appendChild(document.createTextNode(checkedUsers[0][1].desc[i]));
 	womanDesc.appendChild(womanLi);
     }
-   
+    
     let womanGivenText = document.createElement("h4");
     womanGivenText.appendChild(document.createTextNode("Given ratings"));
 
@@ -395,7 +533,7 @@ function compareAndChange(checkedUsers){
 	manLi.appendChild(document.createTextNode(checkedUsers[0][2].desc[i]));
 	manDesc.appendChild(manLi);
     }
-   
+    
     let manGivenText = document.createElement("h4");
     manGivenText.appendChild(document.createTextNode("Given ratings"));
 
@@ -427,6 +565,10 @@ function compareAndChange(checkedUsers){
     man.appendChild(manRecievedText);
     man.appendChild(manRecieved);
 
+    //-----------------------------
+
+    let matchPrecent = document.createElement("h1");
+    matchPrecent.appendChild(document.createTextNode("This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match"));
     
     //-----------------------------
 
@@ -435,17 +577,21 @@ function compareAndChange(checkedUsers){
 
     //-----------------------------
 
-    wrapper.appendChild(ul);
-    wrapper.appendChild(tableChooser);
-    wrapper.appendChild(woman);
-    wrapper.appendChild(man);
-    wrapper.appendChild(btnConfirm);
+    SE_Middle.appendChild(ul);
+    SE_Left.appendChild(matchPrecent);
+    SE_Left.appendChild(tableChooser);
+    SE_Div.appendChild(woman);
+    SE_Div.appendChild(man);
+    SE_Left.appendChild(btnConfirm);
 
     select.onchange = function(){
 	selectedTable = select.options[select.selectedIndex].value;
 	
+	
 	changeWoman(checkedUsers);
 	changeMan(checkedUsers);
+
+	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
 
     womanSelect.onchange = function(){
@@ -454,6 +600,8 @@ function compareAndChange(checkedUsers){
 	checkedUsers[womanSelect.options[womanSelect.selectedIndex].value][1] = temporary;
 
 	changeWoman(checkedUsers);
+
+	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
     
     manSelect.onchange = function(){
@@ -462,6 +610,8 @@ function compareAndChange(checkedUsers){
 	checkedUsers[manSelect.options[manSelect.selectedIndex].value][2] = temporary;
 
 	changeMan(checkedUsers);
+
+	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
 
     btnConfirm.onclick = function(){
@@ -470,7 +620,7 @@ function compareAndChange(checkedUsers){
 }
 
 function displayPairs(users, bool){
-    let SE_EditList = document.getElementById("wrapper");
+    let SE_EditList = document.getElementById("seTime");
     let SE_Userlist = document.createElement("ol");
     for (let i = 0; i < users.length; i++){
         let SE_UserInList = document.createElement("li");
@@ -495,7 +645,7 @@ function displayPairs(users, bool){
         SE_Userlist.appendChild(SE_UserInList);
 	
         SE_user1.onmouseover = function (){
-            vm_menu.hoverOverUser(SE_user1.id);
+            vm_menu.hoverOverUser(users[i][1]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }
         SE_user1.onmouseleave = function (){
@@ -508,7 +658,7 @@ function displayPairs(users, bool){
 
         }
         SE_user2.onmouseover = function (){
-            vm_menu.hoverOverUser(SE_user2.id);
+            vm_menu.hoverOverUser(users[i][2]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }
         SE_user2.onmouseleave = function (){
@@ -603,4 +753,43 @@ function listPairs(checkedUsers){
 function blankArea(id) {
     let area = document.getElementById(id);
     area.innerHTML = ""; 
+}
+
+function getTable(user){
+    var tableList = vm_users.getUsers();
+    for(var i = 0; i < tableList.length; i++){
+	if(tableList[i][1].name === user || tableList[i][2].name === user){
+	    return tableList[i][0];
+	}
+    }
+    return -1;
+}
+
+function calculateMatch(table){
+    let girl = table[1];
+    let boy = table[2];
+
+    let girlPersonal = girl.desc;
+    let girlGive = girl.give;
+    let girlRec = girl.recieved;
+    
+    let boyPersonal = boy.desc;
+    let boyGive = boy.give;
+    let boyRec = boy.recieved;
+
+    let total = 0;
+
+    for(let i = 0; i<boyPersonal.length;i++){
+	total += boyPersonal[i] - girlPersonal[i];
+    }
+
+    for(let i = 0; i<boyGive.length;i++){
+	total += boyGive[i] - girlGive[i];
+    }
+
+    for(let i = 0; i<boyRec.length;i++){
+	total += boyRec[i] - girlRec[i];
+    }
+
+    return 100 - Math.abs(total);
 }
