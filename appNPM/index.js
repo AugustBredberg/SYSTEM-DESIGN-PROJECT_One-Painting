@@ -35,7 +35,8 @@ readInAllUsers = function(){
 	    "agePref": array[4],
 	    "desc": array.slice(5),
 	    "give": [],
-	    "recieved": ""
+	    "recieved": [],
+	    "history": []
 	};
 	daters.push(acc);
 	
@@ -142,7 +143,30 @@ io.on('connection', function(socket) {
 
     socket.on('setDaters', function(setter){
 	daters = setter;
+	console.log(daters);
     });
+
+    socket.on('setDateSetup', function(dateSetup){
+	console.log(dateSetup);
+	for(let i=0; i < dateSetup.length; i++){
+	    let currentGirlId = dateSetup[i][1].id;
+	    let currentBoyId = dateSetup[i][2].id;
+	    
+	    daters[currentGirlId-1].history.push(currentBoyId);
+	    daters[currentBoyId-1].history.push(currentGirlId);
+
+	    
+	}
+	console.log(daters);
+    });
+
+    /// RETURNS USER OBJECT FROM USER ID
+    socket.on('getUserFromId', function(userID, callback){
+	for(let i=0; i < daters.length; i++){
+	    if(daters[i].id == userID) callback(daters[i]);
+	}
+    });
+    
     //Whenever someone disconnects this piece of code executed
     socket.on('disconnect', function () {
 	console.log('A user disconnected');

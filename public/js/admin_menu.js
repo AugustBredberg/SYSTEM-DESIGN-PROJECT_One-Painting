@@ -65,13 +65,15 @@ const vm_menu = new Vue({
 	
         startEvent: function(listOfUsers) {
             blankArea("wrapper");
-
+	    
 	    if(listOfUsers != null){
 		users = listOfUsers;
 	    }else{
 	        users = vm_users.getUsers();
 	    }
 
+	    socket.emit('setDateSetup', users);
+	    
 	    let SE_EditList = document.getElementById("wrapper");
 
 	    let SE_Left = document.createElement("div");

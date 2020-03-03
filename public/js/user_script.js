@@ -18,6 +18,7 @@ let dateQuestions = [
 
 let currentUser = "";
 let currentUserId = 0;
+let currentUserObject = {};
 
 const vm = new Vue({
     el: '#loginSection',
@@ -45,6 +46,11 @@ const vm = new Vue({
 		/// SAVING USERNAME OF USER CURRENTLY LOGGED IN
 		
 		if(success[0] == true){
+		    /// GET USER FROM SERVER FOR FUTURE USE 
+		    socket.emit('getUserFromId', success[1], function(usr){
+			currentUserObject = usr;
+		    });
+		    
 		    currentUser = usernameLogin;
 		    currentUserId = success[1];
 		    console.log("userID: " + currentUserId);
@@ -63,7 +69,6 @@ const vm = new Vue({
 		    frwBtn.setAttribute("src", "/img/loginButton.png");
 		    frwBtn.setAttribute("class", "forwardButton");
 		    frwBtn.onclick = function(){
-			console.log("KOLLA FILIP DET FUNKAR");
 			vm.readyScreen();
 			//loadingDate();
 		    };
@@ -221,7 +226,8 @@ const vm = new Vue({
 	    div.appendChild(pulsatingHeart);
 
 	    /// IF DATE IS FINAL DATE, SHOW INFORMATION SHARING SCREEN
-	    
+
+	    currentDateNumber += 1;
 	    setTimeout(vm.personalQuestions, 1000, dateQuestions, false);
 	    
 	},
@@ -237,7 +243,8 @@ const vm = new Vue({
 
 	    let personalQuestionsText = document.createElement("p");
 	    personalQuestionsText.innerHTML = "Date: " + currentDateNumber;
-	    currentDateNumber ++;
+	    //currentDateNumber += 1;
+	    console.log(currentDateNumber);
 	    personalQuestionsText.setAttribute("class", "dateFont");
 	    personalQuestionsText.style.fontSize = "900%";
 	    div.appendChild(personalQuestionsText);
@@ -363,6 +370,16 @@ const vm = new Vue({
 				let userTMP = allDaters[i];
 				allDaters[i].give.push(givenRatings);
 			    }
+
+			    
+			    /// set recieived rating to person im seeing
+			    console.log(currentDateNumber);
+			    if(allDaters[i].id == currentUserObject.history[currentDateNumber-2] ){
+				allDaters[i].recieved.push(givenRatings);
+				console.log("AAAAHHHHGGAHGAHHGHHAHGHAHHGAHGH");
+				
+			    }
+			    
 			}
 			socket.emit('setDaters', allDaters);
 		    });
