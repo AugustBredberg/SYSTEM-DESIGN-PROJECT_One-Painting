@@ -16,6 +16,7 @@ let userArray = myModule.users(); // val is "Hello"
 //==========================================================
 //==========================================================
 var userInformation = [];
+var daters = [];
 readInAllUsers = function(){
     var data = fs.readFileSync('log.txt', 'utf8');
     var logins = [];
@@ -35,12 +36,15 @@ readInAllUsers = function(){
 	    "give": "",
 	    "recieved": ""
 	};
-	console.log(acc);
+	daters.push(acc);
+	
+	//console.log(acc);
     }
     /// Converting list of accounts to list of objects containing account info
     
-    
-    console.log(logins);
+    daters.pop();
+    //console.log(logins);
+    console.log(daters);
     userInformation = logins;
     return logins;
 };
