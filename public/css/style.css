@@ -28,14 +28,14 @@ h1 {
 
     border: 5px solid white; 
     -webkit-box-shadow: 
-      inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 16px rgba(0,0,0,0.1); 
+    inset 0 0 8px  rgba(0,0,0,0.1),
+    0 0 16px rgba(0,0,0,0.1); 
     -moz-box-shadow: 
-      inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 16px rgba(0,0,0,0.1); 
+    inset 0 0 8px  rgba(0,0,0,0.1),
+    0 0 16px rgba(0,0,0,0.1); 
     box-shadow: 
-      inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 16px rgba(0,0,0,0.1); 
+    inset 0 0 8px  rgba(0,0,0,0.1),
+    0 0 16px rgba(0,0,0,0.1); 
     padding: 15px;
     background: rgba(255,255,255,1);
     margin: 0 0 10px 0;
@@ -145,23 +145,23 @@ h1 {
     width: 4vw;
     height: 4vw;
     
-  background-color: lightgrey;
-  //height: 30px;
-  transform: rotate(-45deg);
-  //width: 30px;
+    background-color: lightgrey;
+    //height: 30px;
+    transform: rotate(-45deg);
+    //width: 30px;
 }
 .heart:before,
 .heart:after {
-  content: "";
-  background-color: inherit;
-  border-radius: 50%;
-  height: 4vw;
-  position: absolute;
-  width: 4vw;
+    content: "";
+    background-color: inherit;
+    border-radius: 50%;
+    height: 4vw;
+    position: absolute;
+    width: 4vw;
 }
 .heart:before {
     top: -2vw;//px;
-  left: 0;
+    left: 0;
 }
 
 
@@ -181,31 +181,26 @@ margin-bottom: 10vh;
 align-items: center;
 grid-template-collumns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
 
- */
-
-
-
-
-
+*/
 }
 
 .choosentable {
-height: 100px;
-width: 350px;
+    height: 100px;
+    width: 350px;
     border-style: solid;
     border-width: 10px;
     display: inline-block;
 
-background-color: #bd0f1b;
+    background-color: #bd0f1b;
 }
 
 .table {
-height: 100px;
-width: 350px;
+    height: 100px;
+    width: 350px;
     border-style: solid;
     border-width: 10px;
     display: inline-block;
-background-color: #F5FFFA;
+    background-color: #F5FFFA;
 }
 
 
@@ -226,70 +221,70 @@ background-color: #F5FFFA;
 
 
 .lds-heart {
-display: inline-block;
-position: relative;
-padding: 30vh 0;
-width: 80px;
-height: 80px;
-transform: rotate(45deg);
-transform-origin: 30px 40px;
+    display: inline-block;
+    position: relative;
+    padding: 30vh 0;
+    width: 80px;
+    height: 80px;
+    transform: rotate(45deg);
+    transform-origin: 30px 40px;
 }
 .lds-heart div {
-top: 20vw;
-left: 20vw;
-position: absolute;
-width: 32px;
-height: 32px;
-background: #bd0f1b; //black;
-animation: lds-heart 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    top: 20vw;
+    left: 20vw;
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: #bd0f1b; //black;
+    animation: lds-heart 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 .lds-heart div:after,
 .lds-heart div:before {
-content: " ";
-position: absolute;
-display: block;
-width: 32px;
-height: 32px;
-background: #bd0f1b;// black;
+    content: " ";
+    position: absolute;
+    display: block;
+    width: 32px;
+    height: 32px;
+    background: #bd0f1b;// black;
 }
 .lds-heart div:before {
-left: -24px;
-border-radius: 50% 0 0 50%;
+    left: -24px;
+    border-radius: 50% 0 0 50%;
 }
 .lds-heart div:after {
-top: -24px;
-border-radius: 50% 50% 0 0;
+    top: -24px;
+    border-radius: 50% 50% 0 0;
 }
 @keyframes lds-heart {
-0% {
-transform: scale(5.7);
-}
-5% {
-transform: scale(6.6);
-}
-39% {
-transform: scale(5.1);
-}
-45% {
-transform: scale(6);
-}
-60% {
-transform: scale(5.7);
-}
-100% {
-transform: scale(5.4);
-}
+    0% {
+	transform: scale(5.7);
+    }
+    5% {
+	transform: scale(6.6);
+    }
+    39% {
+	transform: scale(5.1);
+    }
+    45% {
+	transform: scale(6);
+    }
+    60% {
+	transform: scale(5.7);
+    }
+    100% {
+	transform: scale(5.4);
+    }
 }
 
 
 
 @font-face {
-font-family: dateFont;
-src: url("/fonts/Royalacid.ttf") format("truetype");
+    font-family: dateFont;
+    src: url("/fonts/Royalacid.ttf") format("truetype");
 }
 
 .dateFont{
-color: black;
-//font-size: 900%;
-font-family: dateFont;
+    color: black;
+    //font-size: 900%;
+    font-family: dateFont;
 }

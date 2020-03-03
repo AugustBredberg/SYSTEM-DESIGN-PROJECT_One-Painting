@@ -1,4 +1,3 @@
-
 Anna,a,a,female,18-25,6,8
 Pelle,,,male,18-25,6,3
 Katla,,,female,26-35,3,10
