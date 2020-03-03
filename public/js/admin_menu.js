@@ -4,17 +4,25 @@ let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 let selectedTable = 0;
 let userList = [];
+let removedUsers = [];
 
 var socket = io();
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
-	console.log(daters);
-	console.log("balle");
+	for(var i = 0; i<removedUsers.length; i++){
+	    console.log(removedUsers[i].name);
+	    console.log(daters);
+	    daters.splice(daters.indexOf(removedUsers[i]), 1);
+	}
 	vm_users.users = daters;
     });
 }
-updateUsers();
+
+setInterval(function() {
+    updateUsers();
+}, 10000);
+
 
 const vm_menu = new Vue({
     el: '#eventInfo',
@@ -193,7 +201,7 @@ const vm_menu = new Vue({
 const vm_users = new Vue({
     el: '#userList',
     data: {
-        users: daters,
+        users: [],
         userID: "",
 	button: "button",
     },
@@ -217,6 +225,7 @@ const vm_users = new Vue({
 	    }
 	},
         removeUser: function(userID){
+	    removedUsers.push(userID);
             this.users.splice(this.users.indexOf(userID), 1);
         },
         getUsers: function(){
