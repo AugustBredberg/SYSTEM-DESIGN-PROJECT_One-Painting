@@ -55,6 +55,35 @@ h1 {
     box-sizing:border-box;
 }
 
+.noButton{
+    width: 23vw;
+    height: 23vw;
+    padding-top: 100px;
+
+}
+
+.endheart{
+    width: 70vw;
+    height: 70vw;
+    background-color: white;
+
+}
+
+.match{
+    font-size: 100px;
+
+}
+
+.heartButton{
+    width: 26vw;
+    height: 26vw;
+    padding-right: 150px;
+    padding-top: 100px;
+    background-color: white;
+
+}
+
+
 .genderAgeChoiceDiv{
     font-size: 250%;
     display: grid;
@@ -136,73 +165,131 @@ h1 {
 }
 
 
+.tableDiv{
+
+    display: grid;
+    grid-template-columns: auto auto;
+    margin-left: 15px;
+
+/*
+//width: 100vw;
+//height: 30vw;
+display: inline-block;
+margin-top: 1vh;
+margin-bottom: 10vh;
+
+align-items: center;
+grid-template-collumns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+
+ */
+
+
+
+
+
+}
+
+.choosentable {
+height: 100px;
+width: 350px;
+    border-style: solid;
+    border-width: 10px;
+    display: inline-block;
+
+background-color: #bd0f1b;
+}
+
+.table {
+height: 100px;
+width: 350px;
+    border-style: solid;
+    border-width: 10px;
+    display: inline-block;
+background-color: #F5FFFA;
+}
+
+
+
+
+
+.heartbuttom{
+    position: relative;
+    width: 200px;
+    height: 200px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    background-color: rgba(250,184,66, 1);
+}
 
 
 .lds-heart {
-  display: inline-block;
-  position: relative;
-  padding: 30vh 0;
-  width: 80px;
-  height: 80px;
-  transform: rotate(45deg);
-  transform-origin: 30px 40px;
+display: inline-block;
+position: relative;
+padding: 30vh 0;
+width: 80px;
+height: 80px;
+transform: rotate(45deg);
+transform-origin: 30px 40px;
 }
 .lds-heart div {
-  top: 20vw;
-  left: 20vw;
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  background: #bd0f1b; //black;
-  animation: lds-heart 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+top: 20vw;
+left: 20vw;
+position: absolute;
+width: 32px;
+height: 32px;
+background: #bd0f1b; //black;
+animation: lds-heart 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 .lds-heart div:after,
 .lds-heart div:before {
-  content: " ";
-  position: absolute;
-  display: block;
-  width: 32px;
-  height: 32px;
-  background: #bd0f1b;// black;
+content: " ";
+position: absolute;
+display: block;
+width: 32px;
+height: 32px;
+background: #bd0f1b;// black;
 }
 .lds-heart div:before {
-  left: -24px;
-  border-radius: 50% 0 0 50%;
-} 
+left: -24px;
+border-radius: 50% 0 0 50%;
+}
 .lds-heart div:after {
-  top: -24px;
-  border-radius: 50% 50% 0 0;
+top: -24px;
+border-radius: 50% 50% 0 0;
 }
 @keyframes lds-heart {
-  0% {
-    transform: scale(5.7);
-  }
-  5% {
-    transform: scale(6.6);
-  }
-  39% {
-    transform: scale(5.1);
-  }
-  45% {
-    transform: scale(6);
-  }
-  60% {
-    transform: scale(5.7);
-  }
-  100% {
-    transform: scale(5.4);
-  }
+0% {
+transform: scale(5.7);
+}
+5% {
+transform: scale(6.6);
+}
+39% {
+transform: scale(5.1);
+}
+45% {
+transform: scale(6);
+}
+60% {
+transform: scale(5.7);
+}
+100% {
+transform: scale(5.4);
+}
 }
 
 
 
 @font-face {
-  font-family: dateFont;
-  src: url("/fonts/Royalacid.ttf") format("truetype"); 
+font-family: dateFont;
+src: url("/fonts/Royalacid.ttf") format("truetype");
 }
 
 .dateFont{
-    color: black;
-    //font-size: 900%;
-    font-family: dateFont;
+color: black;
+//font-size: 900%;
+font-family: dateFont;
 }

@@ -4,6 +4,8 @@ var socket = io();
 
 var startScreen;
 var currentDateNumber = 1;
+var table= 3;
+let matcharr = [];
 
 let accountQuestions = [
     "Are you adventurous?",
@@ -19,6 +21,11 @@ let dateQuestions = [
 let currentUser = "";
 let currentUserId = 0;
 let currentUserObject = {};
+let matches = [
+    "Emma",
+    "Lisa",
+    "Sara"
+];
 
 const vm = new Vue({
     el: '#loginSection',
@@ -260,7 +267,7 @@ const vm = new Vue({
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
 		
-		vm.loadingDate();
+		vm.nexttableshowing();
 	    };
 
 	    div.appendChild(frwBtn);
@@ -318,8 +325,64 @@ const vm = new Vue({
 			    current.style.backgroundColor = "red";
 			    heartAnswerInt++;
 			}
-			else{
-			    current.style.backgroundColor = "lightgrey";
+
+			div.appendChild(boxesDiv);
+
+			let frwBtn = document.createElement("img");
+			frwBtn.setAttribute("src", "/img/loginButton.png");
+			frwBtn.setAttribute("class", "forwardButton");
+			frwBtn.onclick = function () {
+			    if (questions.length > currentQuestion) {
+				for (let k = 0; k < 10; k++) {
+				    let current = document.getElementById(k);
+				    current.style.backgroundColor = "lightgrey";
+				}
+				qFunc();
+			    } else {
+				/// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN
+				if (currentDateNumber > 3) {
+				    vm.contantInfoShareScreen();
+				} else {
+				    vm.readyScreen();
+				}
+			    }
+			};
+
+			div.appendChild(frwBtn);
+		    },
+
+
+		    nexttableshowing: function (choosentable) {
+
+
+			let div = document.getElementById("loginInfoDiv");
+			div.innerHTML = "";
+
+			let tableDiv = document.createElement("div");
+			tableDiv.setAttribute("class", "tableDiv");
+
+			for(let i = 1; i<11; i++) {
+			    if(table == i){
+				let choosentable = document.createElement("div");
+				choosentable.setAttribute("class", "choosentable");
+				choosentable.setAttribute("id", i);
+				var text = document.createTextNode(i);
+				choosentable.style.fontSize = "400%";
+				choosentable.appendChild(text);
+				tableDiv.appendChild(choosentable);
+
+			    }
+			    else {
+				let table = document.createElement("div");
+				table.setAttribute("class", "table");
+				table.setAttribute("id", i);
+				var text = document.createTextNode(i);
+				table.style.fontSize = "400%";
+				table.appendChild(text);
+				//table.setAttribute("value", "" + i);
+				tableDiv.appendChild(table);
+			    }
+
 			}
 		    }
 		}//end onclick func
@@ -412,10 +475,167 @@ const vm = new Vue({
 	    div.appendChild(shareQ);
 	    
 	}
+	let frwBtn = document.createElement("img");
+	frwBtn.setAttribute("src", "/img/loginButton.png");
+	frwBtn.setAttribute("class", "forwardButton");
 
-    }
+	frwBtn.onclick = function () {
 
-});
+	    vm.loadingDate();
+	};
+
+
+	div.appendChild(tableDiv);
+	div.appendChild(frwBtn);
+    },
+
+
+
+
+
+
+
+
+
+    contantInfoShareScreen: function () {
+
+	let matchnumber = 0;
+	let div = document.getElementById("loginInfoDiv");
+	div.innerHTML = "";
+
+	let shareQ = document.createElement("p");
+	shareQ.innerHTML = "Do you want to share your contact info with?";
+	shareQ.setAttribute("class", "dateFont");
+	shareQ.style.fontSize = "300%";
+	div.appendChild(shareQ);
+
+
+	let matchesDiv = document.createElement("div");
+	div.appendChild(matchesDiv);
+	let matchesFunc = function () {
+	    matchesDiv.innerHTML = "";
+	    let match = document.createElement("h3");
+	    match.innerHTML = matches[matchnumber];
+	    match.style.fontSize = "250%";
+
+	    matchnumber++;
+	    matchesDiv.appendChild(match);
+	}
+
+
+	let heartbuttom = document.createElement("img");
+	heartbuttom.setAttribute("src", "/img/heart.png");
+	heartbuttom.setAttribute("class", "heartButton");
+
+	heartbuttom.onclick = function () {
+	    if(matchnumber<3) {
+		matcharr.push(matches[matchnumber-1]);
+		matchesFunc();
+	    }
+	    else{
+		matcharr.push(matches[matchnumber-1]);
+		vm.successmatchscreen();
+	    }
+	};
+
+	let nobuttom = document.createElement("img");
+	nobuttom.setAttribute("src", "/img/cross.jpg");
+	nobuttom.setAttribute("class", "noButton");
+	nobuttom.onclick = function () {
+
+	    if(matchnumber<3) {
+		matchesFunc();
+	    }
+	    else{
+		vm.successmatchscreen();
+	    }
+
+	};
+
+
+	matchesFunc();
+	div.appendChild(heartbuttom);
+	div.appendChild(nobuttom);
+
+
+    },
+
+
+    successmatchscreen: function() {
+
+	let div = document.getElementById("loginInfoDiv");
+	div.innerHTML = "";
+	var numberofmatches = matcharr.length;
+	let nummatch = 0;
+
+	let successmatch = document.createElement("p");
+	successmatch.innerHTML = "Congrats, Here are youre matches:";
+	successmatch.style.fontSize = "300%";
+	div.appendChild(successmatch);
+
+
+
+	let successmatchDiv = document.createElement("div");
+	successmatchDiv.setAttribute("class", "successmatchDiv");
+
+	for(nummatch; nummatch<numberofmatches; nummatch++){
+
+	    console.log("hej")
+	    console.log("matcharr[nummatch]")
+	    let match = document.createElement("div");
+	    match.setAttribute("class", "match");
+	    let text = document.createTextNode(matcharr[nummatch]);
+	    match.appendChild(text);
+	    successmatchDiv.appendChild(match)
+
+	}
+
+	div.appendChild(successmatchDiv);
+
+
+	let frwBtn = document.createElement("img");
+	frwBtn.setAttribute("src", "/img/loginButton.png");
+	frwBtn.setAttribute("class", "forwardButton");
+
+	frwBtn.onclick = function () {
+
+	    vm.endingscreen();
+	};
+
+	div.appendChild(frwBtn);
+
+    },
+
+
+
+    endingscreen: function(){
+
+	let div = document.getElementById("loginInfoDiv");
+	div.innerHTML = "";
+
+	let endtext = document.createElement("p");
+
+
+	let endheart = document.createElement("img");
+	endheart.setAttribute("src", "/img/heart.png");
+	endheart.setAttribute("class", "endheart");
+	endtext.innerHTML = "Thanks, see you next time ";
+	endtext.style.fontSize = "300%";
+	div.appendChild(endtext);
+	div.appendChild(endheart);
+
+
+    },
+
+
+
+
+
+
+
+}
+
+		  });
 
 
 
