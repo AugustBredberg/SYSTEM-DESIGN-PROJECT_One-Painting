@@ -22,6 +22,10 @@ const vm_menu = new Vue({
     methods:{
         createEvent: function(){
 
+            socket.emit('getParticipants');
+            socket.on('returnParticipants',function(participants) {
+                console.log(participants[0][0])
+            })
             if(this.eventOngoing == false){
                 this.eventOngoing = true;
                 document.getElementById("eventButton").innerHTML = "Stop Event";
@@ -196,6 +200,7 @@ const vm_users = new Vue({
         },
         getUsers: function(){
 	    var userList = [];
+
 	    var j = 1;
 	    for(var i = 0; i < this.users.length; i++){
 		var temp = [j, this.users[i], this.users[i+1]];

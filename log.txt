@@ -1,4 +1,1 @@
-[Username: putte, Password: bajs, E-mail: hej@bajen.se],
-[Username: Erik, Password: lösen, E-mail: erik],
-[Username: a, Password: b, E-mail: c],
-[Username: erik, Password: pass, E-mail: ],
+erik,erikmail,pass,male,35-45,5,3
