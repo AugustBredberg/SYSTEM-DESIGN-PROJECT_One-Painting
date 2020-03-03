@@ -90,7 +90,7 @@ const vm_menu = new Vue({
             SE_timerButton.appendChild(document.createTextNode("Start timer"));
 	    SE_stopTimerButton.appendChild(document.createTextNode("Stop timer"));
 
-	    SE_timer.appendChild(document.createTextNode("5 : 0"));
+	    SE_timer.appendChild(document.createTextNode(""));
             SE_Left.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
@@ -317,10 +317,11 @@ function compareAndChange(checkedUsers){
     //-----------------------------
     
     let tableChooser = document.createElement("div");
-    
+
+    /*
     let label = document.createElement("label");
     label.appendChild(document.createTextNode("Table:"));
-    label.setAttribute("for", "select");
+    label.setAttribute("for", "select");*/
     
     let select = document.createElement("select");
     select.setAttribute("id", "select");
@@ -328,14 +329,14 @@ function compareAndChange(checkedUsers){
     for(var i = 0; i < checkedUsers.length; i++){
 	let option = document.createElement("option");
 	option.setAttribute("value", i);
-	option.appendChild(document.createTextNode(checkedUsers[i][0]));
+	option.appendChild(document.createTextNode("Table: " + checkedUsers[i][0]));
 	if(i == 0){
 	    option.setAttribute("selected", "selected");
 	}
 	select.appendChild(option);
     }
     
-    tableChooser.appendChild(label);
+    //tableChooser.appendChild(label);
     tableChooser.appendChild(select);
 
     //-----------------------------
@@ -463,7 +464,7 @@ function compareAndChange(checkedUsers){
     //-----------------------------
 
     let matchPrecent = document.createElement("h1");
-    matchPrecent.appendChild(document.createTextNode(calculateMatch(checkedUsers[selectedTable]) + "%"));
+    matchPrecent.appendChild(document.createTextNode("This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match"));
     
     //-----------------------------
 
@@ -473,10 +474,10 @@ function compareAndChange(checkedUsers){
     //-----------------------------
 
     SE_Middle.appendChild(ul);
+    SE_Left.appendChild(matchPrecent);
     SE_Left.appendChild(tableChooser);
     SE_Div.appendChild(woman);
     SE_Div.appendChild(man);
-    SE_Left.appendChild(matchPrecent);
     SE_Left.appendChild(btnConfirm);
 
     select.onchange = function(){
@@ -486,7 +487,7 @@ function compareAndChange(checkedUsers){
 	changeWoman(checkedUsers);
 	changeMan(checkedUsers);
 
-	matchPrecent.innerHTML = calculateMatch(checkedUsers[selectedTable]) + "%";
+	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
 
     womanSelect.onchange = function(){
@@ -496,7 +497,7 @@ function compareAndChange(checkedUsers){
 
 	changeWoman(checkedUsers);
 
-	matchPrecent.innerHTML = calculateMatch(checkedUsers[selectedTable]) + "%";
+	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
     
     manSelect.onchange = function(){
@@ -506,7 +507,7 @@ function compareAndChange(checkedUsers){
 
 	changeMan(checkedUsers);
 
-	matchPrecent.innerHTML = calculateMatch(checkedUsers[selectedTable]) + "%";
+	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
 
     btnConfirm.onclick = function(){

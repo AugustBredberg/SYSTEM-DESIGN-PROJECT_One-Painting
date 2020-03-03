@@ -86,8 +86,6 @@ span {
 #select{
     background-color: red;
     padding: 8px 12px;
-}
-
-label{
-    font-size: 24px;
+    color: white;
+    font-size: 16px;
 }
