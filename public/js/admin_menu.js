@@ -4,17 +4,20 @@ let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 let selectedTable = 0;
 let userList = [];
+let removedUsers = [];
 
 var socket = io();
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
-	console.log(daters);
-	console.log("balle");
 	vm_users.users = daters;
     });
 }
-updateUsers();
+
+setInterval(function() {
+    updateUsers();
+}, 1000);
+
 
 const vm_menu = new Vue({
     el: '#eventInfo',
@@ -193,7 +196,7 @@ const vm_menu = new Vue({
 const vm_users = new Vue({
     el: '#userList',
     data: {
-        users: daters,
+        users: [],
         userID: "",
 	button: "button",
     },
@@ -218,6 +221,7 @@ const vm_users = new Vue({
 	},
         removeUser: function(userID){
             this.users.splice(this.users.indexOf(userID), 1);
+	    socket.emit('setDaters',this.users);
         },
         getUsers: function(){
 	    var userList = [];

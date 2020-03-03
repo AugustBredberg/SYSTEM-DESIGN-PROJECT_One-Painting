@@ -142,7 +142,6 @@ io.on('connection', function(socket) {
 
     socket.on('setDaters', function(setter){
 	daters = setter;
-	console.log(daters);
     });
     //Whenever someone disconnects this piece of code executed
     socket.on('disconnect', function () {
