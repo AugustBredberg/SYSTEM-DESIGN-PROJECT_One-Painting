@@ -1,5 +1,2 @@
-August,augustPass,augustMail
-Fredrik,fredrikPass,fredrikMail
-bajs,bajs,bajs
-najs,najs,najs
-bajsegött,harrypotter,<solfgji@kukenkuk.se
+fredrik,123,yng,male,45-55,10,1
+1,1,1,male,18-25,10,10
