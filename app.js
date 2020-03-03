@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
+var io = require('socket.io')(http);
+
 const port = 3000;
 app.set('port', (process.env.PORT || port));
 //Create HTTP server and listen on port 3000 for requests
@@ -14,6 +16,17 @@ app.get('/', function(req, res) {
 
 app.get('/admin', function(req, res) {
   res.sendFile(path.join(__dirname, '../views/admin.html'));
+});
+
+
+//Whenever someone connects this gets executed
+io.on('connection', function(socket) {
+   console.log('A user connected');
+
+   //Whenever someone disconnects this piece of code executed
+   socket.on('disconnect', function () {
+      console.log('A user disconnected');
+   });
 });
 
 
