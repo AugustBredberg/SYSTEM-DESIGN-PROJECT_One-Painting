@@ -136,8 +136,12 @@ io.on('connection', function(socket) {
     });
 
     socket.on('getDaters', function(callback){
-	readInAllUsers();
+	//readInAllUsers();
 	callback(daters);
+    });
+
+    socket.on('setDaters', function(setter){
+	daters = setter;
     });
     
     //Whenever someone disconnects this piece of code executed
