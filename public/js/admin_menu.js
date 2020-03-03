@@ -3,6 +3,18 @@ let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 let selectedTable = 0;
+let userList = [];
+
+var socket = io();
+
+function updateUsers(){
+    socket.emit('getDaters', function(daters){
+	console.log(daters);
+	console.log("balle");
+	vm_users.users = daters;
+    });
+}
+updateUsers();
 
 const vm_menu = new Vue({
     el: '#eventInfo',
@@ -209,6 +221,9 @@ const vm_users = new Vue({
         },
         getUsers: function(){
 	    var userList = [];
+
+	    updateUsers();
+	    
 	    var j = 1;
 	    for(var i = 0; i < this.users.length; i++){
 		var temp = [j, this.users[i], this.users[i+1]];
@@ -216,6 +231,7 @@ const vm_users = new Vue({
 		i++;
 		j++;
 	    }
+	    //vm_users.users = 
             return userList;
         }
 
@@ -319,9 +335,9 @@ function compareAndChange(checkedUsers){
     let tableChooser = document.createElement("div");
 
     /*
-    let label = document.createElement("label");
-    label.appendChild(document.createTextNode("Table:"));
-    label.setAttribute("for", "select");*/
+      let label = document.createElement("label");
+      label.appendChild(document.createTextNode("Table:"));
+      label.setAttribute("for", "select");*/
     
     let select = document.createElement("select");
     select.setAttribute("id", "select");

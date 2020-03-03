@@ -9,8 +9,8 @@ var io = require('socket.io').listen(http);
 
 var fs = require('fs');
 
-const myModule = require('./log.js');
-let userArray = myModule.users(); // val is "Hello"
+//const myModule = require('./log.js');
+//let userArray = myModule.users(); // val is "Hello"
 
 /// ARRAY WITH ALL ACCOUNTS EVER CREATED
 //==========================================================
@@ -21,10 +21,11 @@ readInAllUsers = function(){
     var data = fs.readFileSync('log.txt', 'utf8');
     var logins = [];
     var accountInfo = [];
+    daters = [];
     var lines = data.split('\n');
     for(var line = 0; line < lines.length; line++){
 	var array = lines[line].split(",");
-	console.log(array.slice(5));
+	//console.log(array.slice(5));
 	logins.push(array);
 	
 	var acc = {
@@ -44,7 +45,7 @@ readInAllUsers = function(){
     
     daters.pop();
     //console.log(logins);
-    console.log(daters);
+    console.log(daters); 
     userInformation = logins;
     return logins;
 };
@@ -58,18 +59,18 @@ app.set('port', (process.env.PORT || port ));
 app.use(express.static(path.join(__dirname, '../public/')));
 
 app.use('/vue',
-  express.static(path.join(__dirname, '/node_modules/vue/dist/')));
+	express.static(path.join(__dirname, '/node_modules/vue/dist/')));
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '../views/index.html'));
+    res.sendFile(path.join(__dirname, '../views/index.html'));
 });
 
 app.get('/admin', function(req, res) {
-  res.sendFile(path.join(__dirname, '../views/admin.html'));
+    res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
 app.get('/admin_menu', function(req, res) {
-  res.sendFile(path.join(__dirname, '../views/admin_menu.html'));
+    res.sendFile(path.join(__dirname, '../views/admin_menu.html'));
 });
 
 function Data(){
@@ -99,7 +100,7 @@ Data.prototype.loginAttempt = function(usernameInput, passwordInput){
 
 /// WHEN CREATE ACCOUNT IS CLICKED
 Data.prototype.accountCreated = function(username, email, password, gender, agePref, desc){
-    userArray.push(username);
+    //userArray.push(username);
     
     fs.appendFileSync('log.txt',username +","
 		      +password+","
@@ -107,15 +108,15 @@ Data.prototype.accountCreated = function(username, email, password, gender, ageP
 		      +gender+","
 		      +agePref+","
 		      +desc+"\n", 'utf8', function(error){
-	if(error) throw error; // hantera fel just in case
-	else console.log("Success when writing username!");
-	
-    });
+			  if(error) throw error; // hantera fel just in case
+			  else console.log("Success when writing username!");
+			  
+		      });
 };
 
 //Whenever someone connects this gets executed
 io.on('connection', function(socket) {
-   console.log('A user connected');
+    console.log('A user connected');
 
     socket.on('accountCreated', function(username, email, password, gender, agePref, desc){
 	data.accountCreated(username, email, password, gender, agePref, desc);
@@ -133,11 +134,16 @@ io.on('connection', function(socket) {
             socket.emit('returnLoginSuccess', false)
         }
     });
+
+    socket.on('getDaters', function(callback){
+	readInAllUsers();
+	callback(daters);
+    });
     
-   //Whenever someone disconnects this piece of code executed
-   socket.on('disconnect', function () {
-      console.log('A user disconnected');
-   });
+    //Whenever someone disconnects this piece of code executed
+    socket.on('disconnect', function () {
+	console.log('A user disconnected');
+    });
 });
 
 /// FUNCTION TO WRITE TO FILE HEHEHEHEHEHE
@@ -145,5 +151,5 @@ io.on('connection', function(socket) {
 
 //http.listen(3000);
 http.listen(app.get('port'), () => {
-  console.log('One Love is running on port 3000!')
+    console.log('One Love is running on port 3000!')
 })
