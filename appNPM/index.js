@@ -25,7 +25,7 @@ readInAllUsers = function(){
     var lines = data.split('\n');
     for(var line = 0; line < lines.length; line++){
 	var array = lines[line].split(",");
-	//console.log(array.slice(5));
+	array.push(line+1); // GIVES EVERY USER AN ID
 	logins.push(array);
 	
 	var acc = {
@@ -34,14 +34,14 @@ readInAllUsers = function(){
 	    "gender": array[3],
 	    "agePref": array[4],
 	    "desc": array.slice(5),
-	    "give": "",
+	    "give": [],
 	    "recieved": ""
 	};
 	daters.push(acc);
 	
 	//console.log(acc);
     }
-    /// Converting list of accounts to list of objects containing account info
+    /// Converting list of accounts to xlist of objects containing account info
     
     daters.pop();
     //console.log(logins);
@@ -90,12 +90,13 @@ Data.prototype.loginAttempt = function(usernameInput, passwordInput){
 	if(currentAccount[username] == usernameInput){
 	    if(currentAccount[password] == passwordInput){
 		console.log("USERNAME and PASSWORD correct!");
-		return true;
+		// returns true and the users ID
+		return [true, currentAccount[currentAccount.length-1]];
 	    }
 	}
     }
     
-    return false;
+    return [false, 0];
 }
 
 /// WHEN CREATE ACCOUNT IS CLICKED
@@ -124,10 +125,10 @@ io.on('connection', function(socket) {
     });
     
     socket.on('loginAttempt', function(username, password){
-	
-        if(Data.prototype.loginAttempt(username, password)){
+	let success = Data.prototype.loginAttempt(username, password);
+        if(success[0]){
             console.log('successful login')
-            socket.emit('returnLoginSuccess', true)
+            socket.emit('returnLoginSuccess', success)
         }
         else{
             console.log('Failed login attempt')
@@ -136,14 +137,12 @@ io.on('connection', function(socket) {
     });
 
     socket.on('getDaters', function(callback){
-	//readInAllUsers();
 	callback(daters);
     });
 
     socket.on('setDaters', function(setter){
 	daters = setter;
     });
-    
     //Whenever someone disconnects this piece of code executed
     socket.on('disconnect', function () {
 	console.log('A user disconnected');

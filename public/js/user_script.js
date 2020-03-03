@@ -16,6 +16,8 @@ let dateQuestions = [
     "Ugly?"
 ];
 
+let currentUser = "";
+let currentUserId = 0;
 
 const vm = new Vue({
     el: '#loginSection',
@@ -40,8 +42,12 @@ const vm = new Vue({
 	    console.log(passwordLogin);
 	    socket.emit('loginAttempt', usernameLogin, passwordLogin);
 	    socket.on('returnLoginSuccess', function(success){
-
-		if(success == true){
+		/// SAVING USERNAME OF USER CURRENTLY LOGGED IN
+		
+		if(success[0] == true){
+		    currentUser = usernameLogin;
+		    currentUserId = success[1];
+		    console.log("userID: " + currentUserId);
 		    let div = document.getElementById("loginInfoDiv");
 		    div.innerHTML = "";
 
@@ -314,13 +320,17 @@ const vm = new Vue({
 	    
 	    div.appendChild(boxesDiv);
 	    let personalDesc = [];
+	    let givenRatings = [];
 	    
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
-		personalDesc.push(heartAnswerInt);
-		console.log("pushed to desc " + heartAnswerInt);
+		/// If questions are PERSONAL
+		if(personalQ) personalDesc.push(heartAnswerInt);
+		else          givenRatings.push(heartAnswerInt);
+		
+		
 		if(questions.length > currentQuestion){
 		    for(let k=0; k<10; k++){
 			let current = document.getElementById(k);
@@ -328,7 +338,8 @@ const vm = new Vue({
 		    }
 		    qFunc();
 		}
-		else{
+		/// THIS ELSE IS FOR: DOCUMENTING NEWLY CREATED ACCOUNTS
+		else if(personalQ){
 		    vm.newAccount.desc = personalDesc;
 		    socket.emit('accountCreated',
 				vm.newAccount.username,
@@ -338,16 +349,28 @@ const vm = new Vue({
 				vm.newAccount.agePref,
 				vm.newAccount.desc
 			       );
-		    
 		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
-		    if(currentDateNumber > 3){
-			vm.contantInfoShareScreen();
-		    }
-		    else{
-			vm.readyScreen();
-		    }
+		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
+		    else vm.readyScreen();
 		}
-	    };
+		/// THIS ELSE IS FOR: DOCUMENTING GIVEN RATINGS
+		else{
+		    socket.emit('getDaters', function(allDaters){
+			console.log("HEEJ");
+			console.log(allDaters);
+			for(let i=0; i < allDaters.length; i++){
+			    if(allDaters[i].id == currentUserId){
+				let userTMP = allDaters[i];
+				allDaters[i].give.push(givenRatings);
+			    }
+			}
+			socket.emit('setDaters', allDaters);
+		    });
+		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
+		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
+		    else vm.readyScreen();
+		}
+	    }
 
 	    div.appendChild(frwBtn);
 	},
