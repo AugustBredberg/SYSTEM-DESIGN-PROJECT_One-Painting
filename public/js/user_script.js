@@ -19,11 +19,26 @@ socket.on('timerStartedUser', function(){
     console.log("Testelitest");
 })
 
+function updateUsers(){
+	socket.emit('getDaters', function(daters){
+		for(var i = 0; i<removedUsers.length; i++){
+			console.log(removedUsers[i].name);
+			console.log(daters);
+			daters.splice(daters.indexOf(removedUsers[i]), 1);
+		}
+		vm_users.users = daters;
+	});
+}
+
+setInterval(function() {
+	updateUsers();
+}, 5000);
+
 const vm = new Vue({
     el: '#loginSection',
     data: {
-    	waiting: true,
-        user: "",
+    waiting: true,
+	user: "",
 	pass: "",
 	newAccount: {username:"", email:"", password:"", gender: "", agePref: "", desc: []}
 
@@ -42,11 +57,12 @@ const vm = new Vue({
 	    console.log(usernameLogin);
 	    console.log(passwordLogin);
 
-		/*
+
 		socket.emit('loginAttempt', usernameLogin, passwordLogin);
 		socket.on('returnLoginSuccess', function(success){
 
-			if(success == true){
+			if(success == true){ //EVENTCODE INPUT MENU
+				this.user = usernameLogin;
 				let div = document.getElementById("loginInfoDiv");
 				div.innerHTML = "";
 
@@ -68,7 +84,10 @@ const vm = new Vue({
 					socket.emit('VerifyCode', eventCode.value);
 					socket.on('VerifyCodeReturn', function (success) {
 						if(success == true){
+							console.log(this.users.indexOf(this.user))
+							socket.emit('setDaterCode',this.users.indexOf(this.user), 'newcode');
 							vm.readyScreen();
+
 						}
 						else{
 							console.log('Invalid code');
@@ -82,33 +101,9 @@ const vm = new Vue({
 				div.appendChild(eventCodeText);
 				div.appendChild(eventCode);
 				div.appendChild(frwBtn);
-				*/
 
 
-	    socket.emit('loginAttempt', usernameLogin, passwordLogin);
-	    socket.on('returnLoginSuccess', function(success){
 
-		if(success == true){
-		    let div = document.getElementById("loginInfoDiv");
-		    div.innerHTML = "";
-
-		    let eventCodeText = document.createElement("h2");
-		    eventCodeText.innerHTML = "Enter Eventcode";
-		    eventCodeText.style.fontSize = "300%";
-
-		    let eventCode = document.createElement("input");
-		    eventCode.setAttribute("class", "userLogin");
-		    eventCode.setAttribute("placeholder", "Eventcode");
-
-		    let frwBtn = document.createElement("img");
-		    frwBtn.setAttribute("src", "/img/loginButton.png");
-		    frwBtn.setAttribute("class", "forwardButton");
-		    frwBtn.onclick = function(){
-			console.log("KOLLA FILIP DET FUNKAR");
-			vm.readyScreen();
-			//loadingDate();
-		    };
-//>>>>>>> e569453f9fa6697211335242a3b0de8c212e50f7
 
 		    div.appendChild(eventCodeText);
 		    div.appendChild(eventCode);
@@ -263,12 +258,9 @@ const vm = new Vue({
 	    div.appendChild(pulsatingHeart);
 
 	    /// IF DATE IS FINAL DATE, SHOW INFORMATION SHARING SCREEN
-	    
-//<<<<<<< HEAD
-//	    setTimeout(vm.personalQuestions, loadTime, dateQuestions);
-//=======
-	    setTimeout(vm.personalQuestions, 1000, dateQuestions, false);
-//>>>>>>> e569453f9fa6697211335242a3b0de8c212e50f7
+
+	    setTimeout(vm.personalQuestions, loadTime, dateQuestions, false);
+
 	    
 	},
 
@@ -324,24 +316,15 @@ const vm = new Vue({
 			socket.on('userTimerReturn', function(startedBool) {
 				if(startedBool == true && vm.waiting) {
 					vm.waiting = false;
-					vm.loadingDate(5000);
+					vm.loadingDate(3000); //Hårdkoda till 300 000 för 5 min
 				}})
 			if (--i) vm.myLoop(i);      //  decrement i and call myLoop again if i > 0
 		}, 3000)
 	},
-/*<<<<<<< HEAD
 
-
-
-
-	foo: function (){
-		console.log('foo');
-	},
-	personalQuestions: function(questions){
-=======*/
 	
 	personalQuestions: function(questions, personalQ){
-//>>>>>>> e569453f9fa6697211335242a3b0de8c212e50f7
+
 	    let currentQuestion = 0;
 	    /*let questions = [
 	      "Are you adventurous?",
