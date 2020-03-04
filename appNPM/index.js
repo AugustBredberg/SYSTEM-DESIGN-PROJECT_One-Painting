@@ -9,8 +9,8 @@ var io = require('socket.io').listen(http);
 
 var fs = require('fs');
 
-const myModule = require('./log.js');
-let userArray = myModule.users(); // val is "Hello"
+//const myModule = require('./log.js');
+//let userArray = myModule.users(); // val is "Hello"
 
 /// ARRAY WITH ALL ACCOUNTS EVER CREATED
 //==========================================================
@@ -95,7 +95,7 @@ Data.prototype.loginAttempt = function(usernameInput, passwordInput){
 
 /// WHEN CREATE ACCOUNT IS CLICKED
 Data.prototype.accountCreated = function(username, email, password, gender, agePref, desc){
-    userArray.push(username);
+    //userArray.push(username);
     
     fs.appendFileSync('log.txt',username +","
 		      +password+","

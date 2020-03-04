@@ -313,8 +313,9 @@ const vm = new Vue({
 	    }
 	    
 	    div.appendChild(boxesDiv);
-	    let personalDesc = [];
 	    
+	    let personalDesc = [];
+	    console.log("hej");
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
@@ -327,7 +328,9 @@ const vm = new Vue({
 			current.style.backgroundColor = "lightgrey";
 		    }
 		    qFunc();
+
 		}
+		
 		else{
 		    vm.newAccount.desc = personalDesc;
 		    socket.emit('accountCreated',
@@ -340,21 +343,33 @@ const vm = new Vue({
 			       );
 		    
 		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
+		    
+		    
+		    if(currentQuestion == 3){
+			console.log("Putt");
+			vm.functionInputDate();
+		    }
+		    else{
+			console.log("hej2");
+				
+			vm.readyScreen();
+		    }
+		    console.log(currentDateNumber);
 		    if(currentDateNumber > 3){
 			vm.contantInfoShareScreen();
 		    }
-		    else{
-			vm.readyScreen();
-		    }
+	
 		}
 	    };
-
+	    console.log("hej3");
 	    div.appendChild(frwBtn);
+	    
 	},
-
-
-
-
+	
+	
+	
+	
+	
 	contantInfoShareScreen: function(){
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
@@ -371,11 +386,50 @@ const vm = new Vue({
 	    shareQ.style.fontSize = "300%";
 	    div.appendChild(shareQ);
 	    
-	}
+	},
 
+	
+	functionInputDate: function(){
+	    let div = document.getElementById("loginInfoDiv");
+	    div.innerHTML = "";
+
+	    let personalQuestionsText = document.createElement("h2");
+	    personalQuestionsText.innerHTML = "Personal Questions";
+	    personalQuestionsText.style.fontSize = "300%";
+	    div.appendChild(personalQuestionsText);
+	    
+	    let InputText = document.createElement("h3");
+	    InputText.innerHTML = "Any other input on the date?";
+	    InputText.setAttribute("class", "dateFont");
+	    InputText.style.fontSize = "200%";
+	    div.appendChild(InputText);
+
+	  
+	    let inputTextField = document.createElement("textarea");
+//	    inputTextField.setAttribute("type","textarea");
+	    inputTextField.setAttribute("id", "inputDate");
+	    inputTextField.setAttribute("rows", "4");
+	    inputTextField.setAttribute("cols", "50");
+	    //inputTextField.setAttribute("value", "female"); 
+	    div.appendChild(inputTextField);
+	    
+
+	    
+	    let frwBtn = document.createElement("img");
+	    frwBtn.setAttribute("src", "/img/loginButton.png");
+	    frwBtn.setAttribute("class", "forwardButton");
+	    frwBtn.onclick = function(){
+		var textField = document.getElementById("inputDate").value;
+		console.log(textField);
+		
+		vm.readyScreen();
+	    }
+	    div.appendChild(frwBtn);
+	},
     }
 
-});
+    
+})
 
 
 
