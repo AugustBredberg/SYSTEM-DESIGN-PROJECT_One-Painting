@@ -71,6 +71,7 @@ const vm = new Vue({
 		    let eventCode = document.createElement("input");
 		    eventCode.setAttribute("class", "userLogin");
 		    eventCode.setAttribute("placeholder", "Eventcode");
+		    eventCode.setAttribute("value", "");
 		    
 
 		    let frwBtn = document.createElement("img");
@@ -78,7 +79,8 @@ const vm = new Vue({
 		    frwBtn.setAttribute("class", "forwardButton");
 		    frwBtn.onclick = function(){
 			socket.emit('getEventcode', function(serverEventCode){
-			    if(serverEventCode == eventCode.value){
+			    console.log( eventCode.value);
+			    if(serverEventCode == eventCode.value &&  eventCode.value != ""){
 				vm.readyScreen();
 			    }
 			});
