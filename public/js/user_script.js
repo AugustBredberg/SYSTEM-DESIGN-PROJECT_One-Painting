@@ -17,6 +17,21 @@ let dateQuestions = [
     "Maybe not?",
     "Ugly?"
 ];
+socket.on('timerStartedUser', function(){
+    console.log("Testelitest");
+})
+
+function updateUsers(){
+	socket.emit('getDaters', function(daters){
+		for(var i = 0; i<removedUsers.length; i++){
+			console.log(removedUsers[i].name);
+			console.log(daters);
+			daters.splice(daters.indexOf(removedUsers[i]), 1);
+		}
+		vm_users.users = daters;
+	});
+}
+
 
 let currentUser = "";
 let currentUserId = 0;
@@ -27,14 +42,14 @@ let matches = [
     "Sara"
 ];
 
+
 const vm = new Vue({
     el: '#loginSection',
     data: {
-        user: "",
+    waiting: true,
+	user: "",
 	pass: "",
 	newAccount: {username:"", email:"", password:"", gender: "", agePref: "", desc: []}
-
-	
     },
 
     methods: {
@@ -78,12 +93,39 @@ const vm = new Vue({
 		    frwBtn.setAttribute("src", "/img/loginButton.png");
 		    frwBtn.setAttribute("class", "forwardButton");
 		    frwBtn.onclick = function(){
+<<<<<<< HEAD
 			socket.emit('getEventcode', function(serverEventCode){
 			    console.log( eventCode.value);
 			    if(serverEventCode == eventCode.value &&  eventCode.value != ""){
 				vm.readyScreen();
 			    }
 			});
+=======
+				console.log(eventCode.value);
+				socket.emit('VerifyCode', eventCode.value);
+				socket.on('VerifyCodeReturn', function (success) {
+					if(success == true){
+						socket.emit('testget');
+						socket.on('testgetreturn', function(allDaters){
+						for(var i = 0; i<allDaters.length; i++){
+							console.log('comparing ' + allDaters[i].name + 'and ' + this.currentUser);
+							if(allDaters[i].name == this.currentUser) {
+								let b = i;
+								i = 1000;
+								console.log("HITTADE ANVÄNDAREN")
+								socket.emit('setDaterCode', b, eventCode.value);
+							}
+						}
+
+						vm.readyScreen();
+						})
+					}
+					else{
+						console.log('Invalid code');
+					}
+
+				})
+>>>>>>> 155473997e6d1da5a42c9bf6d38fea888a48bbc9
 		    };
 
 		    div.appendChild(eventCodeText);
@@ -219,7 +261,7 @@ const vm = new Vue({
 	    vm.personalQuestions(accountQuestions, true);
 	},
 
-	loadingDate: function(){
+	loadingDate: function(loadTime){
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
 	    div.setAttribute("style", "height: 55vh");
@@ -241,7 +283,7 @@ const vm = new Vue({
 	    /// IF DATE IS FINAL DATE, SHOW INFORMATION SHARING SCREEN
 
 	    currentDateNumber += 1;
-	    setTimeout(vm.personalQuestions, 1000, dateQuestions, false);
+	    setTimeout(vm.personalQuestions, loadTime, dateQuestions, false);
 	    
 	},
 
@@ -267,19 +309,43 @@ const vm = new Vue({
 	    ready.setAttribute("class", "dateFont");
 	    ready.style.fontSize = "400%";
 	    div.appendChild(ready);
+	    console.log('Här vare sockets');
+	    
+	    socket.on('timerStartedUser', function(){
+		console.log("hejehejehjeheje");
+		let timerReady = document.createElement("p");
+		timerReady.innerHTML = "Timer Started :)";
+		timerReady.setAttribute("class", "dateFont");
+		timerReady.style.fontSize = "400%";
+		div.appendChild(timerReady);
+	    })
+		
+	    
 
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
-	    frwBtn.onclick = function(){
-		
+	    frwBtn.onclick = function(){	
 		vm.nexttableshowing();
 	    };
 
 	    div.appendChild(frwBtn);
 	},
+	myLoop: function(i) {
+		setTimeout(function () {
+			socket.emit('timerStartedUser');
+			socket.on('userTimerReturn', function(startedBool) {
+				if(startedBool == true && vm.waiting) {
+					vm.waiting = false;
+					vm.loadingDate(3000); //Hårdkoda till 300 000 för 5 min
+				}})
+			if (--i) vm.myLoop(i);      //  decrement i and call myLoop again if i > 0
+		}, 3000)
+	},
+
 	
 	personalQuestions: function(questions, personalQ){
+
 	    let currentQuestion = 0;
 	    /*let questions = [
 	      "Are you adventurous?",
@@ -447,8 +513,9 @@ const vm = new Vue({
 	    frwBtn.setAttribute("class", "forwardButton");
 
 	    frwBtn.onclick = function () {
-
-		vm.loadingDate();
+		frwBtn.setAttribute("src", "/img/waitscreen.png");
+	    	console.log("kall1");
+	    	vm.myLoop(500);
 	    };
 
 

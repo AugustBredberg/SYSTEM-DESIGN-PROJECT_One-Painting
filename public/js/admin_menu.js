@@ -1,41 +1,95 @@
+
+
+var socket = io();
+
+
+
 let compareUser = null;
+
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 let selectedTable = 0;
 let userList = [];
 let removedUsers = [];
+let eventcode = "";
 
-var socket = io();
+
+
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
-	vm_users.users = daters;
+        vm_users.users = [];
+        for(var i = 0; i<daters.length; i++ ){
+            if(daters[i].eventCode == eventcode){
+                vm_users.users.push(daters[i]);
+            }
+        }
+	    //vm_users.users = daters;
+
+
     });
 }
 
 setInterval(function() {
     updateUsers();
+
 }, 1000);
 
 
+
+
 const vm_menu = new Vue({
+
     el: '#eventInfo',
     data: {
-	users: [],
+	users: daters,
 	timer: {minutes:00, seconds:00},
 	dateNum: 1,
 	i: 300,
 	timeout: 0,
+    eventOngoing: false,
+
 	
     },
     methods:{
         createEvent: function(){
-            let eventCode = document.getElementById("eventCode");
-            document.getElementById("eventCode").innerHTML = "1D10T";
-	    
-	    socket.emit('setEventcode', "test");
+            let eventCode = document.getElementById("eventCode");	    
+	   
+
+
+            if(this.eventOngoing == false){
+                this.eventOngoing = true;
+                document.getElementById("eventButton").innerHTML = "Stop Event";
+                console.log('Eventcode generated');
+                let eventCode = document.getElementById("eventCode");
+                var code = vm_users.makeid(8)
+                eventcode = code;
+                document.getElementById("eventCode").innerHTML = code;
+                console.log('adding eventcode' + code);
+                socket.emit('EventStarted', code);
+		socket.emit('setEventcode', code);
+            }
+            else if(this.eventOngoing = true){
+                this.eventOngoing = false;
+                document.getElementById("eventButton").innerHTML = "Create Event";
+
+                console.log('removing eventcode' + document.getElementById("eventCode").innerHTML);
+                socket.emit('EventStopped', document.getElementById("eventCode").innerHTML);
+                document.getElementById("eventCode").innerHTML = "";
+            }
+
+
+            /*let stopEvent = document.getElementById("stopButton")
+            var stopButton = document.createElement("button");
+            stopButton.innerHTML = "Stop Event";
+            stopEvent.appendChild(stopButton);*/
         },
+        cancelEvent: function(){
+            console.log('Event canceled')
+            document.getElementById("eventCode").innerHTML = "";
+        },
+
         startTimer: function(){
             var minute = Math.floor(this.i/60);
 
@@ -50,6 +104,7 @@ const vm_menu = new Vue({
                 this.i = 0;
             }
             else {
+
 		if(this.i == 299){   //hard coded  
 		}
                 timeout = setTimeout(vm_menu.startTimer, 1000);
@@ -65,12 +120,13 @@ const vm_menu = new Vue({
 	},
 	
         startEvent: function(listOfUsers) {
+
             blankArea("wrapper");
 	    
 	    if(listOfUsers != null){
-		users = listOfUsers;
+		this.users = listOfUsers;
 	    }else{
-	        users = vm_users.getUsers();
+	        this.users = vm_users.getUsers();
 	    }
 
 	    socket.emit('setDateSetup', users);
@@ -85,7 +141,7 @@ const vm_menu = new Vue({
 	    SE_Time.setAttribute("id","seTime");
 	    SE_EditList.appendChild(SE_Time);
 	    
-	    displayPairs(users, false);
+	    displayPairs(this.users, false);
             
 	    
 	    
@@ -94,7 +150,7 @@ const vm_menu = new Vue({
 	    SE_Time.appendChild(btnEdit);
 
 	    btnEdit.onclick = function(){
-		users = edit();
+		this.users = edit();
 	    }
 	    
             //let SE_sessionInfo = document.getElementById("wrapper");
@@ -112,16 +168,20 @@ const vm_menu = new Vue({
             SE_Left.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
+
+                socket.emit('timerStarted');
                 vm_menu.startTimer();
             }
 	    SE_stopTimerButton.onclick = function() {
+
                 vm_menu.stopTimer();
             }
-            /*SE_sessionInfo.appendChild(SE_timer);*/
+
 	    SE_Left.appendChild(SE_dateNum);
             SE_Left.appendChild(SE_textBox);
             SE_Left.appendChild(SE_timerButton);
 	    SE_Left.appendChild(SE_stopTimerButton);
+
 
             SE_dateNum.setAttribute("class", "timer");
             SE_textBox.setAttribute("class", "timer");
@@ -135,6 +195,7 @@ const vm_menu = new Vue({
 
 
         },
+        
         hoverOverUser: function(userID){
             //console.log(userID);
 	    
@@ -222,15 +283,28 @@ const vm_users = new Vue({
 		btn.innerHTML = "Are you sure?";
 	    }
 	},
-        removeUser: function(userID){
+
+        removeUser: function(userID) {
+            console.log('removeuser');
             this.users.splice(this.users.indexOf(userID), 1);
-	    socket.emit('setDaters',this.users);
+            socket.emit('setDaters',this.users);
         },
+        makeid: function(length) {
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        },
+
         getUsers: function(){
 	    var userList = [];
 
+
 	    updateUsers();
-	    
+
 	    var j = 1;
 	    for(var i = 0; i < this.users.length; i++){
 		var temp = [j, this.users[i], this.users[i+1]];
