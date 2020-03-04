@@ -12,30 +12,35 @@ let SE_userInfoText = document.createElement("div");
 let selectedTable = 0;
 let userList = [];
 let removedUsers = [];
-
+let eventcode = "";
 
 
 
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
-	for(var i = 0; i<removedUsers.length; i++){
-	    console.log(removedUsers[i].name);
-	    console.log(daters);
-	    daters.splice(daters.indexOf(removedUsers[i]), 1);
-	}
-	vm_users.users = daters;
+        vm_users.users = [];
+        for(var i = 0; i<daters.length; i++ ){
+            if(daters[i].eventCode == eventcode){
+                vm_users.users.push(daters[i]);
+            }
+        }
+	    //vm_users.users = daters;
+
+
     });
 }
 
 setInterval(function() {
     updateUsers();
-}, 5000);
+
+}, 1000);
+
 
 
 
 const vm_menu = new Vue({
-/
+
     el: '#eventInfo',
     data: {
 	users: daters,
@@ -44,13 +49,13 @@ const vm_menu = new Vue({
 	i: 300,
 	timeout: 0,
     eventOngoing: false,
-    eventcode: "",
+
 	
     },
     methods:{
         createEvent: function(){
             let eventCode = document.getElementById("eventCode");
-            document.getElementById("eventCode").innerHTML = "1D10T";
+
 
             if(this.eventOngoing == false){
                 this.eventOngoing = true;
@@ -58,7 +63,7 @@ const vm_menu = new Vue({
                 console.log('Eventcode generated');
                 let eventCode = document.getElementById("eventCode");
                 var code = vm_users.makeid(8)
-                this.eventcode = code;
+                eventcode = code;
                 document.getElementById("eventCode").innerHTML = code;
                 console.log('adding eventcode' + code);
                 socket.emit('EventStarted', code);
@@ -82,6 +87,7 @@ const vm_menu = new Vue({
             console.log('Event canceled')
             document.getElementById("eventCode").innerHTML = "";
         },
+
         startTimer: function(){
             var minute = Math.floor(this.i/60);
 
@@ -274,38 +280,21 @@ const vm_users = new Vue({
 	    }
 	},
 
-        removeUser: function(userID){
-	        console.log('removeuser');
+        removeUser: function(userID) {
+            console.log('removeuser');
             this.users.splice(this.users.indexOf(userID), 1);
             socket.emit('setDaters',this.users);
-
-
         },
-        getUsers: function(){
-            var userList = [];
-
-            updateUsers();
-
-            var j = 1;
-            for(var i = 0; i < this.users.length; i++){
-                var temp = [j, this.users[i], this.users[i+1]];
-                userList.push(temp);
-                i++;
-                j++;
-            }
-            //vm_users.users =
-            return userList;
-        },
-
         makeid: function(length) {
-            var result           = '';
-            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             var charactersLength = characters.length;
-            for ( var i = 0; i < length; i++ ) {
+            for (var i = 0; i < length; i++) {
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
-         }
-        return result;
+            }
+            return result;
         },
+
         getUsers: function(){
 	    var userList = [];
 

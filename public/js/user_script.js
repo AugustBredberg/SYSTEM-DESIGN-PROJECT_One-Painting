@@ -30,9 +30,10 @@ function updateUsers(){
 	});
 }
 
-setInterval(function() {
-	updateUsers();
-}, 5000);
+
+let currentUser = "";
+let currentUserId = 0;
+
 
 const vm = new Vue({
     el: '#loginSection',
@@ -41,8 +42,6 @@ const vm = new Vue({
 	user: "",
 	pass: "",
 	newAccount: {username:"", email:"", password:"", gender: "", agePref: "", desc: []}
-
-	
     },
 
     methods: {
@@ -56,54 +55,54 @@ const vm = new Vue({
 	    console.log("clicklogin");
 	    console.log(usernameLogin);
 	    console.log(passwordLogin);
+	    socket.emit('loginAttempt', usernameLogin, passwordLogin);
+	    socket.on('returnLoginSuccess', function(success){
+		/// SAVING USERNAME OF USER CURRENTLY LOGGED IN
+		
+		if(success[0] == true){
+		    this.currentUser = usernameLogin;
+		    currentUserId = success[1];
+		    console.log("userID: " + currentUserId);
+		    let div = document.getElementById("loginInfoDiv");
+		    div.innerHTML = "";
 
+		    let eventCodeText = document.createElement("h2");
+		    eventCodeText.innerHTML = "Enter Eventcode";
+		    eventCodeText.style.fontSize = "300%";
 
-		socket.emit('loginAttempt', usernameLogin, passwordLogin);
-		socket.on('returnLoginSuccess', function(success){
+		    let eventCode = document.createElement("input");
+		    eventCode.setAttribute("class", "userLogin");
+		    eventCode.setAttribute("placeholder", "Eventcode");
 
-			if(success == true){ //EVENTCODE INPUT MENU
-				this.user = usernameLogin;
-				let div = document.getElementById("loginInfoDiv");
-				div.innerHTML = "";
-
-				let eventCodeText = document.createElement("h2");
-				eventCodeText.innerHTML = "Enter Eventcode";
-				eventCodeText.style.fontSize = "300%";
-
-				let eventCode = document.createElement("input");
-				eventCode.setAttribute("class", "userLogin");
-				eventCode.setAttribute("placeholder", "Eventcode");
-
-				let frwBtn = document.createElement("img");
-				frwBtn.setAttribute("src", "/img/loginButton.png");
-				frwBtn.setAttribute("class", "forwardButton");
-				frwBtn.onclick = function(){
-
-					console.log("KOLLA FILIP DET FUNKAR");
-					console.log(eventCode.value);
-					socket.emit('VerifyCode', eventCode.value);
-					socket.on('VerifyCodeReturn', function (success) {
-						if(success == true){
-							console.log(this.users.indexOf(this.user))
-							socket.emit('setDaterCode',this.users.indexOf(this.user), 'newcode');
-							vm.readyScreen();
-
+		    let frwBtn = document.createElement("img");
+		    frwBtn.setAttribute("src", "/img/loginButton.png");
+		    frwBtn.setAttribute("class", "forwardButton");
+		    frwBtn.onclick = function(){
+				console.log(eventCode.value);
+				socket.emit('VerifyCode', eventCode.value);
+				socket.on('VerifyCodeReturn', function (success) {
+					if(success == true){
+						socket.emit('testget');
+						socket.on('testgetreturn', function(allDaters){
+						for(var i = 0; i<allDaters.length; i++){
+							console.log('comparing ' + allDaters[i].name + 'and ' + this.currentUser);
+							if(allDaters[i].name == this.currentUser) {
+								let b = i;
+								i = 1000;
+								console.log("HITTADE ANVÄNDAREN")
+								socket.emit('setDaterCode', b, eventCode.value);
+							}
 						}
-						else{
-							console.log('Invalid code');
-						}
 
-					})
+						vm.readyScreen();
+						})
+					}
+					else{
+						console.log('Invalid code');
+					}
 
-					//loadingDate();
-				};
-
-				div.appendChild(eventCodeText);
-				div.appendChild(eventCode);
-				div.appendChild(frwBtn);
-
-
-
+				})
+		    };
 
 		    div.appendChild(eventCodeText);
 		    div.appendChild(eventCode);
@@ -385,13 +384,17 @@ const vm = new Vue({
 	    
 	    div.appendChild(boxesDiv);
 	    let personalDesc = [];
+	    let givenRatings = [];
 	    
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
-		personalDesc.push(heartAnswerInt);
-		console.log("pushed to desc " + heartAnswerInt);
+		/// If questions are PERSONAL
+		if(personalQ) personalDesc.push(heartAnswerInt);
+		else          givenRatings.push(heartAnswerInt);
+		
+		
 		if(questions.length > currentQuestion){
 		    for(let k=0; k<10; k++){
 			let current = document.getElementById(k);
@@ -399,7 +402,8 @@ const vm = new Vue({
 		    }
 		    qFunc();
 		}
-		else{
+		/// THIS ELSE IS FOR: DOCUMENTING NEWLY CREATED ACCOUNTS
+		else if(personalQ){
 		    vm.newAccount.desc = personalDesc;
 		    socket.emit('accountCreated',
 				vm.newAccount.username,
@@ -409,16 +413,28 @@ const vm = new Vue({
 				vm.newAccount.agePref,
 				vm.newAccount.desc
 			       );
-		    
 		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
-		    if(currentDateNumber > 3){
-			vm.contantInfoShareScreen();
-		    }
-		    else{
-			vm.readyScreen();
-		    }
+		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
+		    else vm.readyScreen();
 		}
-	    };
+		/// THIS ELSE IS FOR: DOCUMENTING GIVEN RATINGS
+		else{
+		    socket.emit('getDaters', function(allDaters){
+			console.log("HEEJ");
+			console.log(allDaters);
+			for(let i=0; i < allDaters.length; i++){
+			    if(allDaters[i].id == currentUserId){
+				let userTMP = allDaters[i];
+				allDaters[i].give.push(givenRatings);
+			    }
+			}
+			socket.emit('setDaters', allDaters);
+		    });
+		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
+		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
+		    else vm.readyScreen();
+		}
+	    }
 
 	    div.appendChild(frwBtn);
 	},

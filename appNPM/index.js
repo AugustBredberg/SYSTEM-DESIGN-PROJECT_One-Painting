@@ -7,7 +7,7 @@ const port = 3000;
 var timerStarted = 0;
 
 var io = require('socket.io').listen(http);
-
+var eventcodehtml = "test";
 var fs = require('fs');
 
 //const myModule = require('./log.js');
@@ -26,7 +26,7 @@ readInAllUsers = function(){
     var lines = data.split('\n');
     for(var line = 0; line < lines.length; line++){
 	var array = lines[line].split(",");
-	//console.log(array.slice(5));
+	array.push(line+1); // GIVES EVERY USER AN ID
 	logins.push(array);
 	
 	var acc = {
@@ -35,15 +35,15 @@ readInAllUsers = function(){
 	    "gender": array[3],
 	    "agePref": array[4],
 	    "desc": array.slice(5),
-	    "give": "",
+	    "give": [],
 	    "recieved": "",
-        "eventCode": "",
+        "eventcode": "null",
 	};
 	daters.push(acc);
 	
 	//console.log(acc);
     }
-    /// Converting list of accounts to list of objects containing account info
+    /// Converting list of accounts to xlist of objects containing account info
     
     daters.pop();
     //console.log(logins);
@@ -93,12 +93,13 @@ Data.prototype.loginAttempt = function(usernameInput, passwordInput){
 	if(currentAccount[username] == usernameInput){
 	    if(currentAccount[password] == passwordInput){
 		console.log("USERNAME and PASSWORD correct!");
-		return true;
+		// returns true and the users ID
+		return [true, currentAccount[currentAccount.length-1]];
 	    }
 	}
     }
     
-    return false;
+    return [false, 0];
 }
 
 /// WHEN CREATE ACCOUNT IS CLICKED
@@ -131,10 +132,10 @@ io.on('connection', function(socket) {
     })
 
     socket.on('loginAttempt', function(username, password){
-	
-        if(Data.prototype.loginAttempt(username, password)){
+	let success = Data.prototype.loginAttempt(username, password);
+        if(success[0]){
             console.log('successful login')
-            socket.emit('returnLoginSuccess', true)
+            socket.emit('returnLoginSuccess', success)
         }
         else{
             console.log('Failed login attempt')
@@ -186,10 +187,13 @@ io.on('connection', function(socket) {
     });
 
 
-
+    socket.on('testget', function(){
+        socket.emit('testgetreturn', daters);
+    })
 
     socket.on('EventStarted', function(eventCode){
        console.log("event started");
+       eventcodehtml = eventCode;
         fs.appendFileSync('eventcodes.txt', eventCode + '\n', 'utf8', function(error){
             if(error) throw error; // hantera fel just in case
             else console.log("Success when writing username!");
@@ -197,6 +201,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('EventStopped', function(eventCode){
+        eventcodehtml = "null";
         var data = fs.readFileSync('eventcodes.txt', 'utf-8');
         console.log("event stopped");
         var newValue = data.replace((eventCode + '\n'), '');
@@ -218,14 +223,17 @@ io.on('connection', function(socket) {
     });
 
     socket.on('setDaters', function(setter){
-        daters = setter;
-
+	daters = setter;
+    });
+    //Whenever someone disconnects this piece of code executed
+    socket.on('disconnect', function () {
+	console.log('A user disconnected');
     });
     socket.on('setDaterCode', function(daterID, code){
         console.log(daterID);
 
-        daters[daterID+1].eventCode = code;
-        console.log('code = ' + daters[daterID+1].eventCode);
+        daters[daterID].eventCode = code;
+        console.log('code = ' + daters[daterID].eventCode);
 
     })
 
