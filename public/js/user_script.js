@@ -335,7 +335,6 @@ const vm = new Vue({
 	    div.appendChild(boxesDiv);
 	    let personalDesc = [];
 	    let givenRatings = [];
-	    let personalDesc = [];
 	    console.log("hej");
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
@@ -369,10 +368,9 @@ const vm = new Vue({
 		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		    else vm.readyScreen();
 		}
-
-		else if(currentQuestion == 3 && !personalQ){
-			console.log("Putt");
-			vm.functionInputDate();
+		else if(!personalQ){
+		    console.log("Putt");
+		    vm.functionInputDate();
 		}
 		/// THIS ELSE IS FOR: DOCUMENTING GIVEN RATINGS
 		else{
@@ -396,7 +394,10 @@ const vm = new Vue({
 			    
 			}
 			socket.emit('setDaters', allDaters);
+			
 		    });
+
+		   
 		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
 		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		    else vm.readyScreen();
@@ -461,8 +462,6 @@ const vm = new Vue({
 	    shareQ.setAttribute("class", "dateFont");
 	    shareQ.style.fontSize = "300%";
 	    div.appendChild(shareQ);
-<<<<<<< HEAD
-
 
 	    let matchesDiv = document.createElement("div");
 	    div.appendChild(matchesDiv);
@@ -612,8 +611,10 @@ const vm = new Vue({
 	    frwBtn.onclick = function(){
 		var textField = document.getElementById("inputDate").value;
 		console.log(textField);
+
+		if(currentDateNumber > 3) vm.contantInfoShareScreen();
+		else vm.readyScreen();
 		
-		vm.readyScreen();
 	    }
 	    div.appendChild(frwBtn);
 	}
