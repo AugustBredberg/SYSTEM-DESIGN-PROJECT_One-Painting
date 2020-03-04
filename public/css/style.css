@@ -285,6 +285,12 @@ grid-template-collumns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
 
 .dateFont{
     color: black;
-    //font-size: 900%;
+    font-size: 900%;
     font-family: dateFont;
+}
+
+#inputDate{
+    width: 850;
+    height: 400;
+    font-size: 60px;
 }

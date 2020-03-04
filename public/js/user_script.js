@@ -335,7 +335,8 @@ const vm = new Vue({
 	    div.appendChild(boxesDiv);
 	    let personalDesc = [];
 	    let givenRatings = [];
-	    
+	    let personalDesc = [];
+	    console.log("hej");
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
@@ -351,6 +352,7 @@ const vm = new Vue({
 			current.style.backgroundColor = "lightgrey";
 		    }
 		    qFunc();
+
 		}
 		/// THIS ELSE IS FOR: DOCUMENTING NEWLY CREATED ACCOUNTS
 		else if(personalQ){
@@ -366,6 +368,11 @@ const vm = new Vue({
 		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
 		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		    else vm.readyScreen();
+		}
+
+		else if(currentQuestion == 3 && !personalQ){
+			console.log("Putt");
+			vm.functionInputDate();
 		}
 		/// THIS ELSE IS FOR: DOCUMENTING GIVEN RATINGS
 		else{
@@ -394,8 +401,7 @@ const vm = new Vue({
 		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		    else vm.readyScreen();
 		}
-	    }
-
+	    };
 	    div.appendChild(frwBtn);
 	},
 
@@ -446,7 +452,6 @@ const vm = new Vue({
 
 
 	contantInfoShareScreen: function () {
-
 	    let matchnumber = 0;
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
@@ -456,6 +461,7 @@ const vm = new Vue({
 	    shareQ.setAttribute("class", "dateFont");
 	    shareQ.style.fontSize = "300%";
 	    div.appendChild(shareQ);
+<<<<<<< HEAD
 
 
 	    let matchesDiv = document.createElement("div");
@@ -574,13 +580,43 @@ const vm = new Vue({
 
 
 	},
+	functionInputDate: function(){
+	    let div = document.getElementById("loginInfoDiv");
+	    div.innerHTML = "";
 
+	    let personalQuestionsText = document.createElement("h2");
+	    personalQuestionsText.innerHTML = "Personal Questions";
+	    personalQuestionsText.style.fontSize = "300%";
+	    div.appendChild(personalQuestionsText);
+	    
+	    let InputText = document.createElement("h3");
+	    InputText.innerHTML = "Any other input on the date?";
+	    InputText.setAttribute("class", "dateFont");
+	    InputText.style.fontSize = "200%";
+	    div.appendChild(InputText);
 
+	  
+	    let inputTextField = document.createElement("textarea");
+//	    inputTextField.setAttribute("type","textarea");
+	    inputTextField.setAttribute("id", "inputDate");
+	    inputTextField.setAttribute("rows", "4");
+	    inputTextField.setAttribute("cols", "50");
+	    //inputTextField.setAttribute("value", "female"); 
+	    div.appendChild(inputTextField);
+	    
 
-
-
-
-
+	    
+	    let frwBtn = document.createElement("img");
+	    frwBtn.setAttribute("src", "/img/loginButton.png");
+	    frwBtn.setAttribute("class", "forwardButton");
+	    frwBtn.onclick = function(){
+		var textField = document.getElementById("inputDate").value;
+		console.log(textField);
+		
+		vm.readyScreen();
+	    }
+	    div.appendChild(frwBtn);
+	}
     }
 });
 
