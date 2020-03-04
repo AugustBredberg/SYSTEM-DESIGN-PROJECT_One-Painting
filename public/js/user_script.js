@@ -71,13 +71,17 @@ const vm = new Vue({
 		    let eventCode = document.createElement("input");
 		    eventCode.setAttribute("class", "userLogin");
 		    eventCode.setAttribute("placeholder", "Eventcode");
+		    
 
 		    let frwBtn = document.createElement("img");
 		    frwBtn.setAttribute("src", "/img/loginButton.png");
 		    frwBtn.setAttribute("class", "forwardButton");
 		    frwBtn.onclick = function(){
-			vm.readyScreen();
-			//loadingDate();
+			socket.emit('getEventcode', function(serverEventCode){
+			    if(serverEventCode == eventCode.value){
+				vm.readyScreen();
+			    }
+			});
 		    };
 
 		    div.appendChild(eventCodeText);

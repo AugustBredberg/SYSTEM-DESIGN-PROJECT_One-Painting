@@ -17,6 +17,7 @@ var fs = require('fs');
 //==========================================================
 var userInformation = [];
 var daters = [];
+var eventcode = "";
 readInAllUsers = function(){
     var data = fs.readFileSync('log.txt', 'utf8');
     var logins = [];
@@ -137,6 +138,15 @@ io.on('connection', function(socket) {
         }
     });
 
+    socket.on('setEventcode', function(eventCodeGiven){
+	eventcode = eventCodeGiven;
+	console.log(eventcode);
+    });
+
+    socket.on('getEventcode', function(callback){
+	callback(eventcode);
+    });
+    
     socket.on('getDaters', function(callback){
 	callback(daters);
     });

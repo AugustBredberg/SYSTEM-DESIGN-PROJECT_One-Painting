@@ -33,7 +33,8 @@ const vm_menu = new Vue({
         createEvent: function(){
             let eventCode = document.getElementById("eventCode");
             document.getElementById("eventCode").innerHTML = "1D10T";
-
+	    
+	    socket.emit('setEventcode', "test");
         },
         startTimer: function(){
             var minute = Math.floor(this.i/60);
