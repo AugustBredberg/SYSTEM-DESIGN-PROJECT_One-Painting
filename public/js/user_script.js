@@ -22,14 +22,12 @@ socket.on('timerStartedUser', function(){
 })
 
 function updateUsers(){
-	socket.emit('getDaters', function(daters){
-		for(var i = 0; i<removedUsers.length; i++){
-			console.log(removedUsers[i].name);
-			console.log(daters);
-			daters.splice(daters.indexOf(removedUsers[i]), 1);
-		}
-		vm_users.users = daters;
-	});
+    socket.emit('getDaters', function(daters){
+	for(var i = 0; i<removedUsers.length; i++){
+	    daters.splice(daters.indexOf(removedUsers[i]), 1);
+	}
+	vm_users.users = daters;
+    });
 }
 
 
@@ -46,7 +44,7 @@ let matches = [
 const vm = new Vue({
     el: '#loginSection',
     data: {
-    waiting: true,
+	waiting: true,
 	user: "",
 	pass: "",
 	newAccount: {username:"", email:"", password:"", gender: "", agePref: "", desc: []}
@@ -93,39 +91,39 @@ const vm = new Vue({
 		    frwBtn.setAttribute("src", "/img/loginButton.png");
 		    frwBtn.setAttribute("class", "forwardButton");
 		    frwBtn.onclick = function(){
-<<<<<<< HEAD
+			
 			socket.emit('getEventcode', function(serverEventCode){
 			    console.log( eventCode.value);
 			    if(serverEventCode == eventCode.value &&  eventCode.value != ""){
+				console.log(currentUserObject);
+				socket.emit('appendToDaters', currentUserObject);
 				vm.readyScreen();
 			    }
 			});
-=======
-				console.log(eventCode.value);
+			/*	console.log(eventCode.value);
 				socket.emit('VerifyCode', eventCode.value);
 				socket.on('VerifyCodeReturn', function (success) {
-					if(success == true){
-						socket.emit('testget');
-						socket.on('testgetreturn', function(allDaters){
-						for(var i = 0; i<allDaters.length; i++){
-							console.log('comparing ' + allDaters[i].name + 'and ' + this.currentUser);
-							if(allDaters[i].name == this.currentUser) {
-								let b = i;
-								i = 1000;
-								console.log("HITTADE ANVÄNDAREN")
-								socket.emit('setDaterCode', b, eventCode.value);
-							}
-						}
+				if(success == true){
+				socket.emit('testget');
+				socket.on('testgetreturn', function(allDaters){
+				for(var i = 0; i<allDaters.length; i++){
+				console.log('comparing ' + allDaters[i].name + 'and ' + this.currentUser);
+				if(allDaters[i].name == this.currentUser) {
+				let b = i;
+				i = 1000;
+				console.log("HITTADE ANVÄNDAREN")
+				socket.emit('setDaterCode', b, eventCode.value);
+				}
+				}
 
-						vm.readyScreen();
-						})
-					}
-					else{
-						console.log('Invalid code');
-					}
-
+				vm.readyScreen();
 				})
->>>>>>> 155473997e6d1da5a42c9bf6d38fea888a48bbc9
+				}
+				else{
+				console.log('Invalid code');
+				}
+
+				})*/
 		    };
 
 		    div.appendChild(eventCodeText);
@@ -319,7 +317,7 @@ const vm = new Vue({
 		timerReady.style.fontSize = "400%";
 		div.appendChild(timerReady);
 	    })
-		
+	    
 	    
 
 	    let frwBtn = document.createElement("img");
@@ -332,15 +330,15 @@ const vm = new Vue({
 	    div.appendChild(frwBtn);
 	},
 	myLoop: function(i) {
-		setTimeout(function () {
-			socket.emit('timerStartedUser');
-			socket.on('userTimerReturn', function(startedBool) {
-				if(startedBool == true && vm.waiting) {
-					vm.waiting = false;
-					vm.loadingDate(3000); //Hårdkoda till 300 000 för 5 min
-				}})
-			if (--i) vm.myLoop(i);      //  decrement i and call myLoop again if i > 0
-		}, 3000)
+	    setTimeout(function () {
+		socket.emit('timerStartedUser');
+		socket.on('userTimerReturn', function(startedBool) {
+		    if(startedBool == true && vm.waiting) {
+			vm.waiting = false;
+			vm.loadingDate(3000); //Hårdkoda till 300 000 för 5 min
+		    }})
+		if (--i) vm.myLoop(i);      //  decrement i and call myLoop again if i > 0
+	    }, 3000)
 	},
 
 	
@@ -440,16 +438,12 @@ const vm = new Vue({
 		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		    else vm.readyScreen();
 		}
-		else if(!personalQ){
-		    console.log("Putt");
-		    vm.functionInputDate();
-		}
 		/// THIS ELSE IS FOR: DOCUMENTING GIVEN RATINGS
 		else{
 		    socket.emit('getDaters', function(allDaters){
-			console.log("HEEJ");
-			console.log(allDaters);
 			for(let i=0; i < allDaters.length; i++){
+			    console.log("halloj: " + currentUserId);
+			    console.log("braj: " + allDaters[i].id);
 			    if(allDaters[i].id == currentUserId){
 				let userTMP = allDaters[i];
 				allDaters[i].give.push(givenRatings);
@@ -460,8 +454,6 @@ const vm = new Vue({
 			    console.log(currentDateNumber);
 			    if(allDaters[i].id == currentUserObject.history[currentDateNumber-2] ){
 				allDaters[i].recieved.push(givenRatings);
-				console.log("AAAAHHHHGGAHGAHHGHHAHGHAHHGAHGH");
-				
 			    }
 			    
 			}
@@ -469,10 +461,7 @@ const vm = new Vue({
 			
 		    });
 
-		   
-		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
-		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
-		    else vm.readyScreen();
+		    vm.functionInputDate();
 		}
 	    };
 	    div.appendChild(frwBtn);
@@ -667,9 +656,9 @@ const vm = new Vue({
 	    InputText.style.fontSize = "200%";
 	    div.appendChild(InputText);
 
-	  
+	    
 	    let inputTextField = document.createElement("textarea");
-//	    inputTextField.setAttribute("type","textarea");
+	    //	    inputTextField.setAttribute("type","textarea");
 	    inputTextField.setAttribute("id", "inputDate");
 	    inputTextField.setAttribute("rows", "4");
 	    inputTextField.setAttribute("cols", "50");

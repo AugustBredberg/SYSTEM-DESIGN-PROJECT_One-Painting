@@ -19,15 +19,7 @@ let eventcode = "";
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
-        vm_users.users = [];
-        for(var i = 0; i<daters.length; i++ ){
-            if(daters[i].eventCode == eventcode){
-                vm_users.users.push(daters[i]);
-            }
-        }
-	    //vm_users.users = daters;
-
-
+	vm_users.users = daters;
     });
 }
 
@@ -48,14 +40,12 @@ const vm_menu = new Vue({
 	dateNum: 1,
 	i: 300,
 	timeout: 0,
-    eventOngoing: false,
-
-	
+	eventOngoing: false,
     },
     methods:{
         createEvent: function(){
             let eventCode = document.getElementById("eventCode");	    
-	   
+	    
 
 
             if(this.eventOngoing == false){
@@ -81,9 +71,9 @@ const vm_menu = new Vue({
 
 
             /*let stopEvent = document.getElementById("stopButton")
-            var stopButton = document.createElement("button");
-            stopButton.innerHTML = "Stop Event";
-            stopEvent.appendChild(stopButton);*/
+              var stopButton = document.createElement("button");
+              stopButton.innerHTML = "Stop Event";
+              stopEvent.appendChild(stopButton);*/
         },
         cancelEvent: function(){
             console.log('Event canceled')
@@ -129,7 +119,7 @@ const vm_menu = new Vue({
 	        this.users = vm_users.getUsers();
 	    }
 
-	    socket.emit('setDateSetup', users);
+	    socket.emit('setDateSetup', this.users);
 	    
 	    let SE_EditList = document.getElementById("wrapper");
 
@@ -210,6 +200,7 @@ const vm_menu = new Vue({
             let personalInfo = document.createElement("h1");
             personalInfo.appendChild(document.createTextNode("Personal Info:"));
 
+	    console.log(userID);
 	    let question1 = document.createElement("p");
             question1.appendChild(document.createTextNode("Answer to question 1: " + userID.desc[0]));
             let question2 = document.createElement("p");
@@ -638,6 +629,7 @@ function displayPairs(users, bool){
         SE_Userlist.appendChild(SE_UserInList);
 	
         SE_user1.onmouseover = function (){
+	    updateUsers();
             vm_menu.hoverOverUser(users[i][1]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }
@@ -651,6 +643,7 @@ function displayPairs(users, bool){
 
         }
         SE_user2.onmouseover = function (){
+	    updateUsers();
             vm_menu.hoverOverUser(users[i][2]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }

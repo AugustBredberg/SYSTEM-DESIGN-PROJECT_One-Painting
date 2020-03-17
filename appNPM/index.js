@@ -17,6 +17,7 @@ var fs = require('fs');
 //==========================================================
 //==========================================================
 var userInformation = [];
+var allDaters = [];
 var daters = [];
 var eventcode = "";
 readInAllUsers = function(){
@@ -39,13 +40,13 @@ readInAllUsers = function(){
 	    "give": [],
 	    "recieved": [],
 	    "history": [],
-            "eventcode": "null"
+            //"eventcode": "null"
 	};
-	daters.push(acc);
+	allDaters.push(acc);
     }
     /// Converting list of accounts to xlist of objects containing account info
     
-    daters.pop();
+    allDaters.pop();
     //console.log(logins);
     console.log(daters); 
     userInformation = logins;
@@ -94,7 +95,7 @@ Data.prototype.loginAttempt = function(usernameInput, passwordInput){
 	    if(currentAccount[password] == passwordInput){
 		console.log("USERNAME and PASSWORD correct!");
 		// returns true and the users ID
-		return [true, currentAccount[currentAccount.length-1]];
+		return [true, allDaters[i].id];
 	    }
 	}
     }
@@ -224,6 +225,7 @@ io.on('connection', function(socket) {
 
     socket.on('getDaters', function(callback){
 	callback(daters);
+	console.log(daters);
     });
 
     socket.on('setDaters', function(setter){
@@ -232,23 +234,30 @@ io.on('connection', function(socket) {
     });
 
     socket.on('setDateSetup', function(dateSetup){
-	console.log(dateSetup);
 	for(let i=0; i < dateSetup.length; i++){
 	    let currentGirlId = dateSetup[i][1].id;
 	    let currentBoyId = dateSetup[i][2].id;
+
+	    girlIndex = daters.map(function(d) { return d.id }).indexOf(currentGirlId);
+	    boyIndex = daters.map(function(d) { return d.id }).indexOf(currentBoyId);
 	    
-	    daters[currentGirlId-1].history.push(currentBoyId);
-	    daters[currentBoyId-1].history.push(currentGirlId);
+	    daters[girlIndex].history.push(currentBoyId);
+	    daters[boyIndex].history.push(currentGirlId);
 
 	    
 	}
 	console.log(daters);
     });
 
+    socket.on('appendToDaters',function(dater){
+	daters.push(dater);
+	console.log(daters);
+    });
+
     /// RETURNS USER OBJECT FROM USER ID
     socket.on('getUserFromId', function(userID, callback){
-	for(let i=0; i < daters.length; i++){
-	    if(daters[i].id == userID) callback(daters[i]);
+	for(let i=0; i < allDaters.length; i++){
+	    if(allDaters[i].id == userID) callback(allDaters[i]);
 	}
     });
     
