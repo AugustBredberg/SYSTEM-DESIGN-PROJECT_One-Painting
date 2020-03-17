@@ -1,6 +1,5 @@
 var socket = io();
 
-
 let tableList = [];
 let userList = [];
 let removedUsers = [];
@@ -113,9 +112,7 @@ const vm_menu = new Vue({
 
             blankArea("wrapper");
 	    
-	    if(listOfUsers != null){
-		this.users = listOfUsers;
-	    }else{
+	    if(listOfUsers == null){
 	        vm_users.getUsers();
 	    }
 	    socket.emit('setDateSetup', tableList);
@@ -139,7 +136,7 @@ const vm_menu = new Vue({
 	    SE_Time.appendChild(btnEdit);
 
 	    btnEdit.onclick = function(){
-		this.users = edit();
+		edit();
 	    }
 	    
             //let SE_sessionInfo = document.getElementById("wrapper");
@@ -345,15 +342,13 @@ const vm_users = new Vue({
 })
 
 function edit(changedUsers){
-    var users = tableList;
     var checkedUsers = [];
-    var usersTemp = users;
+    var usersTemp = JSON.parse(JSON.stringify(tableList));
     if(changedUsers != null){
 	for(var i = 0; i < changedUsers.length; i++){
-	    users[changedUsers[i][0]-1] = changedUsers[i];
+	    usersTemp[changedUsers[i][0]-1] = changedUsers[i];
 	}
     }
-    
     blankArea("wrapper");
     
     let wrapper = document.getElementById("wrapper");
@@ -366,7 +361,7 @@ function edit(changedUsers){
     SE_buttons.setAttribute("id","seTime");
     wrapper.appendChild(SE_buttons);
     
-    displayPairs(users, true);
+    displayPairs(usersTemp, true);
 
     let btnCompare = document.createElement("button");
     btnCompare.appendChild(document.createTextNode("Compare and change"));
@@ -382,30 +377,28 @@ function edit(changedUsers){
     SE_Left.appendChild(btnDiscard);
 
     btnCompare.onclick = function(){
-	let tableCounter = 1;
-	for(var i = 0; i <users.length; i++){
+	for(var i = 0; i <tableList.length; i++){
 	    let temp = document.getElementById("li"+i);
 	    if(temp.checked){
-		let tempList = [tableCounter,users[i][1],users[i][2]];
-		checkedUsers.push(tempList);
+		checkedUsers.push(JSON.parse(JSON.stringify(tableList[i])));
 	    }
-	    tableCounter++;
 	}
 	compareAndChange(checkedUsers);
     }
 
     btnSave.onclick = function(){
-	vm_menu.startEvent(users);
+	tableList = JSON.parse(JSON.stringify(usersTemp));
+	vm_menu.startEvent(tableList);
     }
 
     btnDiscard.onclick = function(){
-	vm_menu.startEvent(usersTemp);
+	vm_menu.startEvent(tableList);
     }
 }
 
 function compareAndChange(checkedUsers){
     blankArea("wrapper");
-
+    console.log(tableList);
     let wrapper = document.getElementById("wrapper");
     let SE_Left = document.createElement("div");
     SE_Left.setAttribute("id","left");
@@ -610,15 +603,14 @@ function compareAndChange(checkedUsers){
 	changeMan(checkedUsers);
 
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
+	console.log(tableList);
     }
 
     womanSelect.onchange = function(){
 	var temporary = checkedUsers[selectedTable][1];
 	checkedUsers[selectedTable][1] = checkedUsers[womanSelect.options[womanSelect.selectedIndex].value][1];
 	checkedUsers[womanSelect.options[womanSelect.selectedIndex].value][1] = temporary;
-
 	changeWoman(checkedUsers);
-
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
     
@@ -630,6 +622,7 @@ function compareAndChange(checkedUsers){
 	changeMan(checkedUsers);
 
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
+	console.log(tableList);
     }
 
     btnConfirm.onclick = function(){
@@ -775,7 +768,7 @@ function blankArea(id) {
     area.innerHTML = ""; 
 }
 
-function getTable(user){
+/*function getTable(user){
     var tableList = vm_users.getUsers();
     for(var i = 0; i < tableList.length; i++){
 	if(tableList[i][1].name === user || tableList[i][2].name === user){
@@ -783,7 +776,7 @@ function getTable(user){
 	}
     }
     return -1;
-}
+}*/
 
 function calculateMatch(table){
     let girl = table[1];
