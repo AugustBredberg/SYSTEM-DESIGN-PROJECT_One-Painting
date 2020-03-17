@@ -1,18 +1,18 @@
-
-
 var socket = io();
 
 
+let tableList = [];
+let userList = [];
+let removedUsers = [];
 
 let compareUser = null;
+
+let selectedTable = 0;
+let eventcode = "";
 
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
-let selectedTable = 0;
-let userList = [];
-let removedUsers = [];
-let eventcode = "";
 
 
 
@@ -116,10 +116,9 @@ const vm_menu = new Vue({
 	    if(listOfUsers != null){
 		this.users = listOfUsers;
 	    }else{
-	        this.users = vm_users.getUsers();
+	        vm_users.getUsers();
 	    }
-
-	    socket.emit('setDateSetup', this.users);
+	    socket.emit('setDateSetup', tableList);
 	    
 	    let SE_EditList = document.getElementById("wrapper");
 
@@ -131,7 +130,7 @@ const vm_menu = new Vue({
 	    SE_Time.setAttribute("id","seTime");
 	    SE_EditList.appendChild(SE_Time);
 	    
-	    displayPairs(this.users, false);
+	    displayPairs(tableList, false);
             
 	    
 	    
@@ -291,27 +290,62 @@ const vm_users = new Vue({
         },
 
         getUsers: function(){
-	    var userList = [];
-
-
 	    updateUsers();
 
 	    var j = 1;
-	    for(var i = 0; i < this.users.length; i++){
-		var temp = [j, this.users[i], this.users[i+1]];
-		userList.push(temp);
-		i++;
-		j++;
-	    }
-	    //vm_users.users = 
-            return userList;
-        }
+	    var girls = [];
+	    var boys = [];
 
+	    for(var i = 0; i < this.users.length; i++){
+		if(this.users[i].gender === 'female'){
+		    girls.push(this.users[i]);
+		}
+		else if(this.users[i].gender === 'male'){
+		    boys.push(this.users[i]);
+		}
+	    }
+
+	    while(boys.length != 0 && girls.length != 0){
+		var match = 0;
+		var boyIndex = 0;
+		for(var i = 0; i<boys.length; i++){
+		    tempMatch = calculateMatch([1, girls[0], boys[i]]);
+		    if(tempMatch > match){
+			boyIndex = i;
+			match = tempMatch;
+		    }
+		}
+
+		var temp = [j, girls[0], boys[boyIndex]];
+		tableList.push(temp);
+		j++;
+		boys.splice(boyIndex, 1);
+		girls.splice(0, 1);
+	    }
+
+	    if(boys.length != 0){
+		var str = "Couldn't find a match for:\n";
+		for(var i = 0; i<boys.length; i++){
+		    str += boys[i].name + "\n";
+		    this.users.splice(this.users.indexOf(boys[i]), 1);
+		}
+		alert(str);
+	    }
+	    
+	    if(girls.length != 0){
+		var str = "Couldn't find a match for:\n";
+		for(var i = 0; i<girls.length; i++){
+		    str += girls[i].name + "\n";
+		    this.users.splice(this.users.indexOf(girls[i]), 1);
+		}
+		alert(str);
+	    }
+        }
     }
 })
 
 function edit(changedUsers){
-    var users = vm_users.getUsers();
+    var users = tableList;
     var checkedUsers = [];
     var usersTemp = users;
     if(changedUsers != null){
