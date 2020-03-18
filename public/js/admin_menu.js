@@ -307,7 +307,8 @@ const vm_users = new Vue({
 		var boyIndex = 0;
 		for(var i = 0; i<boys.length; i++){
 		    tempMatch = calculateMatch([1, girls[0], boys[i]]);
-		    if(tempMatch > match){
+		    if(tempMatch > match &&
+		       getOccurrence(girls[0].history, boys[i].id) <= 1){
 			boyIndex = i;
 			match = tempMatch;
 		    }
@@ -805,4 +806,10 @@ function calculateMatch(table){
     }
 
     return 100 - Math.abs(total);
+}
+
+function getOccurrence(array, value) {
+    var count = 0;
+    array.forEach((v) => (v === value && count++));
+    return count;
 }
