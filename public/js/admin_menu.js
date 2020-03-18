@@ -1,12 +1,20 @@
-let compareUser = null;
-let SE_timer = document.createElement("p");
-let SE_userInfo = document.getElementById("wrapper");
-let SE_userInfoText = document.createElement("div");
-let selectedTable = 0;
+var socket = io();
+
+let tableList = [];
 let userList = [];
 let removedUsers = [];
 
-var socket = io();
+let compareUser = null;
+
+let selectedTable = 0;
+let eventcode = "";
+
+let SE_timer = document.createElement("p");
+let SE_userInfo = document.getElementById("wrapper");
+let SE_userInfoText = document.createElement("div");
+
+
+
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
@@ -16,26 +24,61 @@ function updateUsers(){
 
 setInterval(function() {
     updateUsers();
+
 }, 1000);
 
 
+
+
 const vm_menu = new Vue({
+
     el: '#eventInfo',
     data: {
-	users: [],
+	users: daters,
 	timer: {minutes:00, seconds:00},
 	dateNum: 1,
 	i: 300,
 	timeout: 0,
-	
+	eventOngoing: false,
     },
     methods:{
         createEvent: function(){
-            let eventCode = document.getElementById("eventCode");
-            document.getElementById("eventCode").innerHTML = "1D10T";
+            let eventCode = document.getElementById("eventCode");	    
 	    
-	    socket.emit('setEventcode', "test");
+
+
+            if(this.eventOngoing == false){
+                this.eventOngoing = true;
+                document.getElementById("eventButton").innerHTML = "Stop Event";
+                console.log('Eventcode generated');
+                let eventCode = document.getElementById("eventCode");
+                var code = vm_users.makeid(8)
+                eventcode = code;
+                document.getElementById("eventCode").innerHTML = code;
+                console.log('adding eventcode' + code);
+                socket.emit('EventStarted', code);
+		socket.emit('setEventcode', code);
+            }
+            else if(this.eventOngoing = true){
+                this.eventOngoing = false;
+                document.getElementById("eventButton").innerHTML = "Create Event";
+
+                console.log('removing eventcode' + document.getElementById("eventCode").innerHTML);
+                socket.emit('EventStopped', document.getElementById("eventCode").innerHTML);
+                document.getElementById("eventCode").innerHTML = "";
+            }
+
+
+            /*let stopEvent = document.getElementById("stopButton")
+              var stopButton = document.createElement("button");
+              stopButton.innerHTML = "Stop Event";
+              stopEvent.appendChild(stopButton);*/
         },
+        cancelEvent: function(){
+            console.log('Event canceled')
+            document.getElementById("eventCode").innerHTML = "";
+        },
+
         startTimer: function(){
             var minute = Math.floor(this.i/60);
 
@@ -50,6 +93,7 @@ const vm_menu = new Vue({
                 this.i = 0;
             }
             else {
+
 		if(this.i == 299){   //hard coded  
 		}
                 timeout = setTimeout(vm_menu.startTimer, 1000);
@@ -65,15 +109,13 @@ const vm_menu = new Vue({
 	},
 	
         startEvent: function(listOfUsers) {
+
             blankArea("wrapper");
 	    
-	    if(listOfUsers != null){
-		users = listOfUsers;
-	    }else{
-	        users = vm_users.getUsers();
+	    if(listOfUsers == null){
+	        vm_users.getUsers();
 	    }
-
-	    socket.emit('setDateSetup', users);
+	    socket.emit('setDateSetup', tableList);
 	    
 	    let SE_EditList = document.getElementById("wrapper");
 
@@ -85,7 +127,7 @@ const vm_menu = new Vue({
 	    SE_Time.setAttribute("id","seTime");
 	    SE_EditList.appendChild(SE_Time);
 	    
-	    displayPairs(users, false);
+	    displayPairs(tableList, false);
             
 	    
 	    
@@ -94,7 +136,7 @@ const vm_menu = new Vue({
 	    SE_Time.appendChild(btnEdit);
 
 	    btnEdit.onclick = function(){
-		users = edit();
+		edit();
 	    }
 	    
             //let SE_sessionInfo = document.getElementById("wrapper");
@@ -112,16 +154,20 @@ const vm_menu = new Vue({
             SE_Left.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
+
+                socket.emit('timerStarted');
                 vm_menu.startTimer();
             }
 	    SE_stopTimerButton.onclick = function() {
+
                 vm_menu.stopTimer();
             }
-            /*SE_sessionInfo.appendChild(SE_timer);*/
+
 	    SE_Left.appendChild(SE_dateNum);
             SE_Left.appendChild(SE_textBox);
             SE_Left.appendChild(SE_timerButton);
 	    SE_Left.appendChild(SE_stopTimerButton);
+
 
             SE_dateNum.setAttribute("class", "timer");
             SE_textBox.setAttribute("class", "timer");
@@ -135,6 +181,7 @@ const vm_menu = new Vue({
 
 
         },
+        
         hoverOverUser: function(userID){
             //console.log(userID);
 	    
@@ -149,6 +196,7 @@ const vm_menu = new Vue({
             let personalInfo = document.createElement("h1");
             personalInfo.appendChild(document.createTextNode("Personal Info:"));
 
+	    console.log(userID);
 	    let question1 = document.createElement("p");
             question1.appendChild(document.createTextNode("Answer to question 1: " + userID.desc[0]));
             let question2 = document.createElement("p");
@@ -222,39 +270,85 @@ const vm_users = new Vue({
 		btn.innerHTML = "Are you sure?";
 	    }
 	},
-        removeUser: function(userID){
+
+        removeUser: function(userID) {
+            console.log('removeuser');
             this.users.splice(this.users.indexOf(userID), 1);
-	    socket.emit('setDaters',this.users);
+            socket.emit('setDaters',this.users);
         },
+        makeid: function(length) {
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        },
+
         getUsers: function(){
-	    var userList = [];
-
 	    updateUsers();
-	    
-	    var j = 1;
-	    for(var i = 0; i < this.users.length; i++){
-		var temp = [j, this.users[i], this.users[i+1]];
-		userList.push(temp);
-		i++;
-		j++;
-	    }
-	    //vm_users.users = 
-            return userList;
-        }
 
+	    var j = 1;
+	    var girls = [];
+	    var boys = [];
+
+	    for(var i = 0; i < this.users.length; i++){
+		if(this.users[i].gender === 'female'){
+		    girls.push(this.users[i]);
+		}
+		else if(this.users[i].gender === 'male'){
+		    boys.push(this.users[i]);
+		}
+	    }
+
+	    while(boys.length != 0 && girls.length != 0){
+		var match = 0;
+		var boyIndex = 0;
+		for(var i = 0; i<boys.length; i++){
+		    tempMatch = calculateMatch([1, girls[0], boys[i]]);
+		    if(tempMatch > match){
+			boyIndex = i;
+			match = tempMatch;
+		    }
+		}
+
+		var temp = [j, girls[0], boys[boyIndex]];
+		tableList.push(temp);
+		j++;
+		boys.splice(boyIndex, 1);
+		girls.splice(0, 1);
+	    }
+
+	    if(boys.length != 0){
+		var str = "Couldn't find a match for:\n";
+		for(var i = 0; i<boys.length; i++){
+		    str += boys[i].name + "\n";
+		    this.users.splice(this.users.indexOf(boys[i]), 1);
+		}
+		alert(str);
+	    }
+	    
+	    if(girls.length != 0){
+		var str = "Couldn't find a match for:\n";
+		for(var i = 0; i<girls.length; i++){
+		    str += girls[i].name + "\n";
+		    this.users.splice(this.users.indexOf(girls[i]), 1);
+		}
+		alert(str);
+	    }
+        }
     }
 })
 
 function edit(changedUsers){
-    var users = vm_users.getUsers();
     var checkedUsers = [];
-    var usersTemp = users;
+    var usersTemp = JSON.parse(JSON.stringify(tableList));
     if(changedUsers != null){
 	for(var i = 0; i < changedUsers.length; i++){
-	    users[changedUsers[i][0]-1] = changedUsers[i];
+	    usersTemp[changedUsers[i][0]-1] = changedUsers[i];
 	}
     }
-    
     blankArea("wrapper");
     
     let wrapper = document.getElementById("wrapper");
@@ -267,7 +361,7 @@ function edit(changedUsers){
     SE_buttons.setAttribute("id","seTime");
     wrapper.appendChild(SE_buttons);
     
-    displayPairs(users, true);
+    displayPairs(usersTemp, true);
 
     let btnCompare = document.createElement("button");
     btnCompare.appendChild(document.createTextNode("Compare and change"));
@@ -283,30 +377,28 @@ function edit(changedUsers){
     SE_Left.appendChild(btnDiscard);
 
     btnCompare.onclick = function(){
-	let tableCounter = 1;
-	for(var i = 0; i <users.length; i++){
+	for(var i = 0; i <tableList.length; i++){
 	    let temp = document.getElementById("li"+i);
 	    if(temp.checked){
-		let tempList = [tableCounter,users[i][1],users[i][2]];
-		checkedUsers.push(tempList);
+		checkedUsers.push(JSON.parse(JSON.stringify(tableList[i])));
 	    }
-	    tableCounter++;
 	}
 	compareAndChange(checkedUsers);
     }
 
     btnSave.onclick = function(){
-	vm_menu.startEvent(users);
+	tableList = JSON.parse(JSON.stringify(usersTemp));
+	vm_menu.startEvent(tableList);
     }
 
     btnDiscard.onclick = function(){
-	vm_menu.startEvent(usersTemp);
+	vm_menu.startEvent(tableList);
     }
 }
 
 function compareAndChange(checkedUsers){
     blankArea("wrapper");
-
+    console.log(tableList);
     let wrapper = document.getElementById("wrapper");
     let SE_Left = document.createElement("div");
     SE_Left.setAttribute("id","left");
@@ -511,15 +603,14 @@ function compareAndChange(checkedUsers){
 	changeMan(checkedUsers);
 
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
+	console.log(tableList);
     }
 
     womanSelect.onchange = function(){
 	var temporary = checkedUsers[selectedTable][1];
 	checkedUsers[selectedTable][1] = checkedUsers[womanSelect.options[womanSelect.selectedIndex].value][1];
 	checkedUsers[womanSelect.options[womanSelect.selectedIndex].value][1] = temporary;
-
 	changeWoman(checkedUsers);
-
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
     }
     
@@ -531,6 +622,7 @@ function compareAndChange(checkedUsers){
 	changeMan(checkedUsers);
 
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
+	console.log(tableList);
     }
 
     btnConfirm.onclick = function(){
@@ -564,6 +656,7 @@ function displayPairs(users, bool){
         SE_Userlist.appendChild(SE_UserInList);
 	
         SE_user1.onmouseover = function (){
+	    updateUsers();
             vm_menu.hoverOverUser(users[i][1]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }
@@ -577,6 +670,7 @@ function displayPairs(users, bool){
 
         }
         SE_user2.onmouseover = function (){
+	    updateUsers();
             vm_menu.hoverOverUser(users[i][2]);
             document.getElementById('userInfoText').style.visibility = "visible";
         }
@@ -674,7 +768,7 @@ function blankArea(id) {
     area.innerHTML = ""; 
 }
 
-function getTable(user){
+/*function getTable(user){
     var tableList = vm_users.getUsers();
     for(var i = 0; i < tableList.length; i++){
 	if(tableList[i][1].name === user || tableList[i][2].name === user){
@@ -682,7 +776,7 @@ function getTable(user){
 	}
     }
     return -1;
-}
+}*/
 
 function calculateMatch(table){
     let girl = table[1];

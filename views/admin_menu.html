@@ -6,9 +6,11 @@
 
     <title>Admin</title>
 
+
     <script defer src="/socket.io/socket.io.js"></script>
+
     <script defer type="text/javascript" src="js/users.js"></script>
-    <script src="https://vuejs.org/js/vue.js"></script>
+    <script defer src="https://vuejs.org/js/vue.js"></script>
     <script defer src="js/admin_menu.js"></script>
     
 
@@ -22,6 +24,7 @@
 
       <div align="center" id="logo">
         <img src="/img/logotyp.svg" class="logo">
+
       </div>
       
       <div id="menu">
@@ -29,7 +32,7 @@
         <section id="eventInfo">
 	  <h2>Manage event</h2>
 	  <div>
-            <button type="submit" v-on:click="createEvent" alt="Create event" width="10">Create Event</button>
+            <button type="submit" id="eventButton" v-on:click="createEvent" alt="Create event" width="10">Create Event</button>
             <div id="eventCode" class="center"><p id="temp">temp</p></div>
             <button type="submit" v-on:click="startEvent(null)" alt="Start event" width="10">Continue</button>
 	  </div>
@@ -39,10 +42,13 @@
 	  <h2>Connected users:</h2>
 	  <div id="list">
             <div v-for="user in users">
+
               <p v-bind:id="user.id">
 		<button v-bind:id="button+user.id" v-on:click="confirmRemove(user)">X</button>
 		{{user.name}}
+        {{user.eventCode}}
               </p>
+
             </div>
 	  </div>
 
