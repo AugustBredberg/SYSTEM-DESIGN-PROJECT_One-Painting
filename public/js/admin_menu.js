@@ -36,8 +36,8 @@ const vm_menu = new Vue({
     data: {
 	users: daters,
 	timer: {minutes:00, seconds:00},
-	dateNum: 1,
-	i: 300,
+	dateNum: 0,
+	i: 12,
 	timeout: 0,
 	eventOngoing: false,
     },
@@ -80,6 +80,15 @@ const vm_menu = new Vue({
         },
 
         startTimer: function(){
+
+
+            if(this.i == 0){
+                this.i = 12;
+            }
+            if(this.i == 12){
+                this.dateNum += 1;
+            }
+            this.i--;
             var minute = Math.floor(this.i/60);
 
             var second = this.i % 60;
@@ -88,20 +97,32 @@ const vm_menu = new Vue({
             SE_timer.innerHTML = this.timer.minutes + ' : ' + this.timer.seconds;
 
 
-            this.i--;
+
             if(this.i == -1){
                 this.i = 0;
             }
             else {
 
-		if(this.i == 299){   //hard coded  
-		}
-                timeout = setTimeout(vm_menu.startTimer, 1000);
+		if(this.i != 0) {   //hard coded
+
+            timeout = setTimeout(vm_menu.startTimer, 1000);
+        }
+		else{
+            socket.emit('timerStopped');
+        }
             }
 
         },
 
 	stopTimer: function(){
+        socket.emit('timerStopped');
+        this.i = 0;
+        var minute = Math.floor(this.i/60);
+
+        var second = this.i % 60;
+        this.timer.minutes = minute;
+        this.timer.seconds = second;
+        SE_timer.innerHTML = this.timer.minutes + ' : ' + this.timer.seconds;
 	    clearTimeout(timeout);
 	    
 	    
@@ -156,11 +177,14 @@ const vm_menu = new Vue({
             SE_timerButton.onclick = function() {
 
                 socket.emit('timerStarted');
+
                 vm_menu.startTimer();
+                SE_dateNum.innerHTML = 'Date: ' + vm_menu.dateNum;
             }
 	    SE_stopTimerButton.onclick = function() {
 
                 vm_menu.stopTimer();
+
             }
 
 	    SE_Left.appendChild(SE_dateNum);

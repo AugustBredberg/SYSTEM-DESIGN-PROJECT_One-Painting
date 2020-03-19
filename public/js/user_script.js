@@ -335,7 +335,7 @@ const vm = new Vue({
 		socket.on('userTimerReturn', function(startedBool) {
 		    if(startedBool == true && vm.waiting) {
 			vm.waiting = false;
-			vm.loadingDate(3000); //Hårdkoda till 300 000 för 5 min
+			vm.loadingDate(12000); //Hårdkoda till 300 000 för 5 min
 		    }})
 		if (--i) vm.myLoop(i);      //  decrement i and call myLoop again if i > 0
 	    }, 3000)
@@ -504,6 +504,7 @@ const vm = new Vue({
 	    frwBtn.onclick = function () {
 		frwBtn.setAttribute("src", "/img/waitscreen.png");
 	    	console.log("kall1");
+	    	vm.waiting = true;
 	    	vm.myLoop(500);
 	    };
 
