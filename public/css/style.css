@@ -55,6 +55,17 @@ h1 {
     box-sizing:border-box;
 }
 
+.historyBtn{
+    display: block;
+    width: 23vw;
+    height: 10vw;
+    border-radius: 10%;
+    font-size: 3em;
+    color: white;
+    background-color: black;
+}
+
+
 .noButton{
     width: 23vw;
     height: 23vw;

@@ -6,6 +6,8 @@ var startScreen;
 var currentDateNumber = 1;
 var table = 3;
 let matcharr = [];
+var currUsr = "";
+var currPass = "";
 
 let accountQuestions = [
     "Are you adventurous?",
@@ -90,8 +92,12 @@ const vm = new Vue({
 		    let frwBtn = document.createElement("img");
 		    frwBtn.setAttribute("src", "/img/loginButton.png");
 		    frwBtn.setAttribute("class", "forwardButton");
+
+		    let hstBtn = document.createElement("button");
+		    hstBtn.setAttribute("class", "historyBtn");
+		    hstBtn.appendChild(document.createTextNode("History"));
+		    
 		    frwBtn.onclick = function(){
-			
 			socket.emit('getEventcode', function(serverEventCode){
 			    console.log( eventCode.value);
 			    if(serverEventCode == eventCode.value &&  eventCode.value != ""){
@@ -126,9 +132,17 @@ const vm = new Vue({
 				})*/
 		    };
 
+		    hstBtn.onclick = function(){
+			currUsr = usernameLogin;
+			currPass = passwordLogin;
+
+			history();
+		    }
+
 		    div.appendChild(eventCodeText);
 		    div.appendChild(eventCode);
 		    div.appendChild(frwBtn);
+		    div.appendChild(hstBtn);
 
 		}
 		else{
@@ -703,7 +717,23 @@ const vm = new Vue({
     }
 });
 
+function history(){
+    let div = document.getElementById("loginInfoDiv");
+    div.innerHTML = "";
 
+    let header = document.createElement("h2");
+    header.style.fontSize = "300%";
+    header.appendChild(document.createTextNode("Matches:"));
+    
+    let backBtn = document.createElement("button");
+    backBtn.setAttribute("class", "historyBtn");
+    backBtn.appendChild(document.createTextNode("Back"));
+    
+    backBtn.onclick = function(){
+	vm.login(currUsr, currPass);
+    }
 
-
+    div.appendChild(header);
+    div.appendChild(backBtn);
+}
 
