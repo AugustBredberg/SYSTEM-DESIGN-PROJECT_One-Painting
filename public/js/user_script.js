@@ -35,9 +35,7 @@ let currentUser = "";
 let currentUserId = 0;
 let currentUserObject = {};
 let matches = [
-    "Emma",
-    "Lisa",
-    "Sara"
+   
 ];
 
 
@@ -539,6 +537,18 @@ const vm = new Vue({
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
 
+	    socket.emit('getUserFromId', currentUserId, function(me){
+		currentUserObject = me;
+	    });
+	    console.log("######################################");
+	    console.log(currentUserObject.history);
+	    // Get dates and put into matches
+	    //for(let i=0; i < currentUserObject.history.length; i++){
+	    socket.emit('getUserFromId', parseInt(currentUserObject.history[0]), function(match){
+		matches.push(match.name);
+	    });
+	    //}
+
 	    let shareQ = document.createElement("p");
 	    shareQ.innerHTML = "Do you want to share your contact info with?";
 	    shareQ.setAttribute("class", "dateFont");
@@ -608,7 +618,7 @@ const vm = new Vue({
 	    successmatch.style.fontSize = "300%";
 	    div.appendChild(successmatch);
 
-
+	    
 
 	    let successmatchDiv = document.createElement("div");
 	    successmatchDiv.setAttribute("class", "successmatchDiv");
