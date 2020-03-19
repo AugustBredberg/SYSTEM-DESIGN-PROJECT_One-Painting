@@ -502,7 +502,26 @@ const vm = new Vue({
 	    frwBtn.setAttribute("class", "forwardButton");
 
 	    frwBtn.onclick = function () {
-		frwBtn.setAttribute("src", "/img/waitscreen.png");
+		//frwBtn.setAttribute("src", "/img/waitscreen.png");
+		div.removeChild(frwBtn);
+		let loadingDivHolder = document.createElement("div");
+		loadingDivHolder.setAttribute("class", "spinner");
+		let div1 = document.createElement("div");
+		let div2 = document.createElement("div");
+		let div3 = document.createElement("div");
+		let div4 = document.createElement("div");
+		let div5 = document.createElement("div");
+		div1.setAttribute("class", "rect1");
+		div2.setAttribute("class", "rect2");
+		div3.setAttribute("class", "rect3");
+		div4.setAttribute("class", "rect4");
+		div5.setAttribute("class", "rect5");
+		loadingDivHolder.appendChild(div1);
+		loadingDivHolder.appendChild(div2);
+		loadingDivHolder.appendChild(div3);
+		loadingDivHolder.appendChild(div4);
+		loadingDivHolder.appendChild(div5);
+		div.appendChild(loadingDivHolder);
 	    	console.log("kall1");
 	    	vm.myLoop(500);
 	    };
