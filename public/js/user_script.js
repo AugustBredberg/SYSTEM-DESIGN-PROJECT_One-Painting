@@ -330,6 +330,7 @@ const vm = new Vue({
 	    div.appendChild(frwBtn);
 	},
 	myLoop: function(i) {
+
 	    setTimeout(function () {
 		socket.emit('timerStartedUser');
 		socket.on('userTimerReturn', function(startedBool) {
@@ -504,6 +505,7 @@ const vm = new Vue({
 	    frwBtn.onclick = function () {
 		frwBtn.setAttribute("src", "/img/waitscreen.png");
 	    	console.log("kall1");
+			socket.emit('userReady');
 	    	vm.waiting = true;
 	    	vm.myLoop(500);
 	    };

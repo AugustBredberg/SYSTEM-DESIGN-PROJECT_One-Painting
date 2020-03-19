@@ -9,6 +9,7 @@ let compareUser = null;
 let selectedTable = 0;
 let eventcode = "";
 
+let SE_datersReady = document.createElement("p");
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
@@ -83,9 +84,11 @@ const vm_menu = new Vue({
 
 
             if(this.i == 0){
+                socket.emit('resetReadyUsers');
                 this.i = 12;
             }
             if(this.i == 12){
+                vm_menu.startEvent(null);
                 this.dateNum += 1;
             }
             this.i--;
@@ -163,6 +166,11 @@ const vm_menu = new Vue({
             //let SE_sessionInfo = document.getElementById("wrapper");
             let SE_dateNum = document.createElement("p");
             SE_dateNum.appendChild(document.createTextNode('Date: ' + this.dateNum));
+
+            SE_datersReady.appendChild(document.createTextNode('Daters ready: ' + '0' + ' / ' + vm_users.users.length))
+            vm_menu.myLoop(500);
+
+
             let SE_textBox = document.createElement("p");
             SE_textBox.appendChild(document.createTextNode('Coming up'));
             let SE_timerButton = document.createElement("button");
@@ -186,7 +194,7 @@ const vm_menu = new Vue({
                 vm_menu.stopTimer();
 
             }
-
+        SE_Left.appendChild(SE_datersReady);
 	    SE_Left.appendChild(SE_dateNum);
             SE_Left.appendChild(SE_textBox);
             SE_Left.appendChild(SE_timerButton);
@@ -205,7 +213,19 @@ const vm_menu = new Vue({
 
 
         },
-        
+
+        myLoop: function(i) {
+
+            setTimeout(function () {
+                socket.emit('checkReadyUsers')
+                socket.on('checkReadyUsersReturn', function(readyAmount){
+                    SE_datersReady.innerHTML = ('Daters ready: ' + readyAmount + ' / ' + vm_users.users.length);
+
+
+                })
+                if (--i) vm_menu.myLoop(i);      //  decrement i and call myLoop again if i > 0
+            }, 1000)
+        },
         hoverOverUser: function(userID){
             //console.log(userID);
 	    
