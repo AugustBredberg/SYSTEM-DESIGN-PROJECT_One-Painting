@@ -165,7 +165,7 @@ const vm = new Vue({
 		let match_header = document.createElement("h2");
 		match_header.style.fontSize = "300%";
 		match_header.style.border = "5px solid black";
-		match_header.style.padding = "5%";
+		match_header.style.padding = "2%";
 
 		if(i === 0){
 		    match_header.innerHTML = "Kim: 073272973, kim@gmail.com";
@@ -748,10 +748,10 @@ const vm = new Vue({
 
 	    
 	    let inputTextField = document.createElement("textarea");
-	    //	    inputTextField.setAttribute("type","textarea");
+	    inputTextField.setAttribute("type","textarea");
 	    inputTextField.setAttribute("id", "inputDate");
 	    inputTextField.setAttribute("rows", "4");
-	    inputTextField.setAttribute("cols", "50");
+	    inputTextField.setAttribute("cols", "20");
 	    //inputTextField.setAttribute("value", "female"); 
 	    div.appendChild(inputTextField);
 	    

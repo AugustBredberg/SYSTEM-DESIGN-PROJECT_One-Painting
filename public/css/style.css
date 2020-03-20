@@ -1,3 +1,14 @@
+@font-face {
+    font-family: dateFont;
+    src: url("/fonts/Royalacid.ttf") format("truetype");
+}
+
+.dateFont{
+    color: black;
+    font-size: 900%;
+    font-family: dateFont;
+}
+
 h1 {
     color: red;
 }
@@ -16,8 +27,6 @@ h1 {
 }
 
 .loginInfoDiv{
-    
-
     padding: 50px;
 }
 
@@ -289,16 +298,7 @@ grid-template-collumns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
 
 
 
-@font-face {
-    font-family: dateFont;
-    src: url("/fonts/Royalacid.ttf") format("truetype");
-}
 
-.dateFont{
-    color: black;
-    font-size: 900%;
-    font-family: dateFont;
-}
 
 #inputDate{
     width: 850;
