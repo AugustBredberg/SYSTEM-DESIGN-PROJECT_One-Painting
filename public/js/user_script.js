@@ -36,11 +36,7 @@ function updateUsers(){
 let currentUser = "";
 let currentUserId = 0;
 let currentUserObject = {};
-let matches = [
-    "Emma",
-    "Lisa",
-    "Sara"
-];
+let matches = [];
 
 
 const vm = new Vue({
@@ -268,6 +264,10 @@ const vm = new Vue({
 	    // TEXT INPUT USERNAME, PASSWORD ETC
 	    for(let inf in accountInfo){
 		let temp = document.createElement("input");
+		if(accountInfo[inf] === "Password" ||
+		   accountInfo[inf] === "Re-enter Password"){
+		    temp.setAttribute("type", "password");
+		}
 		temp.setAttribute("class", "userLogin");
 		temp.setAttribute("id", accountInfo[inf]);
 		temp.setAttribute("placeholder", accountInfo[inf]);
@@ -510,6 +510,14 @@ const vm = new Vue({
 			    
 			    /// set recieived rating to person im seeing
 			    console.log(currentDateNumber);
+			    socket.emit('getUserFromIdContact', currentUserId, function(me){
+				currentUserObject = me;
+			    });
+			    socket.emit('getUserFromId',
+					currentUserObject.history[currentUserObject.history.length -1],
+					function(me){
+					    matches.push(me);
+			    });
 			    if(allDaters[i].id == currentUserObject.history[currentDateNumber-2] ){
 				allDaters[i].recieved.push(givenRatings);
 			    }
@@ -596,6 +604,9 @@ const vm = new Vue({
 	    let matchnumber = 0;
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
+	 
+	    console.log("######################################");
+	    console.log(currentUserObject.history);
 
 	    let shareQ = document.createElement("p");
 	    shareQ.innerHTML = "Do you want to share your contact info with?";
@@ -608,13 +619,14 @@ const vm = new Vue({
 	    let matchesFunc = function () {
 		matchesDiv.innerHTML = "";
 		let match = document.createElement("h3");
-		match.innerHTML = matches[matchnumber];
+		match.innerHTML = matches[matchnumber].name;
 		match.style.fontSize = "250%";
 
 		matchnumber++;
 		matchesDiv.appendChild(match);
 	    }
 
+	    
 
 	    let heartbuttom = document.createElement("img");
 	    heartbuttom.setAttribute("src", "/img/heart.png");
@@ -622,11 +634,11 @@ const vm = new Vue({
 
 	    heartbuttom.onclick = function () {
 		if(matchnumber<3) {
-		    matcharr.push(matches[matchnumber-1]);
+		    matcharr.push(matches[matchnumber-1].name);
 		    matchesFunc();
 		}
 		else{
-		    matcharr.push(matches[matchnumber-1]);
+		    matcharr.push(matches[matchnumber-1].name);
 		    vm.successmatchscreen();
 		}
 	    };
@@ -649,7 +661,7 @@ const vm = new Vue({
 	    matchesFunc();
 	    div.appendChild(heartbuttom);
 	    div.appendChild(nobuttom);
-
+	    console.log("varför kommer vi hit innan??");
 
 	},
 
@@ -666,7 +678,7 @@ const vm = new Vue({
 	    successmatch.style.fontSize = "300%";
 	    div.appendChild(successmatch);
 
-
+	    
 
 	    let successmatchDiv = document.createElement("div");
 	    successmatchDiv.setAttribute("class", "successmatchDiv");
