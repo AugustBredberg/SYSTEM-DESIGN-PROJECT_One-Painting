@@ -206,6 +206,10 @@ const vm = new Vue({
 	    // TEXT INPUT USERNAME, PASSWORD ETC
 	    for(let inf in accountInfo){
 		let temp = document.createElement("input");
+		if(accountInfo[inf] === "Password" ||
+		   accountInfo[inf] === "Re-enter Password"){
+		    temp.setAttribute("type", "password");
+		}
 		temp.setAttribute("class", "userLogin");
 		temp.setAttribute("id", accountInfo[inf]);
 		temp.setAttribute("placeholder", accountInfo[inf]);
