@@ -1,3 +1,4 @@
+admin,admin,,,,,
 erik,pass,mail,male,18-25,6,6
 nils,piss,mail,male,18-25,5,6
 tor,puss,mail,male,18-25,0,0

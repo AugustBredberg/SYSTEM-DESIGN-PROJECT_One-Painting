@@ -72,6 +72,10 @@ const vm = new Vue({
 		    socket.emit('getUserFromId', success[1], function(usr){
 			currentUserObject = usr;
 		    });
+
+		    if(usernameLogin === "admin"){
+			document.location.href = "/admin_menu";
+		    }
 		    
 		    currentUser = usernameLogin;
 		    currentUserId = success[1];

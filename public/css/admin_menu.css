@@ -8,7 +8,33 @@ button {
   font-size: 16px;
   cursor: pointer;
 }
+.forwardButton{
+    width: 6vw;
+    height: 6vw;
+    background-image: url(/img/forwardButton);
+    //position:relative;
+    box-sizing:border-box;
+}
 
+.userLogin{
+    width: 24vw;
+    height: 4vh;
+    font-size: 250%;
+
+    border: 5px solid white; 
+    -webkit-box-shadow: 
+    inset 0 0 8px  rgba(0,0,0,0.1),
+    0 0 16px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+    inset 0 0 8px  rgba(0,0,0,0.1),
+    0 0 16px rgba(0,0,0,0.1); 
+    box-shadow: 
+    inset 0 0 8px  rgba(0,0,0,0.1),
+    0 0 16px rgba(0,0,0,0.1); 
+    padding: 15px;
+    background: rgba(255,255,255,1);
+    margin: 0 0 10px 0;
+}
 li {
     font-size: 24px;
 }
