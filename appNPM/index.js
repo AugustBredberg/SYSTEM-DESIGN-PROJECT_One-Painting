@@ -242,9 +242,7 @@ io.on('connection', function(socket) {
 	    boyIndex = daters.map(function(d) { return d.id }).indexOf(currentBoyId);
 	    
 	    daters[girlIndex].history.push(currentBoyId);
-	    daters[boyIndex].history.push(currentGirlId);
-
-	    
+	    daters[boyIndex].history.push(currentGirlId);	    
 	}
 	console.log(daters);
     });
@@ -257,7 +255,18 @@ io.on('connection', function(socket) {
     /// RETURNS USER OBJECT FROM USER ID
     socket.on('getUserFromId', function(userID, callback){
 	for(let i=0; i < allDaters.length; i++){
-	    if(allDaters[i].id == userID) callback(allDaters[i]);
+	    if(allDaters[i].id == userID){
+		callback(allDaters[i]);
+	    }
+	}
+    });
+
+    socket.on('getUserFromIdContact', function(userID, callback){
+	for(let i=0; i < daters.length; i++){
+	    console.log(daters);
+	    if(daters[i].id == userID){
+		callback(daters[i]);
+	    }
 	}
     });
     

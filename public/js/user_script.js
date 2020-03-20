@@ -34,9 +34,7 @@ function updateUsers(){
 let currentUser = "";
 let currentUserId = 0;
 let currentUserObject = {};
-let matches = [
-   
-];
+let matches = [];
 
 
 const vm = new Vue({
@@ -450,6 +448,14 @@ const vm = new Vue({
 			    
 			    /// set recieived rating to person im seeing
 			    console.log(currentDateNumber);
+			    socket.emit('getUserFromIdContact', currentUserId, function(me){
+				currentUserObject = me;
+			    });
+			    socket.emit('getUserFromId',
+					currentUserObject.history[currentUserObject.history.length -1],
+					function(me){
+					    matches.push(me);
+			    });
 			    if(allDaters[i].id == currentUserObject.history[currentDateNumber-2] ){
 				allDaters[i].recieved.push(givenRatings);
 			    }
@@ -536,18 +542,9 @@ const vm = new Vue({
 	    let matchnumber = 0;
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
-
-	    socket.emit('getUserFromId', currentUserId, function(me){
-		currentUserObject = me;
-	    });
+	 
 	    console.log("######################################");
 	    console.log(currentUserObject.history);
-	    // Get dates and put into matches
-	    //for(let i=0; i < currentUserObject.history.length; i++){
-	    socket.emit('getUserFromId', parseInt(currentUserObject.history[0]), function(match){
-		matches.push(match.name);
-	    });
-	    //}
 
 	    let shareQ = document.createElement("p");
 	    shareQ.innerHTML = "Do you want to share your contact info with?";
@@ -560,13 +557,14 @@ const vm = new Vue({
 	    let matchesFunc = function () {
 		matchesDiv.innerHTML = "";
 		let match = document.createElement("h3");
-		match.innerHTML = matches[matchnumber];
+		match.innerHTML = matches[matchnumber].name;
 		match.style.fontSize = "250%";
 
 		matchnumber++;
 		matchesDiv.appendChild(match);
 	    }
 
+	    
 
 	    let heartbuttom = document.createElement("img");
 	    heartbuttom.setAttribute("src", "/img/heart.png");
@@ -574,11 +572,11 @@ const vm = new Vue({
 
 	    heartbuttom.onclick = function () {
 		if(matchnumber<3) {
-		    matcharr.push(matches[matchnumber-1]);
+		    matcharr.push(matches[matchnumber-1].name);
 		    matchesFunc();
 		}
 		else{
-		    matcharr.push(matches[matchnumber-1]);
+		    matcharr.push(matches[matchnumber-1].name);
 		    vm.successmatchscreen();
 		}
 	    };
@@ -601,7 +599,7 @@ const vm = new Vue({
 	    matchesFunc();
 	    div.appendChild(heartbuttom);
 	    div.appendChild(nobuttom);
-
+	    console.log("varför kommer vi hit innan??");
 
 	},
 
