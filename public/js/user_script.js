@@ -136,7 +136,7 @@ const vm = new Vue({
 			currUsr = usernameLogin;
 			currPass = passwordLogin;
 
-			history();
+			vm.history();
 		    }
 
 		    div.appendChild(eventCodeText);
@@ -152,6 +152,46 @@ const vm = new Vue({
 
 
 	},
+	history: function(){
+	    let div = document.getElementById("loginInfoDiv");
+	    div.innerHTML = "";
+
+	    let header = document.createElement("h2");
+	    header.style.fontSize = "300%";
+	    header.appendChild(document.createTextNode("Matches:"));
+
+	    let matchDiv = document.createElement("div");
+	    for(let i = 0; i<3; i++){
+		let match_header = document.createElement("h2");
+		match_header.style.fontSize = "300%";
+		match_header.style.border = "5px solid black";
+		match_header.style.padding = "5%";
+
+		if(i === 0){
+		    match_header.innerHTML = "Kim: 073272973, kim@gmail.com";
+		}
+		else if(i === 1){
+		    match_header.innerHTML = "Sam: 073723973, sam@gmail.com";
+		}else{
+		    match_header.innerHTML = "Alexis: 073712924, alexis@gmail.com";
+		}
+		matchDiv.appendChild(match_header);
+	    }
+		
+	    let backBtn = document.createElement("button");
+	    backBtn.setAttribute("class", "historyBtn");
+	    backBtn.appendChild(document.createTextNode("Back"));
+	    
+	    backBtn.onclick = function(){
+		vm.login(currUsr, currPass);
+	    }
+
+	    div.appendChild(header);
+	    div.appendChild(matchDiv);
+	    div.appendChild(backBtn);
+	    
+	},
+	
 	createAccount: function(){
 	    
 	    
@@ -717,23 +757,5 @@ const vm = new Vue({
     }
 });
 
-function history(){
-    let div = document.getElementById("loginInfoDiv");
-    div.innerHTML = "";
 
-    let header = document.createElement("h2");
-    header.style.fontSize = "300%";
-    header.appendChild(document.createTextNode("Matches:"));
-    
-    let backBtn = document.createElement("button");
-    backBtn.setAttribute("class", "historyBtn");
-    backBtn.appendChild(document.createTextNode("Back"));
-    
-    backBtn.onclick = function(){
-	vm.login(currUsr, currPass);
-    }
-
-    div.appendChild(header);
-    div.appendChild(backBtn);
-}
 
