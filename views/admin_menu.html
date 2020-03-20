@@ -5,7 +5,8 @@
     <meta charset="utf-8">
 
     <title>Admin</title>
-
+    <meta name="description" content="Dating app">
+    <meta name="author" content="One Painting">
 
     <script defer src="/socket.io/socket.io.js"></script>
 
@@ -20,7 +21,7 @@
   </head>
 
   <body>
-    <div id ="wrapper">
+    <div id="wrapper">
 
       <div align="center" id="logo">
         <img src="/img/logotyp.svg" class="logo">
@@ -46,7 +47,7 @@
               <p v-bind:id="user.id">
 		<button v-bind:id="button+user.id" v-on:click="confirmRemove(user)">X</button>
 		{{user.name}}
-        {{user.eventCode}}
+		{{user.eventCode}}
               </p>
 
             </div>
@@ -57,6 +58,4 @@
       </div>
     </div>
   </body>
-  <footer>
-
-  </footer>
+</html>

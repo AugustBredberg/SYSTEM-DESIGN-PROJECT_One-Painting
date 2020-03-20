@@ -25,7 +25,6 @@ function updateUsers(){
 
 setInterval(function() {
     updateUsers();
-
 }, 1000);
 
 
@@ -37,7 +36,7 @@ const vm_menu = new Vue({
     data: {
 	users: daters,
 	timer: {minutes:00, seconds:00},
-	dateNum: 0,
+	dateNum: 1,
 	i: 12,
 	timeout: 0,
 	eventOngoing: false,
@@ -46,17 +45,13 @@ const vm_menu = new Vue({
         createEvent: function(){
             let eventCode = document.getElementById("eventCode");	    
 	    
-
-
             if(this.eventOngoing == false){
                 this.eventOngoing = true;
                 document.getElementById("eventButton").innerHTML = "Stop Event";
-                console.log('Eventcode generated');
                 let eventCode = document.getElementById("eventCode");
                 var code = vm_users.makeid(8)
                 eventcode = code;
                 document.getElementById("eventCode").innerHTML = code;
-                console.log('adding eventcode' + code);
                 socket.emit('EventStarted', code);
 		socket.emit('setEventcode', code);
             }
@@ -64,19 +59,11 @@ const vm_menu = new Vue({
                 this.eventOngoing = false;
                 document.getElementById("eventButton").innerHTML = "Create Event";
 
-                console.log('removing eventcode' + document.getElementById("eventCode").innerHTML);
                 socket.emit('EventStopped', document.getElementById("eventCode").innerHTML);
                 document.getElementById("eventCode").innerHTML = "";
             }
-
-
-            /*let stopEvent = document.getElementById("stopButton")
-              var stopButton = document.createElement("button");
-              stopButton.innerHTML = "Stop Event";
-              stopEvent.appendChild(stopButton);*/
         },
         cancelEvent: function(){
-            console.log('Event canceled')
             document.getElementById("eventCode").innerHTML = "";
         },
 
@@ -84,12 +71,10 @@ const vm_menu = new Vue({
 
 
             if(this.i == 0){
-                socket.emit('resetReadyUsers');
+                
                 this.i = 12;
-            }
-            if(this.i == 12){
-                vm_menu.startEvent(null);
-                this.dateNum += 1;
+		this.dateNum += 1;
+		vm_menu.startEvent(null);
             }
             this.i--;
             var minute = Math.floor(this.i/60);
@@ -108,24 +93,25 @@ const vm_menu = new Vue({
 
 		if(this.i != 0) {   //hard coded
 
-            timeout = setTimeout(vm_menu.startTimer, 1000);
-        }
+		    timeout = setTimeout(vm_menu.startTimer, 1000);
+		}
 		else{
-            socket.emit('timerStopped');
-        }
+		    socket.emit('timerStopped');
+		    socket.emit('resetReadyUsers');
+		}
             }
 
         },
 
 	stopTimer: function(){
-        socket.emit('timerStopped');
-        this.i = 0;
-        var minute = Math.floor(this.i/60);
+            socket.emit('timerStopped');
+            this.i = 0;
+            var minute = Math.floor(this.i/60);
 
-        var second = this.i % 60;
-        this.timer.minutes = minute;
-        this.timer.seconds = second;
-        SE_timer.innerHTML = this.timer.minutes + ' : ' + this.timer.seconds;
+            var second = this.i % 60;
+            this.timer.minutes = minute;
+            this.timer.seconds = second;
+            SE_timer.innerHTML = this.timer.minutes + ' : ' + this.timer.seconds;
 	    clearTimeout(timeout);
 	    
 	    
@@ -140,6 +126,8 @@ const vm_menu = new Vue({
 	        vm_users.getUsers();
 	    }
 	    socket.emit('setDateSetup', tableList);
+
+	    console.log(tableList[0][1].history);
 	    
 	    let SE_EditList = document.getElementById("wrapper");
 
@@ -194,7 +182,7 @@ const vm_menu = new Vue({
                 vm_menu.stopTimer();
 
             }
-        SE_Left.appendChild(SE_datersReady);
+            SE_Left.appendChild(SE_datersReady);
 	    SE_Left.appendChild(SE_dateNum);
             SE_Left.appendChild(SE_textBox);
             SE_Left.appendChild(SE_timerButton);
@@ -227,20 +215,12 @@ const vm_menu = new Vue({
             }, 1000)
         },
         hoverOverUser: function(userID){
-            //console.log(userID);
-	    
-            //document.getElementById("toHideOnViewNum").style.visibility = "hidden";
-            //document.getElementById("toHideOnViewText").style.visibility = "hidden";
-            //document.getElementById("toHideOnViewtimer").style.visibility = "hidden";
-            //document.getElementById("toHideOnViewButton").style.visibility = "hidden";
-
             SE_userInfoText.setAttribute("class", "userInfo");
             SE_userInfoText.setAttribute("id", "userInfoText");
 
             let personalInfo = document.createElement("h1");
             personalInfo.appendChild(document.createTextNode("Personal Info:"));
 
-	    console.log(userID);
 	    let question1 = document.createElement("p");
             question1.appendChild(document.createTextNode("Answer to question 1: " + userID.desc[0]));
             let question2 = document.createElement("p");
@@ -268,13 +248,12 @@ const vm_menu = new Vue({
             let given3 = document.createElement("p");
             given3.appendChild(document.createTextNode("Answer to question 3: " + userID.recieved[2]));
 
-        let otherInput = document.createElement("h1");
+            let otherInput = document.createElement("h1");
             otherInput.appendChild(document.createTextNode("Other input:"))
 
-        let other1 = document.createElement("p");
-            console.log(userID.other + ' Is the text of' + userID.name);
-            other1.appendChild(document.createTextNode(userID.other));
-	    //SE_userInfoText.appendChild(document.createTextNode(userID)); //Denna ska bort
+            let other1 = document.createElement("p");
+            other1.innerHTML = userID.other;
+	    
             SE_userInfoText.appendChild(personalInfo);
             SE_userInfoText.appendChild(question1);
             SE_userInfoText.appendChild(question2);
@@ -324,7 +303,6 @@ const vm_users = new Vue({
 	},
 
         removeUser: function(userID) {
-            console.log('removeuser');
             this.users.splice(this.users.indexOf(userID), 1);
             socket.emit('setDaters',this.users);
         },
@@ -340,7 +318,8 @@ const vm_users = new Vue({
 
         getUsers: function(){
 	    updateUsers();
-
+	    tableList = [];
+	    
 	    var j = 1;
 	    var girls = [];
 	    var boys = [];
@@ -360,7 +339,7 @@ const vm_users = new Vue({
 		for(var i = 0; i<boys.length; i++){
 		    tempMatch = calculateMatch([1, girls[0], boys[i]]);
 		    if(tempMatch > match &&
-		       getOccurrence(girls[0].history, boys[i].id) <= 1){
+		       getOccurrence(girls[0].history, boys[i].id) < 1){
 			boyIndex = i;
 			match = tempMatch;
 		    }
@@ -451,7 +430,6 @@ function edit(changedUsers){
 
 function compareAndChange(checkedUsers){
     blankArea("wrapper");
-    console.log(tableList);
     let wrapper = document.getElementById("wrapper");
     let SE_Left = document.createElement("div");
     SE_Left.setAttribute("id","left");
@@ -656,7 +634,6 @@ function compareAndChange(checkedUsers){
 	changeMan(checkedUsers);
 
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
-	console.log(tableList);
     }
 
     womanSelect.onchange = function(){
@@ -675,7 +652,6 @@ function compareAndChange(checkedUsers){
 	changeMan(checkedUsers);
 
 	matchPrecent.innerHTML = "This table is a " + calculateMatch(checkedUsers[selectedTable]) + "% match";
-	console.log(tableList);
     }
 
     btnConfirm.onclick = function(){
@@ -716,10 +692,6 @@ function displayPairs(users, bool){
         SE_user1.onmouseleave = function (){
             SE_userInfoText.innerHTML = "";
             document.getElementById('userInfoText').style.visibility = "hidden";
-            //document.getElementById("toHideOnViewNum").style.visibility = "visible";
-            //document.getElementById("toHideOnViewText").style.visibility = "visible";
-            //document.getElementById("toHideOnViewtimer").style.visibility = "visible";
-            //document.getElementById("toHideOnViewButton").style.visibility = "visible";
 
         }
         SE_user2.onmouseover = function (){
@@ -730,10 +702,6 @@ function displayPairs(users, bool){
         SE_user2.onmouseleave = function (){
             SE_userInfoText.innerHTML = "";
             document.getElementById('userInfoText').style.visibility = "hidden";
-            //document.getElementById("toHideOnViewNum").style.visibility = "visible";
-            //document.getElementById("toHideOnViewText").style.visibility = "visible";
-            //document.getElementById("toHideOnViewtimer").style.visibility = "visible";
-            //document.getElementById("toHideOnViewButton").style.visibility = "visible";
         }
 
     }
@@ -820,16 +788,6 @@ function blankArea(id) {
     let area = document.getElementById(id);
     area.innerHTML = ""; 
 }
-
-/*function getTable(user){
-    var tableList = vm_users.getUsers();
-    for(var i = 0; i < tableList.length; i++){
-	if(tableList[i][1].name === user || tableList[i][2].name === user){
-	    return tableList[i][0];
-	}
-    }
-    return -1;
-}*/
 
 function calculateMatch(table){
     let girl = table[1];

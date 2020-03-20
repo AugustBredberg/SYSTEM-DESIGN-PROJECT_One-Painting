@@ -4,7 +4,7 @@ var socket = io();
 
 var startScreen;
 var currentDateNumber = 1;
-var table = 3;
+var tableNr = Math.floor(Math.random() * 10) + 1;
 let matcharr = [];
 var currUsr = "";
 var currPass = "";
@@ -15,13 +15,10 @@ let accountQuestions = [
 ];
 
 let dateQuestions = [
-    "Did date was good for both?",
-    "Maybe not?",
-    "Ugly?"
+    "Did you have things in common with your date?",
+    "How fun was your date?",
+    "How was the overall experience?"
 ];
-socket.on('timerStartedUser', function(){
-    console.log("Testelitest");
-})
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
@@ -49,16 +46,11 @@ const vm = new Vue({
     },
 
     methods: {
-	//login: function(){loginClicked();},
-	//createAccount: function(){createAccountClicked();},
         markDone: function() {
 
 	},
 	
 	login: function(usernameLogin, passwordLogin){
-	    console.log("clicklogin");
-	    console.log(usernameLogin);
-	    console.log(passwordLogin);
 	    socket.emit('loginAttempt', usernameLogin, passwordLogin);
 	    socket.on('returnLoginSuccess', function(success){
 		/// SAVING USERNAME OF USER CURRENTLY LOGGED IN
@@ -75,7 +67,6 @@ const vm = new Vue({
 		    
 		    currentUser = usernameLogin;
 		    currentUserId = success[1];
-		    console.log("userID: " + currentUserId);
 		    let div = document.getElementById("loginInfoDiv");
 		    div.innerHTML = "";
 
@@ -99,37 +90,11 @@ const vm = new Vue({
 		    
 		    frwBtn.onclick = function(){
 			socket.emit('getEventcode', function(serverEventCode){
-			    console.log( eventCode.value);
 			    if(serverEventCode == eventCode.value &&  eventCode.value != ""){
-				console.log(currentUserObject);
 				socket.emit('appendToDaters', currentUserObject);
 				vm.readyScreen();
 			    }
 			});
-			/*	console.log(eventCode.value);
-				socket.emit('VerifyCode', eventCode.value);
-				socket.on('VerifyCodeReturn', function (success) {
-				if(success == true){
-				socket.emit('testget');
-				socket.on('testgetreturn', function(allDaters){
-				for(var i = 0; i<allDaters.length; i++){
-				console.log('comparing ' + allDaters[i].name + 'and ' + this.currentUser);
-				if(allDaters[i].name == this.currentUser) {
-				let b = i;
-				i = 1000;
-				console.log("HITTADE ANVÄNDAREN")
-				socket.emit('setDaterCode', b, eventCode.value);
-				}
-				}
-
-				vm.readyScreen();
-				})
-				}
-				else{
-				console.log('Invalid code');
-				}
-
-				})*/
 		    };
 
 		    hstBtn.onclick = function(){
@@ -146,7 +111,7 @@ const vm = new Vue({
 
 		}
 		else{
-		    console.log('Invalid username or password');
+		    alert('Invalid username or password');
 		}
 	    })
 
@@ -357,7 +322,6 @@ const vm = new Vue({
 	    let personalQuestionsText = document.createElement("p");
 	    personalQuestionsText.innerHTML = "Date: " + currentDateNumber;
 	    //currentDateNumber += 1;
-	    console.log(currentDateNumber);
 	    personalQuestionsText.setAttribute("class", "dateFont");
 	    personalQuestionsText.style.fontSize = "900%";
 	    div.appendChild(personalQuestionsText);
@@ -367,10 +331,8 @@ const vm = new Vue({
 	    ready.setAttribute("class", "dateFont");
 	    ready.style.fontSize = "400%";
 	    div.appendChild(ready);
-	    console.log('Här vare sockets');
 	    
 	    socket.on('timerStartedUser', function(){
-		console.log("hejehejehjeheje");
 		let timerReady = document.createElement("p");
 		timerReady.innerHTML = "Timer Started :)";
 		timerReady.setAttribute("class", "dateFont");
@@ -406,12 +368,7 @@ const vm = new Vue({
 	personalQuestions: function(questions, personalQ){
 
 	    let currentQuestion = 0;
-	    /*let questions = [
-	      "Are you adventurous?",
-	      "Do you prefer a night on the sofa over a night out?"
-	      ];*/
-	    
-	    console.log("click");
+
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
 
@@ -450,7 +407,6 @@ const vm = new Vue({
 		box.onclick = function(){
 		    heartAnswerInt = 0;
 		    for(let k=0; k<10; k++){
-			console.log("plong");
 			let current = document.getElementById(k);
 			if(parseInt(this.id) >= k){
 			    current.style.backgroundColor = "red";
@@ -466,7 +422,7 @@ const vm = new Vue({
 	    div.appendChild(boxesDiv);
 	    let personalDesc = [];
 	    let givenRatings = [];
-	    console.log("hej");
+
 	    let frwBtn = document.createElement("img");
 	    frwBtn.setAttribute("src", "/img/loginButton.png");
 	    frwBtn.setAttribute("class", "forwardButton");
@@ -496,7 +452,6 @@ const vm = new Vue({
 				vm.newAccount.desc
 			       );
 		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN
-			console.log(currentDateNumber + '   isCurrent date');
 			if(currentDateNumber == 0){
 				currentDateNumber = 1;
 				location.reload();
@@ -508,8 +463,6 @@ const vm = new Vue({
 		else{
 		    socket.emit('getDaters', function(allDaters){
 			for(let i=0; i < allDaters.length; i++){
-			    console.log("halloj: " + currentUserId);
-			    console.log("braj: " + allDaters[i].id);
 			    if(allDaters[i].id == currentUserId){
 				let userTMP = allDaters[i];
 				allDaters[i].give.push(givenRatings);
@@ -517,11 +470,10 @@ const vm = new Vue({
 
 			    
 			    /// set recieived rating to person im seeing
-			    console.log(currentDateNumber);
 			    socket.emit('getUserFromIdContact', currentUserId, function(me){
 				currentUserObject = me;
 			    });
-			    socket.emit('getUserFromId',
+			    socket.emit('getUserFromIdContact',
 					currentUserObject.history[currentUserObject.history.length -1],
 					function(me){
 					    matches.push(me);
@@ -549,7 +501,7 @@ const vm = new Vue({
 	    tableDiv.setAttribute("class", "tableDiv");
 
 	    for(let i = 1; i<11; i++) {
-		if(table == i){
+		if(tableNr == i){
 		    let choosentable = document.createElement("div");
 		    choosentable.setAttribute("class", "choosentable");
 		    choosentable.setAttribute("id", i);
@@ -596,8 +548,7 @@ const vm = new Vue({
 		loadingDivHolder.appendChild(div4);
 		loadingDivHolder.appendChild(div5);
 		div.appendChild(loadingDivHolder);
-	    	console.log("kall1");
-			socket.emit('userReady');
+		socket.emit('userReady');
 	    	vm.waiting = true;
 	    	vm.myLoop(500);
 	    };
@@ -613,9 +564,6 @@ const vm = new Vue({
 	    let matchnumber = 0;
 	    let div = document.getElementById("loginInfoDiv");
 	    div.innerHTML = "";
-	 
-	    console.log("######################################");
-	    console.log(currentUserObject.history);
 
 	    let shareQ = document.createElement("p");
 	    shareQ.innerHTML = "Do you want to share your contact info with?";
@@ -670,8 +618,6 @@ const vm = new Vue({
 	    matchesFunc();
 	    div.appendChild(heartbuttom);
 	    div.appendChild(nobuttom);
-	    console.log("varför kommer vi hit innan??");
-
 	},
 
 
@@ -693,9 +639,6 @@ const vm = new Vue({
 	    successmatchDiv.setAttribute("class", "successmatchDiv");
 
 	    for(nummatch; nummatch<numberofmatches; nummatch++){
-
-		console.log("hej")
-		console.log("matcharr[nummatch]")
 		let match = document.createElement("div");
 		match.setAttribute("class", "match");
 		let text = document.createTextNode(matcharr[nummatch]);
@@ -761,8 +704,7 @@ const vm = new Vue({
 	    inputTextField.setAttribute("type","textarea");
 	    inputTextField.setAttribute("id", "inputDate");
 	    inputTextField.setAttribute("rows", "4");
-	    inputTextField.setAttribute("cols", "20");
-	    //inputTextField.setAttribute("value", "female"); 
+	    inputTextField.setAttribute("cols", "20"); 
 	    div.appendChild(inputTextField);
 
 	    
@@ -775,17 +717,13 @@ const vm = new Vue({
 		var textField = document.getElementById("inputDate").value;
 			socket.emit('getDaters', function(allDaters) {
 				for (let i = 0; i < allDaters.length; i++) {
-					console.log("halloj: " + currentUserId);
-					console.log("braj: " + allDaters[i].id);
 					if (allDaters[i].id == currentUserId) {
-						let userTMP = allDaters[i];
-						allDaters[i].other = document.getElementById("inputDate").value;;
-						console.log(allDaters[i].name + 'Answered' + allDaters[i].other);
-						socket.emit('setDaters', allDaters);
+					    let userTMP = allDaters[i];
+					    allDaters[i].other = inputTextField.value;
+					    socket.emit('setDaters', allDaters);
 					}
 				}
 			})
-		console.log(textField);
 
 		if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		else vm.readyScreen();

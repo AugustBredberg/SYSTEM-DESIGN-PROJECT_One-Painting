@@ -10,9 +10,6 @@ var io = require('socket.io').listen(http);
 var eventcodehtml = "test";
 var fs = require('fs');
 
-//const myModule = require('./log.js');
-//let userArray = myModule.users(); // val is "Hello"
-
 /// ARRAY WITH ALL ACCOUNTS EVER CREATED
 //==========================================================
 //==========================================================
@@ -41,21 +38,17 @@ readInAllUsers = function(){
 	    "give": [],
 	    "recieved": [],
 	    "history": [],
-        "other": ""
-            //"eventcode": "null"
+            "other": ""
 	};
 	allDaters.push(acc);
     }
     /// Converting list of accounts to xlist of objects containing account info
     
     allDaters.pop();
-    //console.log(logins);
-    console.log(daters); 
     userInformation = logins;
     return logins;
 };
 readInAllUsers();
-console.log(userInformation.length);
 //==========================================================
 //==========================================================
 
@@ -88,15 +81,12 @@ const data = new Data();
 
 /// VERIFIES LOGIN ATTEMPT (WAS USERNAME AND PASSWORD CORRECT)
 Data.prototype.loginAttempt = function(usernameInput, passwordInput){
-    console.log('Login attempt');
     let username = 0;
     let password = 1;
     for(var i=0; i < userInformation.length; i++){
 	let currentAccount = userInformation[i];
 	if(currentAccount[username] == usernameInput){
 	    if(currentAccount[password] == passwordInput){
-		console.log("USERNAME and PASSWORD correct!");
-		// returns true and the users ID
 		return [true, allDaters[i].id];
 	    }
 	}
@@ -107,17 +97,13 @@ Data.prototype.loginAttempt = function(usernameInput, passwordInput){
 
 /// WHEN CREATE ACCOUNT IS CLICKED
 Data.prototype.accountCreated = function(username, email, password, gender, agePref, desc){
-    //userArray.push(username);
-    
     fs.appendFileSync('log.txt',username +","
 		      +password+","
 		      +email+","
 		      +gender+","
 		      +agePref+","
 		      +desc+"\n", 'utf8', function(error){
-			  if(error) throw error; // hantera fel just in case
-			  else console.log("Success when writing username!");
-			  
+			  if(error) throw error;
 		      });
 };
 
@@ -131,13 +117,13 @@ io.on('connection', function(socket) {
     });
 
     socket.on('connectUserToCode', function (user, code) {
-        console.log('Connecting ' + user + 'to code: ' + code);
+        //console.log('Connecting ' + user + 'to code: ' + code);
     })
 
     socket.on('loginAttempt', function(username, password){
 	let success = Data.prototype.loginAttempt(username, password);
         if(success[0]){
-            console.log('successful login')
+            console.log('Successful login')
             socket.emit('returnLoginSuccess', success)
         }
         else{
@@ -148,7 +134,6 @@ io.on('connection', function(socket) {
 
     socket.on('setEventcode', function(eventCodeGiven){
 	eventcode = eventCodeGiven;
-	console.log(eventcode);
     });
 
     socket.on('getEventcode', function(callback){
@@ -161,20 +146,16 @@ io.on('connection', function(socket) {
 
     })
     socket.on('timerStopped', function() {
-        console.log('Timer stopepd');
+        console.log('Timer stopped');
         timerStarted = 0;
 
     })
     socket.on('timerStartedUser',function(){
-        console.log(timerStarted);
         if(timerStarted == 1){
-            console.log('timer started and return emitted');
             socket.emit("userTimerReturn", true);
-
         }
         else {
             socket.emit("userTimerReturn", false);
-
         }
 
 
@@ -194,7 +175,6 @@ io.on('connection', function(socket) {
         }
 		   )});
     socket.on("timerStarted", function() {
-	console.log("timer started blalalla");
 	socket.emit('timerStartedUser');
     });
 
@@ -207,16 +187,14 @@ io.on('connection', function(socket) {
     })
 
     socket.on('checkReadyUsers', function () {
-        console.log('users ready: ' + readyDaters + ' / ' + daters.length);
         socket.emit('checkReadyUsersReturn', readyDaters);
     })
     socket.on('resetReadyUsers', function(){
         readyDaters = 0;
     })
 
-
+    // Starts event
     socket.on('EventStarted', function(eventCode){
-	console.log("event started");
 	eventcodehtml = eventCode;
         fs.appendFileSync('eventcodes.txt', eventCode + '\n', 'utf8', function(error){
             if(error) throw error; // hantera fel just in case
@@ -224,10 +202,10 @@ io.on('connection', function(socket) {
         });
     });
 
+    // Stops event
     socket.on('EventStopped', function(eventCode){
         eventcodehtml = "null";
         var data = fs.readFileSync('eventcodes.txt', 'utf-8');
-        console.log("event stopped");
         var newValue = data.replace((eventCode + '\n'), '');
         fs.writeFileSync('eventcodes.txt', newValue, 'utf-8');
     });
@@ -237,16 +215,17 @@ io.on('connection', function(socket) {
 	console.log('A user disconnected');
     });
 
+    // Gets list of daters
     socket.on('getDaters', function(callback){
 	callback(daters);
-	console.log(daters);
     });
 
+    // Sets list of daters
     socket.on('setDaters', function(setter){
 	daters = setter;
-	console.log(daters);
     });
 
+    // Gives every dater its history of dates
     socket.on('setDateSetup', function(dateSetup){
 	for(let i=0; i < dateSetup.length; i++){
 	    let currentGirlId = dateSetup[i][1].id;
@@ -258,15 +237,14 @@ io.on('connection', function(socket) {
 	    daters[girlIndex].history.push(currentBoyId);
 	    daters[boyIndex].history.push(currentGirlId);	    
 	}
-	console.log(daters);
     });
 
+    // Appends a dater to the daters list
     socket.on('appendToDaters',function(dater){
 	daters.push(dater);
-	console.log(daters);
     });
 
-    /// RETURNS USER OBJECT FROM USER ID
+    // RETURNS USER OBJECT FROM USER ID
     socket.on('getUserFromId', function(userID, callback){
 	for(let i=0; i < allDaters.length; i++){
 	    if(allDaters[i].id == userID){
@@ -275,32 +253,29 @@ io.on('connection', function(socket) {
 	}
     });
 
+    // RETURNS USER OBJECT FROM USER ID
     socket.on('getUserFromIdContact', function(userID, callback){
+	console.log(daters);
 	for(let i=0; i < daters.length; i++){
-	    console.log(daters);
 	    if(daters[i].id == userID){
 		callback(daters[i]);
 	    }
 	}
     });
     
-    //Whenever someone disconnects this piece of code executed
+    // Whenever someone disconnects this piece of code executed
     socket.on('disconnect', function () {
 	console.log('A user disconnected');
     });
-    socket.on('setDaterCode', function(daterID, code){
-        console.log(daterID);
 
+    // Sets the eventcode of the dater
+    socket.on('setDaterCode', function(daterID, code){
         daters[daterID].eventCode = code;
-        console.log('code = ' + daters[daterID].eventCode);
 
     })
-
-    //socket.on('pushToMatches');
-
 });
 
-/// FUNCTION TO WRITE TO FILE HEHEHEHEHEHE
+/// FUNCTION TO WRITE TO FILE
 
 
 //http.listen(3000);
