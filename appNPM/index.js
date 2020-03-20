@@ -20,6 +20,7 @@ var userInformation = [];
 var allDaters = [];
 var daters = [];
 var eventcode = "";
+var readyDaters = 0;
 readInAllUsers = function(){
     var data = fs.readFileSync('log.txt', 'utf8');
     var logins = [];
@@ -40,6 +41,7 @@ readInAllUsers = function(){
 	    "give": [],
 	    "recieved": [],
 	    "history": [],
+        "other": ""
             //"eventcode": "null"
 	};
 	allDaters.push(acc);
@@ -200,6 +202,18 @@ io.on('connection', function(socket) {
     socket.on('testget', function(){
         socket.emit('testgetreturn', daters);
     })
+    socket.on('userReady', function(){
+        readyDaters+=1;
+    })
+
+    socket.on('checkReadyUsers', function () {
+        console.log('users ready: ' + readyDaters + ' / ' + daters.length);
+        socket.emit('checkReadyUsersReturn', readyDaters);
+    })
+    socket.on('resetReadyUsers', function(){
+        readyDaters = 0;
+    })
+
 
     socket.on('EventStarted', function(eventCode){
 	console.log("event started");

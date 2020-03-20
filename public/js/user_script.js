@@ -193,8 +193,8 @@ const vm = new Vue({
 	},
 	
 	createAccount: function(){
-	    
-	    
+
+		currentDateNumber = 0;
 	    let accountInfo = [
 		"Username",
 		"E-mail",
@@ -315,6 +315,8 @@ const vm = new Vue({
 	    section.prepend(messageDiv);
 	    
 	    vm.personalQuestions(accountQuestions, true);
+
+
 	},
 
 	loadingDate: function(loadTime){
@@ -388,6 +390,7 @@ const vm = new Vue({
 	    div.appendChild(frwBtn);
 	},
 	myLoop: function(i) {
+
 	    setTimeout(function () {
 		socket.emit('timerStartedUser');
 		socket.on('userTimerReturn', function(startedBool) {
@@ -492,7 +495,12 @@ const vm = new Vue({
 				vm.newAccount.agePref,
 				vm.newAccount.desc
 			       );
-		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
+		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN
+			console.log(currentDateNumber + '   isCurrent date');
+			if(currentDateNumber == 0){
+				currentDateNumber = 1;
+				location.reload();
+			}
 		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		    else vm.readyScreen();
 		}
@@ -589,6 +597,7 @@ const vm = new Vue({
 		loadingDivHolder.appendChild(div5);
 		div.appendChild(loadingDivHolder);
 	    	console.log("kall1");
+			socket.emit('userReady');
 	    	vm.waiting = true;
 	    	vm.myLoop(500);
 	    };
@@ -744,6 +753,7 @@ const vm = new Vue({
 	    InputText.innerHTML = "Any other input on the date?";
 	    InputText.setAttribute("class", "dateFont");
 	    InputText.style.fontSize = "200%";
+
 	    div.appendChild(InputText);
 
 	    
@@ -754,6 +764,7 @@ const vm = new Vue({
 	    inputTextField.setAttribute("cols", "20");
 	    //inputTextField.setAttribute("value", "female"); 
 	    div.appendChild(inputTextField);
+
 	    
 
 	    
@@ -762,6 +773,18 @@ const vm = new Vue({
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
 		var textField = document.getElementById("inputDate").value;
+			socket.emit('getDaters', function(allDaters) {
+				for (let i = 0; i < allDaters.length; i++) {
+					console.log("halloj: " + currentUserId);
+					console.log("braj: " + allDaters[i].id);
+					if (allDaters[i].id == currentUserId) {
+						let userTMP = allDaters[i];
+						allDaters[i].other = document.getElementById("inputDate").value;;
+						console.log(allDaters[i].name + 'Answered' + allDaters[i].other);
+						socket.emit('setDaters', allDaters);
+					}
+				}
+			})
 		console.log(textField);
 
 		if(currentDateNumber > 3) vm.contantInfoShareScreen();
