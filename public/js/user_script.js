@@ -6,6 +6,8 @@ var startScreen;
 var currentDateNumber = 1;
 var table = 3;
 let matcharr = [];
+var currUsr = "";
+var currPass = "";
 
 let accountQuestions = [
     "Are you adventurous?",
@@ -90,8 +92,12 @@ const vm = new Vue({
 		    let frwBtn = document.createElement("img");
 		    frwBtn.setAttribute("src", "/img/loginButton.png");
 		    frwBtn.setAttribute("class", "forwardButton");
+
+		    let hstBtn = document.createElement("button");
+		    hstBtn.setAttribute("class", "historyBtn");
+		    hstBtn.appendChild(document.createTextNode("History"));
+		    
 		    frwBtn.onclick = function(){
-			
 			socket.emit('getEventcode', function(serverEventCode){
 			    console.log( eventCode.value);
 			    if(serverEventCode == eventCode.value &&  eventCode.value != ""){
@@ -126,9 +132,17 @@ const vm = new Vue({
 				})*/
 		    };
 
+		    hstBtn.onclick = function(){
+			currUsr = usernameLogin;
+			currPass = passwordLogin;
+
+			history();
+		    }
+
 		    div.appendChild(eventCodeText);
 		    div.appendChild(eventCode);
 		    div.appendChild(frwBtn);
+		    div.appendChild(hstBtn);
 
 		}
 		else{
@@ -139,8 +153,8 @@ const vm = new Vue({
 
 	},
 	createAccount: function(){
-	    
-	    
+
+		currentDateNumber = 0;
 	    let accountInfo = [
 		"Username",
 		"E-mail",
@@ -257,6 +271,8 @@ const vm = new Vue({
 	    section.prepend(messageDiv);
 	    
 	    vm.personalQuestions(accountQuestions, true);
+
+
 	},
 
 	loadingDate: function(loadTime){
@@ -435,7 +451,12 @@ const vm = new Vue({
 				vm.newAccount.agePref,
 				vm.newAccount.desc
 			       );
-		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN 
+		    /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN
+			console.log(currentDateNumber + '   isCurrent date');
+			if(currentDateNumber == 0){
+				currentDateNumber = 1;
+				location.reload();
+			}
 		    if(currentDateNumber > 3) vm.contantInfoShareScreen();
 		    else vm.readyScreen();
 		}
@@ -503,7 +524,26 @@ const vm = new Vue({
 	    frwBtn.setAttribute("class", "forwardButton");
 
 	    frwBtn.onclick = function () {
-		frwBtn.setAttribute("src", "/img/waitscreen.png");
+		//frwBtn.setAttribute("src", "/img/waitscreen.png");
+		div.removeChild(frwBtn);
+		let loadingDivHolder = document.createElement("div");
+		loadingDivHolder.setAttribute("class", "spinner");
+		let div1 = document.createElement("div");
+		let div2 = document.createElement("div");
+		let div3 = document.createElement("div");
+		let div4 = document.createElement("div");
+		let div5 = document.createElement("div");
+		div1.setAttribute("class", "rect1");
+		div2.setAttribute("class", "rect2");
+		div3.setAttribute("class", "rect3");
+		div4.setAttribute("class", "rect4");
+		div5.setAttribute("class", "rect5");
+		loadingDivHolder.appendChild(div1);
+		loadingDivHolder.appendChild(div2);
+		loadingDivHolder.appendChild(div3);
+		loadingDivHolder.appendChild(div4);
+		loadingDivHolder.appendChild(div5);
+		div.appendChild(loadingDivHolder);
 	    	console.log("kall1");
 			socket.emit('userReady');
 	    	vm.waiting = true;
@@ -657,6 +697,7 @@ const vm = new Vue({
 	    InputText.innerHTML = "Any other input on the date?";
 	    InputText.setAttribute("class", "dateFont");
 	    InputText.style.fontSize = "200%";
+
 	    div.appendChild(InputText);
 
 	    
@@ -667,6 +708,7 @@ const vm = new Vue({
 	    inputTextField.setAttribute("cols", "50");
 	    //inputTextField.setAttribute("value", "female"); 
 	    div.appendChild(inputTextField);
+
 	    
 
 	    
@@ -675,6 +717,18 @@ const vm = new Vue({
 	    frwBtn.setAttribute("class", "forwardButton");
 	    frwBtn.onclick = function(){
 		var textField = document.getElementById("inputDate").value;
+			socket.emit('getDaters', function(allDaters) {
+				for (let i = 0; i < allDaters.length; i++) {
+					console.log("halloj: " + currentUserId);
+					console.log("braj: " + allDaters[i].id);
+					if (allDaters[i].id == currentUserId) {
+						let userTMP = allDaters[i];
+						allDaters[i].other = document.getElementById("inputDate").value;;
+						console.log(allDaters[i].name + 'Answered' + allDaters[i].other);
+						socket.emit('setDaters', allDaters);
+					}
+				}
+			})
 		console.log(textField);
 
 		if(currentDateNumber > 3) vm.contantInfoShareScreen();
@@ -686,7 +740,23 @@ const vm = new Vue({
     }
 });
 
+function history(){
+    let div = document.getElementById("loginInfoDiv");
+    div.innerHTML = "";
 
+    let header = document.createElement("h2");
+    header.style.fontSize = "300%";
+    header.appendChild(document.createTextNode("Matches:"));
+    
+    let backBtn = document.createElement("button");
+    backBtn.setAttribute("class", "historyBtn");
+    backBtn.appendChild(document.createTextNode("Back"));
+    
+    backBtn.onclick = function(){
+	vm.login(currUsr, currPass);
+    }
 
-
+    div.appendChild(header);
+    div.appendChild(backBtn);
+}
 

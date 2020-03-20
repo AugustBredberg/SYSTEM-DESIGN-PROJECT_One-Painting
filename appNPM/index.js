@@ -41,6 +41,7 @@ readInAllUsers = function(){
 	    "give": [],
 	    "recieved": [],
 	    "history": [],
+        "other": ""
             //"eventcode": "null"
 	};
 	allDaters.push(acc);

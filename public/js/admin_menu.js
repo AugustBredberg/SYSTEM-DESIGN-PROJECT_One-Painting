@@ -268,6 +268,12 @@ const vm_menu = new Vue({
             let given3 = document.createElement("p");
             given3.appendChild(document.createTextNode("Answer to question 3: " + userID.recieved[2]));
 
+        let otherInput = document.createElement("h1");
+            otherInput.appendChild(document.createTextNode("Other input:"))
+
+        let other1 = document.createElement("p");
+            console.log(userID.other + ' Is the text of' + userID.name);
+            other1.appendChild(document.createTextNode(userID.other));
 	    //SE_userInfoText.appendChild(document.createTextNode(userID)); //Denna ska bort
             SE_userInfoText.appendChild(personalInfo);
             SE_userInfoText.appendChild(question1);
@@ -281,6 +287,8 @@ const vm_menu = new Vue({
             SE_userInfoText.appendChild(given1);
             SE_userInfoText.appendChild(given2);
             SE_userInfoText.appendChild(given3);
+            SE_userInfoText.appendChild(otherInput);
+            SE_userInfoText.appendChild(other1);
 
             SE_userInfo.appendChild(SE_userInfoText);
         },
