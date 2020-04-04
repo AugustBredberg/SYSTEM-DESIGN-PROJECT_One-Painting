@@ -16,7 +16,6 @@ let SE_userInfoText = document.createElement("div");
 
 
 
-
 function updateUsers(){
     socket.emit('getDaters', function(daters){
 	vm_users.users = daters;
@@ -26,7 +25,6 @@ function updateUsers(){
 setInterval(function() {
     updateUsers();
 }, 1000);
-
 
 
 
@@ -126,8 +124,6 @@ const vm_menu = new Vue({
 	        vm_users.getUsers();
 	    }
 	    socket.emit('setDateSetup', tableList);
-
-	    console.log(tableList[0][1].history);
 	    
 	    let SE_EditList = document.getElementById("wrapper");
 
@@ -253,7 +249,10 @@ const vm_menu = new Vue({
 
             let other1 = document.createElement("p");
             other1.innerHTML = userID.other;
-	    
+
+	    console.log(userID.desc);
+	    console.log(userID.give);
+	    console.log(userID.recieved);
             SE_userInfoText.appendChild(personalInfo);
             SE_userInfoText.appendChild(question1);
             SE_userInfoText.appendChild(question2);
@@ -359,15 +358,15 @@ const vm_users = new Vue({
 		    this.users.splice(this.users.indexOf(boys[i]), 1);
 		}
 		alert(str);
-	    }
-	    
-	    if(girls.length != 0){
+	    } else if(girls.length != 0){
 		var str = "Couldn't find a match for:\n";
 		for(var i = 0; i<girls.length; i++){
 		    str += girls[i].name + "\n";
 		    this.users.splice(this.users.indexOf(girls[i]), 1);
 		}
 		alert(str);
+	    } else {
+		socket.emit('tableMatching', tableList);
 	    }
         }
     }
@@ -415,7 +414,12 @@ function edit(changedUsers){
 		checkedUsers.push(JSON.parse(JSON.stringify(tableList[i])));
 	    }
 	}
-	compareAndChange(checkedUsers);
+	if(checkedUsers.length >= 2){
+	    compareAndChange(checkedUsers);
+	} else {
+	    checkedUsers = [];
+	    alert("You have to choose atleast 2 pairs");
+	}
     }
 
     btnSave.onclick = function(){

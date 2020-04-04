@@ -181,17 +181,23 @@ io.on('connection', function(socket) {
 
     socket.on('testget', function(){
         socket.emit('testgetreturn', daters);
-    })
+    });
+    
     socket.on('userReady', function(){
         readyDaters+=1;
-    })
+    });
 
     socket.on('checkReadyUsers', function () {
         socket.emit('checkReadyUsersReturn', readyDaters);
-    })
+    });
+
     socket.on('resetReadyUsers', function(){
         readyDaters = 0;
-    })
+    });
+
+    socket.on('tableMatching', function(tableList) {
+	socket.broadcast.emit('tables',tableList);
+    });
 
     // Starts event
     socket.on('EventStarted', function(eventCode){

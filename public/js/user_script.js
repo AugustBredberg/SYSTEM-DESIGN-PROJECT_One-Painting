@@ -4,10 +4,12 @@ var socket = io();
 
 var startScreen;
 var currentDateNumber = 1;
-var tableNr = Math.floor(Math.random() * 10) + 1;
+var tableNr = 0;
 let matcharr = [];
 var currUsr = "";
 var currPass = "";
+var tableList = [];
+
 
 let accountQuestions = [
     "Are you adventurous?",
@@ -28,6 +30,10 @@ function updateUsers(){
 	vm_users.users = daters;
     });
 }
+
+socket.on('tables', function(tables){
+    tableList = tables;
+});
 
 
 let currentUser = "";
@@ -500,6 +506,16 @@ const vm = new Vue({
 	    let tableDiv = document.createElement("div");
 	    tableDiv.setAttribute("class", "tableDiv");
 
+	    for(let i = 0; i<tableList.length; i++){
+		console.log("Girl: " + tableList[i][1].name);
+		console.log("Boy: " + tableList[i][2].name);
+		console.log("Current user: " + currentUserObject.name);
+		if(tableList[i][1].name === currentUserObject.name || tableList[i][2].name === currentUserObject.name){
+		    tableNr = tableList[i][0];
+		    break;
+		}
+	    }
+	    console.log("Table nr:" + tableNr);
 	    for(let i = 1; i<11; i++) {
 		if(tableNr == i){
 		    let choosentable = document.createElement("div");
