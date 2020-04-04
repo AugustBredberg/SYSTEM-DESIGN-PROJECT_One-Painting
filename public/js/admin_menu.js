@@ -14,7 +14,22 @@ let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 
+function drawPairs(){
+    var SE_Time = document.getElementById("seTime");
+    SE_Time.innerHTML = "";
+    vm_users.getUsers();
+    displayPairs(tableList, false);
 
+    var SE_time = document.getElementById("seTime");
+    let btnEdit = document.createElement("button");
+    btnEdit.appendChild(document.createTextNode("Edit"));
+    SE_Time.appendChild(btnEdit);
+
+    btnEdit.onclick = function(){
+	clearInterval(interval);
+	edit();
+    }
+}
 
 function updateUsers(){
     socket.emit('getDaters', function(daters){
@@ -25,8 +40,6 @@ function updateUsers(){
 setInterval(function() {
     updateUsers();
 }, 1000);
-
-
 
 const vm_menu = new Vue({
 
@@ -86,6 +99,7 @@ const vm_menu = new Vue({
 
             if(this.i == -1){
                 this.i = 0;
+		console.log("slut");
             }
             else {
 
@@ -96,6 +110,11 @@ const vm_menu = new Vue({
 		else{
 		    socket.emit('timerStopped');
 		    socket.emit('resetReadyUsers');
+		    this.i = 12;
+		    this.dateNum += 1;
+		    SE_timer.innerHTML = this.timer.minutes + ' : ' + this.timer.seconds;
+		    vm_menu.startEvent(null);
+
 		}
             }
 
@@ -135,17 +154,11 @@ const vm_menu = new Vue({
 	    SE_Time.setAttribute("id","seTime");
 	    SE_EditList.appendChild(SE_Time);
 	    
-	    displayPairs(tableList, false);
-            
+	    //displayPairs(tableList, false);
+            var interval = setInterval(function() {
+		drawPairs();
+	    }, 1000);
 	    
-	    
-	    let btnEdit = document.createElement("button");
-	    btnEdit.appendChild(document.createTextNode("Edit"));
-	    SE_Time.appendChild(btnEdit);
-
-	    btnEdit.onclick = function(){
-		edit();
-	    }
 	    
             //let SE_sessionInfo = document.getElementById("wrapper");
             let SE_dateNum = document.createElement("p");
@@ -167,14 +180,14 @@ const vm_menu = new Vue({
             SE_Left.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
-
+		clearInterval(interval);
                 socket.emit('timerStarted');
 
                 vm_menu.startTimer();
                 SE_dateNum.innerHTML = 'Date: ' + vm_menu.dateNum;
             }
 	    SE_stopTimerButton.onclick = function() {
-
+		
                 vm_menu.stopTimer();
 
             }
@@ -211,6 +224,7 @@ const vm_menu = new Vue({
             }, 1000)
         },
         hoverOverUser: function(userID){
+	    SE_userInfoText.innerHTML = "";
             SE_userInfoText.setAttribute("class", "userInfo");
             SE_userInfoText.setAttribute("id", "userInfoText");
 
@@ -249,10 +263,7 @@ const vm_menu = new Vue({
 
             let other1 = document.createElement("p");
             other1.innerHTML = userID.other;
-
-	    console.log(userID.desc);
-	    console.log(userID.give);
-	    console.log(userID.recieved);
+	    
             SE_userInfoText.appendChild(personalInfo);
             SE_userInfoText.appendChild(question1);
             SE_userInfoText.appendChild(question2);

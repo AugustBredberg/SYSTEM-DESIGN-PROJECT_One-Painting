@@ -49,6 +49,7 @@ readInAllUsers = function(){
     return logins;
 };
 readInAllUsers();
+
 //==========================================================
 //==========================================================
 
@@ -110,7 +111,7 @@ Data.prototype.accountCreated = function(username, email, password, gender, ageP
 //Whenever someone connects this gets executed
 io.on('connection', function(socket) {
     console.log('A user connected');
-
+    
     socket.on('accountCreated', function(username, email, password, gender, agePref, desc){
 	data.accountCreated(username, email, password, gender, agePref, desc);
 	readInAllUsers(); // UPDATING USERLIST WITH NEW USER
@@ -225,7 +226,7 @@ io.on('connection', function(socket) {
     socket.on('getDaters', function(callback){
 	callback(daters);
     });
-
+    
     // Sets list of daters
     socket.on('setDaters', function(setter){
 	daters = setter;
