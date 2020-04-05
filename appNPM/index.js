@@ -38,6 +38,7 @@ readInAllUsers = function(){
 	    "give": [],
 	    "recieved": [],
 	    "history": [],
+	    //"matches": [],
             "other": ""
 	};
 	allDaters.push(acc);

@@ -8,27 +8,29 @@ let compareUser = null;
 
 let selectedTable = 0;
 let eventcode = "";
-
+var interval;
 let SE_datersReady = document.createElement("p");
 let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 
-function drawPairs(){
+function drawPairs(bool){
     var SE_Time = document.getElementById("seTime");
     SE_Time.innerHTML = "";
     vm_users.getUsers();
-    displayPairs(tableList, false);
 
+    displayPairs(tableList, false);
+    
     var SE_time = document.getElementById("seTime");
     let btnEdit = document.createElement("button");
     btnEdit.appendChild(document.createTextNode("Edit"));
     SE_Time.appendChild(btnEdit);
-
+    
     btnEdit.onclick = function(){
 	clearInterval(interval);
 	edit();
     }
+    
 }
 
 function updateUsers(){
@@ -155,7 +157,7 @@ const vm_menu = new Vue({
 	    SE_EditList.appendChild(SE_Time);
 	    
 	    //displayPairs(tableList, false);
-            var interval = setInterval(function() {
+            interval = setInterval(function() {
 		drawPairs();
 	    }, 1000);
 	    
@@ -404,7 +406,7 @@ function edit(changedUsers){
     wrapper.appendChild(SE_buttons);
     
     displayPairs(usersTemp, true);
-
+    
     let btnCompare = document.createElement("button");
     btnCompare.appendChild(document.createTextNode("Compare and change"));
 
