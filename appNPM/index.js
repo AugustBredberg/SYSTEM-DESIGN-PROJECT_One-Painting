@@ -16,6 +16,7 @@ var fs = require('fs');
 var userInformation = [];
 var allDaters = [];
 var daters = [];
+var listOfMatches = [];
 var eventcode = "";
 var readyDaters = 0;
 readInAllUsers = function(){
@@ -38,7 +39,6 @@ readInAllUsers = function(){
 	    "give": [],
 	    "recieved": [],
 	    "history": [],
-	    //"matches": [],
             "other": ""
 	};
 	allDaters.push(acc);
@@ -193,6 +193,31 @@ io.on('connection', function(socket) {
         socket.emit('checkReadyUsersReturn', readyDaters);
     });
 
+    socket.on('getMatches', function(name){
+	var mainList = [];
+	var matchList = []
+	for(var i = 0; i < listOfMatches.length; i++){
+	    if (listOfMatches[i][0] === name){
+		mainList = listOfMatches[i];
+		break;
+	    }
+	}
+	for(var i = 1; i<mainList.length; i++){
+	    var tempName = mainList[i];
+	    for(var j = 1; j<listOfMatches.length;j++){
+		if(listOfMatches[j][0] === tempName){
+		    if(listOfMatches[j].includes(name)){
+			matchList.push(tempName);
+			break;
+		    }else{
+			break;
+		    }
+		}
+	    }
+	}
+	socket.emit('returnGetMatches', matchList);
+    });
+
     socket.on('resetReadyUsers', function(){
         readyDaters = 0;
     });
@@ -241,9 +266,15 @@ io.on('connection', function(socket) {
 
 	    girlIndex = daters.map(function(d) { return d.id }).indexOf(currentGirlId);
 	    boyIndex = daters.map(function(d) { return d.id }).indexOf(currentBoyId);
-	    
-	    daters[girlIndex].history.push(currentBoyId);
-	    daters[boyIndex].history.push(currentGirlId);	    
+
+	    if(!daters[girlIndex].history.includes(currentBoyId)){
+		daters[girlIndex].history.push(currentBoyId);
+	    }
+	    if(!daters[boyIndex].history.includes(currentGirlId)){
+		daters[boyIndex].history.push(currentGirlId);
+	    }
+	    //daters[girlIndex].history.push(currentBoyId);
+	    //daters[boyIndex].history.push(currentGirlId);	    
 	}
     });
 
@@ -270,11 +301,17 @@ io.on('connection', function(socket) {
 	    }
 	}
     });
+
+    socket.on('matchingDone', function(incMatches){
+	listOfMatches.push(incMatches);
+	readyDaters++;
+    });
     
     // Whenever someone disconnects this piece of code executed
     socket.on('disconnect', function () {
 	console.log('A user disconnected');
     });
+    
 
     // Sets the eventcode of the dater
     socket.on('setDaterCode', function(daterID, code){

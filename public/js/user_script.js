@@ -8,7 +8,7 @@ let matcharr = [];
 var currUsr = "";
 var currPass = "";
 var tableList = [];
-
+var timer;
 
 let accountQuestions = [
     "Are you adventurous?",
@@ -585,10 +585,11 @@ const vm = new Vue({
 
 
         contantInfoShareScreen: function() {
-            let matchnumber = 0;
+	    matcharr.push(currentUserObject.name);
+	    let matchnumber = 0;
             let div = document.getElementById("loginInfoDiv");
             div.innerHTML = "";
-
+	    
             let shareQ = document.createElement("p");
             shareQ.innerHTML = "Do you want to share your contact info with?";
             shareQ.setAttribute("class", "dateFont");
@@ -614,12 +615,13 @@ const vm = new Vue({
             heartbuttom.setAttribute("class", "heartButton");
 
             heartbuttom.onclick = function() {
-                if (matchnumber < 3) {
+                if (matchnumber < currentUserObject.history.length-1) {
                     matcharr.push(matches[matchnumber - 1].name);
                     matchesFunc();
                 } else {
                     matcharr.push(matches[matchnumber - 1].name);
-                    vm.successmatchscreen();
+		    socket.emit('matchingDone', matcharr);
+		    vm.waitingScreen(500);	
                 }
             };
 
@@ -628,10 +630,12 @@ const vm = new Vue({
             nobuttom.setAttribute("class", "noButton");
             nobuttom.onclick = function() {
 
-                if (matchnumber < 3) {
+                if (matchnumber < currentUserObject.history.length-1) {
                     matchesFunc();
                 } else {
-                    vm.successmatchscreen();
+		    socket.emit('matchingDone', matcharr);
+                    //vm.successmatchscreen();
+		    vm.waitingScreen(500);
                 }
 
             };
@@ -642,35 +646,62 @@ const vm = new Vue({
             div.appendChild(nobuttom);
         },
 
-
+	waitingScreen: function(i){
+	    let div = document.getElementById("loginInfoDiv");
+            div.innerHTML = "";
+	    timer = setTimeout(function () {
+		socket.emit('checkReadyUsers')
+		socket.on('checkReadyUsersReturn', function(readyAmount){
+		    div.innerHTML = ('Daters done: ' + readyAmount + ' / ' + tableList.length*2);
+		    if(readyAmount >= tableList.length*2){
+			socket.emit('getMatches', currentUserObject.name);
+			console.log(matches);
+			socket.on('returnGetMatches', function(returnedMatches){
+			    matcharr = returnedMatches;
+			});
+			console.log(matcharr);
+			vm.successmatchscreen();
+		    }
+		})
+		if(--i) vm.waitingScreen(i);
+	    }, 1000);
+	},
+	
         successmatchscreen: function() {
-
+	    clearInterval(timer);
+	    matcharr.splice(0,1);
             let div = document.getElementById("loginInfoDiv");
             div.innerHTML = "";
             var numberofmatches = matcharr.length;
             let nummatch = 0;
 
-            let successmatch = document.createElement("p");
-            successmatch.innerHTML = "Congrats, Here are youre matches:";
-            successmatch.style.fontSize = "300%";
-            div.appendChild(successmatch);
+	    if(numberofmatches === 0){
+		let successmatch = document.createElement("p");
+		successmatch.innerHTML = "Sadly no matches for you!";
+		successmatch.style.fontSize = "300%";
+		div.appendChild(successmatch);
+	    }else{
+		let successmatch = document.createElement("p");
+		successmatch.innerHTML = "Congrats, Here are youre matches:";
+		successmatch.style.fontSize = "300%";
+		div.appendChild(successmatch);
 
 
 
-            let successmatchDiv = document.createElement("div");
-            successmatchDiv.setAttribute("class", "successmatchDiv");
+		let successmatchDiv = document.createElement("div");
+		successmatchDiv.setAttribute("class", "successmatchDiv");
 
-            for (nummatch; nummatch < numberofmatches; nummatch++) {
-                let match = document.createElement("div");
-                match.setAttribute("class", "match");
-                let text = document.createTextNode(matcharr[nummatch]);
-                match.appendChild(text);
-                successmatchDiv.appendChild(match)
+		for (nummatch; nummatch < numberofmatches; nummatch++) {
+                    let match = document.createElement("div");
+                    match.setAttribute("class", "match");
+                    let text = document.createTextNode(matcharr[nummatch]);
+                    match.appendChild(text);
+                    successmatchDiv.appendChild(match)
 
-            }
+		}
 
-            div.appendChild(successmatchDiv);
-
+		div.appendChild(successmatchDiv);
+	    }
 
             let frwBtn = document.createElement("img");
             frwBtn.setAttribute("src", "/img/loginButton.png");

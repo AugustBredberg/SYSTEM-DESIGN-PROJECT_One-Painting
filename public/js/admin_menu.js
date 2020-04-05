@@ -143,8 +143,9 @@ const vm_menu = new Vue({
 	    
 	    if(listOfUsers == null){
 	        vm_users.getUsers();
+		socket.emit('setDateSetup', tableList);
 	    }
-	    socket.emit('setDateSetup', tableList);
+	    
 	    
 	    let SE_EditList = document.getElementById("wrapper");
 
@@ -214,7 +215,6 @@ const vm_menu = new Vue({
         },
 
         myLoop: function(i) {
-
             setTimeout(function () {
                 socket.emit('checkReadyUsers')
                 socket.on('checkReadyUsersReturn', function(readyAmount){
@@ -225,6 +225,7 @@ const vm_menu = new Vue({
                 if (--i) vm_menu.myLoop(i);      //  decrement i and call myLoop again if i > 0
             }, 1000)
         },
+	
         hoverOverUser: function(userID){
 	    SE_userInfoText.innerHTML = "";
             SE_userInfoText.setAttribute("class", "userInfo");
