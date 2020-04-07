@@ -261,21 +261,57 @@ io.on('connection', function(socket) {
     // Gives every dater its history of dates
     socket.on('setDateSetup', function(dateSetup){
 	for(let i=0; i < dateSetup.length; i++){
+            let currentGirlId = dateSetup[i][1].id;
+            let currentBoyId = dateSetup[i][2].id;
+
+
+            for(let k=0; k < daters.length; k++){
+
+		if(daters[k].id == currentGirlId){
+		    if(!daters[k].history.includes(currentBoyId)){
+			daters[k].history.push(currentBoyId);
+		    }
+		}
+		if(daters[k].id == currentBoyId){
+		    if(!daters[k].history.includes(currentGirlId)){
+			daters[k].history.push(currentGirlId);
+		    }
+		}
+            }
+	}
+	/*
+	for(let i=0; i < dateSetup.length; i++){
 	    let currentGirlId = dateSetup[i][1].id;
 	    let currentBoyId = dateSetup[i][2].id;
 
-	    girlIndex = daters.map(function(d) { return d.id }).indexOf(currentGirlId);
-	    boyIndex = daters.map(function(d) { return d.id }).indexOf(currentBoyId);
+	    //girlIndex = daters.map(function(d) { return d.id }).indexOf(currentGirlId);
+	    //boyIndex = daters.map(function(d) { return d.id }).indexOf(currentBoyId);
 
+	    for(var j = 0; j<daters.length; j++){
+		if(daters[j].id == currentGirlId){
+		    girlIndex = j;
+		    break;
+		}
+	    }
+
+	    for(var j = 0; j<daters.length; j++){
+		if(daters[j].id == currentBoyId){
+		    boyIndex = j;
+		    break;
+		}
+	    }
+	    
 	    if(!daters[girlIndex].history.includes(currentBoyId)){
 		daters[girlIndex].history.push(currentBoyId);
 	    }
 	    if(!daters[boyIndex].history.includes(currentGirlId)){
 		daters[boyIndex].history.push(currentGirlId);
-	    }
+		}
+	    
 	    //daters[girlIndex].history.push(currentBoyId);
 	    //daters[boyIndex].history.push(currentGirlId);	    
-	}
+	}*/
+	console.log(daters);
     });
 
     // Appends a dater to the daters list

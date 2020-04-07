@@ -9,6 +9,7 @@ var currUsr = "";
 var currPass = "";
 var tableList = [];
 var timer;
+var date = 0;
 
 let accountQuestions = [
     "Are you adventurous?",
@@ -479,32 +480,33 @@ const vm = new Vue({
                 }
                 /// THIS ELSE IS FOR: DOCUMENTING GIVEN RATINGS
                 else {
+		    console.log("Kommer hit");
+		    socket.emit('getUserFromIdContact', currentUserId, function(me) {
+                            currentUserObject = me;
+                    });
+		    
                     socket.emit('getDaters', function(allDaters) {
+			/// set recieived rating to person im seeing
+			var give = false;
+			var rec = false;
+			
                         for (let i = 0; i < allDaters.length; i++) {
-                            if (allDaters[i].id == currentUserId) {
-                                let userTMP = allDaters[i];
+                            if (allDaters[i].id == currentUserId && give == false) {
                                 allDaters[i].give.push(givenRatings);
+				give = true;
                             }
-
-
-                            /// set recieived rating to person im seeing
-                            socket.emit('getUserFromIdContact', currentUserId, function(me) {
-                                currentUserObject = me;
-                            });
 			    
-                            /*socket.emit('getUserFromIdContact',
-                                currentUserObject.history[currentUserObject.history.length - 1],
-                                function(me) {
-                                    matches.push(me);
-                                });
-			    */
-                            if (allDaters[i].id == currentUserObject.history[currentDateNumber - 2]) {
+                            if (allDaters[i].id == currentUserObject.history[date] && rec == false) {
                                 allDaters[i].recieved.push(givenRatings);
+				date++;
+				rec = true;
                             }
-
+			    if(give && rec){
+				break;
+			    }
                         }
                         socket.emit('setDaters', allDaters);
-
+			
                     });
 
                     vm.functionInputDate();

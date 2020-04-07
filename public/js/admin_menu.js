@@ -14,10 +14,10 @@ let SE_timer = document.createElement("p");
 let SE_userInfo = document.getElementById("wrapper");
 let SE_userInfoText = document.createElement("div");
 
-function drawPairs(bool){
+function drawPairs(){
     var SE_Time = document.getElementById("seTime");
     SE_Time.innerHTML = "";
-    vm_users.getUsers();
+    //vm_users.getUsers();
 
     displayPairs(tableList, false);
     
@@ -36,6 +36,17 @@ function drawPairs(bool){
 function updateUsers(){
     socket.emit('getDaters', function(daters){
 	vm_users.users = daters;
+	for(var j = 0; j < vm_users.users.length; j++){
+	    for(var i = 0; i < tableList.length; i++){
+		if(tableList[i][1].id == vm_users.users[j].id){
+		    tableList[i][1] = vm_users.users[j];
+		    break;
+		}else if(tableList[i][2].id == vm_users.users[j].id){
+		    tableList[i][2] = vm_users.users[j];
+		    break;
+		}
+	    }
+	}
     });
 }
 
@@ -143,6 +154,7 @@ const vm_menu = new Vue({
 	    
 	    if(listOfUsers == null){
 	        vm_users.getUsers();
+		console.log(tableList);
 		socket.emit('setDateSetup', tableList);
 	    }
 	    
@@ -345,6 +357,8 @@ const vm_users = new Vue({
 		    boys.push(this.users[i]);
 		}
 	    }
+
+	    ////////////////
 
 	    while(boys.length != 0 && girls.length != 0){
 		var match = 0;
@@ -838,6 +852,6 @@ function calculateMatch(table){
 
 function getOccurrence(array, value) {
     var count = 0;
-    array.forEach((v) => (v === value && count++));
+    array.forEach((v) => (v == value && count++));
     return count;
 }
