@@ -10,6 +10,7 @@ var currPass = "";
 var tableList = [];
 var timer;
 var date = 0;
+var successmatchLock = true;
 
 let accountQuestions = [
     "Are you adventurous?",
@@ -617,7 +618,7 @@ const vm = new Vue({
             heartbuttom.setAttribute("class", "heartButton");
 
             heartbuttom.onclick = function() {
-                if (matchnumber < currentUserObject.history.length-1) {
+                if (matchnumber < currentUserObject.history.length) {
                     matcharr.push(matches[matchnumber - 1].name);
                     matchesFunc();
                 } else {
@@ -662,7 +663,9 @@ const vm = new Vue({
 			    matcharr = returnedMatches;
 			});
 			console.log(matcharr);
+
 			vm.successmatchscreen();
+
 		    }
 		})
 		if(--i) vm.waitingScreen(i);
@@ -670,8 +673,11 @@ const vm = new Vue({
 	},
 	
         successmatchscreen: function() {
-	    clearInterval(timer);
-	    matcharr.splice(0,1);
+        clearInterval(timer);
+        if(currentUserObject.name == matcharr[0]) {
+            console.log("This should only print once")
+            matcharr.splice(0, 1);
+        }
             let div = document.getElementById("loginInfoDiv");
             div.innerHTML = "";
             var numberofmatches = matcharr.length;
