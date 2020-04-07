@@ -632,7 +632,7 @@ const vm = new Vue({
             nobuttom.setAttribute("class", "noButton");
             nobuttom.onclick = function() {
 
-                if (matchnumber < currentUserObject.history.length-1) {
+                if (matchnumber < currentUserObject.history.length) {
                     matchesFunc();
                 } else {
 		    socket.emit('matchingDone', matcharr);
@@ -677,7 +677,7 @@ const vm = new Vue({
             var numberofmatches = matcharr.length;
             let nummatch = 0;
 
-	    if(numberofmatches === 0){
+	    if(numberofmatches == 0){
 		let successmatch = document.createElement("p");
 		successmatch.innerHTML = "Sadly no matches for you!";
 		successmatch.style.fontSize = "300%";

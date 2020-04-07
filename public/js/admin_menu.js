@@ -343,7 +343,7 @@ const vm_users = new Vue({
 
         getUsers: function(){
 	    updateUsers();
-	    tableList = [];
+	    //tableList = [];
 	    
 	    var j = 1;
 	    var girls = [];
@@ -358,8 +358,55 @@ const vm_users = new Vue({
 		}
 	    }
 
-	    ////////////////
+	    if(tableList.length == 0){
+		while(boys.length != 0 && girls.length != 0){
+		    var match = 0;
+		    var boyIndex = 0;
+		    for(var i = 0; i<boys.length; i++){
+			tempMatch = calculateMatch([1, girls[0], boys[i]]);
+			if(tempMatch > match &&
+			   getOccurrence(girls[0].history, boys[i].id) < 1){
+			    boyIndex = i;
+			    match = tempMatch;
+			}
+		    }
 
+		    var temp = [j, girls[0], boys[boyIndex]];
+		    tableList.push(temp);
+		    j++;
+		    boys.splice(boyIndex, 1);
+		    girls.splice(0, 1);
+		}
+		if(boys.length != 0){
+		    var str = "Couldn't find a match for:\n";
+		    for(var i = 0; i<boys.length; i++){
+			str += boys[i].name + "\n";
+			this.users.splice(this.users.indexOf(boys[i]), 1);
+		    }
+		    alert(str);
+		} else if(girls.length != 0){
+		    var str = "Couldn't find a match for:\n";
+		    for(var i = 0; i<girls.length; i++){
+			str += girls[i].name + "\n";
+			this.users.splice(this.users.indexOf(girls[i]), 1);
+		    }
+		    alert(str);
+		}
+	    } else {
+		var temp = JSON.parse(JSON.stringify(tableList));
+		for(var i = 0; i<tableList.length; i++){
+		    console.log("--------------------");
+		    console.log(tableList[i][2].name);
+		    console.log(temp[i][2].name);
+		    tableList[i][2] = temp[(i+1)%tableList.length][2];
+		    console.log(tableList[i][2].name);
+		    console.log(temp[i][2].name);
+		    console.log("--------------------");
+		}
+	    }
+
+	    ////////////////
+	    /*
 	    while(boys.length != 0 && girls.length != 0){
 		var match = 0;
 		var boyIndex = 0;
@@ -377,25 +424,11 @@ const vm_users = new Vue({
 		j++;
 		boys.splice(boyIndex, 1);
 		girls.splice(0, 1);
-	    }
+	    }*/
 
-	    if(boys.length != 0){
-		var str = "Couldn't find a match for:\n";
-		for(var i = 0; i<boys.length; i++){
-		    str += boys[i].name + "\n";
-		    this.users.splice(this.users.indexOf(boys[i]), 1);
-		}
-		alert(str);
-	    } else if(girls.length != 0){
-		var str = "Couldn't find a match for:\n";
-		for(var i = 0; i<girls.length; i++){
-		    str += girls[i].name + "\n";
-		    this.users.splice(this.users.indexOf(girls[i]), 1);
-		}
-		alert(str);
-	    } else {
-		socket.emit('tableMatching', tableList);
-	    }
+	    
+	    socket.emit('tableMatching', tableList);
+	    
         }
     }
 })
