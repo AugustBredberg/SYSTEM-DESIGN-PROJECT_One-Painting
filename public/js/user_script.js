@@ -11,7 +11,7 @@ var tableList = [];
 var timer;
 var date = 0;
 var successmatchLock = true;
-
+let cont = true;
 let accountQuestions = [
     "Are you adventurous?",
     "Do you prefer a night on the sofa over a night out?"
@@ -464,13 +464,13 @@ const vm = new Vue({
                 else if (personalQ) {
                     vm.newAccount.desc = personalDesc;
                     socket.emit('accountCreated',
-                        vm.newAccount.username,
-                        vm.newAccount.email,
-                        vm.newAccount.password,
-                        vm.newAccount.gender,
-                        vm.newAccount.agePref,
-                        vm.newAccount.desc
-                    );
+				vm.newAccount.username,
+				vm.newAccount.email,
+				vm.newAccount.password,
+				vm.newAccount.gender,
+				vm.newAccount.agePref,
+				vm.newAccount.desc
+			       );
                     /// IF IT WAS THE FINAL DATE, JUMP TO INFOSHARE SCREEN
                     if (currentDateNumber == 0) {
                         currentDateNumber = 1;
@@ -481,9 +481,8 @@ const vm = new Vue({
                 }
                 /// THIS ELSE IS FOR: DOCUMENTING GIVEN RATINGS
                 else {
-		    console.log("Kommer hit");
 		    socket.emit('getUserFromIdContact', currentUserId, function(me) {
-                            currentUserObject = me;
+                        currentUserObject = me;
                     });
 		    
                     socket.emit('getDaters', function(allDaters) {
@@ -650,34 +649,44 @@ const vm = new Vue({
         },
 
 	waitingScreen: function(i){
+	    var count = 1;
 	    let div = document.getElementById("loginInfoDiv");
-            div.innerHTML = "";
-	    timer = setTimeout(function () {
-		socket.emit('checkReadyUsers')
-		socket.on('checkReadyUsersReturn', function(readyAmount){
-		    div.innerHTML = ('Daters done: ' + readyAmount + ' / ' + tableList.length*2);
-		    if(readyAmount >= tableList.length*2){
-			socket.emit('getMatches', currentUserObject.name);
-			console.log(matches);
-			socket.on('returnGetMatches', function(returnedMatches){
-			    matcharr = returnedMatches;
-			});
-			console.log(matcharr);
+	    div.innerHTML = "";
+	    let h1 = document.createElement("h1");
+	    h1.style.fontSize = "300%";
+	    h1.innerHTML = "";
+            div.appendChild(h1);
+	    function myLoop () {
+		setTimeout(function () {
+		    socket.emit('checkReadyUsers')
+		    socket.on('checkReadyUsersReturn', function(readyAmount){
+			h1.innerHTML = ('Daters done: ' + readyAmount + ' / ' + tableList.length*2);
+			if(readyAmount >= tableList.length*2){
+			    socket.emit('getMatches', currentUserObject.name);
+			    socket.on('returnGetMatches', function(returnedMatches){
+				matcharr = returnedMatches;
+			    });
 
-			vm.successmatchscreen();
-
+			    
+			    cont = false;
+			    vm.successmatchscreen();
+			}
+		    });
+		    if(cont){
+			myLoop();
 		    }
-		})
-		if(--i) vm.waitingScreen(i);
-	    }, 1000);
+		    
+		}, 1000);
+	    }
+
+
+	    myLoop(); 
 	},
 	
         successmatchscreen: function() {
-        clearInterval(timer);
-        if(currentUserObject.name == matcharr[0]) {
-            console.log("This should only print once")
-            matcharr.splice(0, 1);
-        }
+            if(currentUserObject.name == matcharr[0]) {
+		matcharr.splice(0, 1);
+            }
             let div = document.getElementById("loginInfoDiv");
             div.innerHTML = "";
             var numberofmatches = matcharr.length;

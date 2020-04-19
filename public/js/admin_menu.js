@@ -5,7 +5,7 @@ let userList = [];
 let removedUsers = [];
 
 let compareUser = null;
-
+let _ready = 0;
 let selectedTable = 0;
 let eventcode = "";
 var interval;
@@ -112,7 +112,6 @@ const vm_menu = new Vue({
 
             if(this.i == -1){
                 this.i = 0;
-		console.log("slut");
             }
             else {
 
@@ -154,7 +153,6 @@ const vm_menu = new Vue({
 	    
 	    if(listOfUsers == null){
 	        vm_users.getUsers();
-		console.log(tableList);
 		socket.emit('setDateSetup', tableList);
 	    }
 	    
@@ -195,11 +193,15 @@ const vm_menu = new Vue({
             SE_Left.appendChild(SE_timer);
             SE_timer.setAttribute("class", "timer");
             SE_timerButton.onclick = function() {
+		if(_ready >= vm_users.users.length){
 		clearInterval(interval);
                 socket.emit('timerStarted');
 
                 vm_menu.startTimer();
-                SE_dateNum.innerHTML = 'Date: ' + vm_menu.dateNum;
+                    SE_dateNum.innerHTML = 'Date: ' + vm_menu.dateNum;
+		} else {
+		    alert("Not all users are ready");
+		}
             }
 	    SE_stopTimerButton.onclick = function() {
 		
@@ -231,7 +233,7 @@ const vm_menu = new Vue({
                 socket.emit('checkReadyUsers')
                 socket.on('checkReadyUsersReturn', function(readyAmount){
                     SE_datersReady.innerHTML = ('Daters ready: ' + readyAmount + ' / ' + vm_users.users.length);
-
+		    _ready = readyAmount;
 
                 })
                 if (--i) vm_menu.myLoop(i);      //  decrement i and call myLoop again if i > 0
@@ -395,36 +397,9 @@ const vm_users = new Vue({
 	    } else {
 		var temp = JSON.parse(JSON.stringify(tableList));
 		for(var i = 0; i<tableList.length; i++){
-		    console.log("--------------------");
-		    console.log(tableList[i][2].name);
-		    console.log(temp[i][2].name);
 		    tableList[i][2] = temp[(i+1)%tableList.length][2];
-		    console.log(tableList[i][2].name);
-		    console.log(temp[i][2].name);
-		    console.log("--------------------");
 		}
 	    }
-
-	    ////////////////
-	    /*
-	    while(boys.length != 0 && girls.length != 0){
-		var match = 0;
-		var boyIndex = 0;
-		for(var i = 0; i<boys.length; i++){
-		    tempMatch = calculateMatch([1, girls[0], boys[i]]);
-		    if(tempMatch > match &&
-		       getOccurrence(girls[0].history, boys[i].id) < 1){
-			boyIndex = i;
-			match = tempMatch;
-		    }
-		}
-
-		var temp = [j, girls[0], boys[boyIndex]];
-		tableList.push(temp);
-		j++;
-		boys.splice(boyIndex, 1);
-		girls.splice(0, 1);
-	    }*/
 
 	    
 	    socket.emit('tableMatching', tableList);

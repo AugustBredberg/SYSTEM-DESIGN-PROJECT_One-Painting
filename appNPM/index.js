@@ -197,15 +197,15 @@ io.on('connection', function(socket) {
 	var mainList = [];
 	var matchList = []
 	for(var i = 0; i < listOfMatches.length; i++){
-	    if (listOfMatches[i][0] === name){
-		mainList = listOfMatches[i];
+	    if (listOfMatches[i][0] == name){
+		mainList = JSON.parse(JSON.stringify(listOfMatches[i]));
 		break;
 	    }
 	}
 	for(var i = 1; i<mainList.length; i++){
-	    var tempName = mainList[i];
-	    for(var j = 1; j<listOfMatches.length;j++){
-		if(listOfMatches[j][0] === tempName){
+	    var tempName = JSON.parse(JSON.stringify(mainList[i]));
+	    for(var j = 0; j<listOfMatches.length;j++){
+		if(listOfMatches[j][0] == tempName){
 		    if(listOfMatches[j].includes(name)){
 			matchList.push(tempName);
 			break;
@@ -279,38 +279,7 @@ io.on('connection', function(socket) {
 		}
             }
 	}
-	/*
-	for(let i=0; i < dateSetup.length; i++){
-	    let currentGirlId = dateSetup[i][1].id;
-	    let currentBoyId = dateSetup[i][2].id;
 
-	    //girlIndex = daters.map(function(d) { return d.id }).indexOf(currentGirlId);
-	    //boyIndex = daters.map(function(d) { return d.id }).indexOf(currentBoyId);
-
-	    for(var j = 0; j<daters.length; j++){
-		if(daters[j].id == currentGirlId){
-		    girlIndex = j;
-		    break;
-		}
-	    }
-
-	    for(var j = 0; j<daters.length; j++){
-		if(daters[j].id == currentBoyId){
-		    boyIndex = j;
-		    break;
-		}
-	    }
-	    
-	    if(!daters[girlIndex].history.includes(currentBoyId)){
-		daters[girlIndex].history.push(currentBoyId);
-	    }
-	    if(!daters[boyIndex].history.includes(currentGirlId)){
-		daters[boyIndex].history.push(currentGirlId);
-		}
-	    
-	    //daters[girlIndex].history.push(currentBoyId);
-	    //daters[boyIndex].history.push(currentGirlId);	    
-	}*/
 	console.log(daters);
     });
 
